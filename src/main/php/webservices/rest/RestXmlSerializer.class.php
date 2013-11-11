@@ -1,7 +1,7 @@
 <?php namespace webservices\rest;
 
 use xml\Tree;
-
+use xml\Node;
 
 /**
  * An XML serializer
@@ -23,14 +23,14 @@ class RestXmlSerializer extends RestSerializer {
   /**
    * Serialize
    *
-   * @param   var value
+   * @param   var $payload
    * @return  string
    */
   public function serialize($payload) {
     $t= new Tree();
     $t->setEncoding('UTF-8');
 
-    if ($payload instanceof \Payload) {
+    if ($payload instanceof Payload) {
       $root= isset($payload->properties['name']) ? $payload->properties['name'] : 'root';
       $payload= $payload->value;
     } else {
@@ -38,11 +38,11 @@ class RestXmlSerializer extends RestSerializer {
     }
 
     if ($payload instanceof \lang\Generic) {
-      $t->root= \xml\Node::fromObject($payload, $root);
+      $t->root= Node::fromObject($payload, $root);
     } else if (is_array($payload)) {
-      $t->root= \xml\Node::fromArray($payload, $root);
+      $t->root= Node::fromArray($payload, $root);
     } else {
-      $t->root= new \xml\Node($root, $payload);
+      $t->root= new Node($root, $payload);
     }
     return $t->getDeclaration()."\n".$t->getSource(INDENT_NONE);
   }

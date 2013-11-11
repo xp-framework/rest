@@ -140,9 +140,9 @@ class RestRequest extends \lang\Object {
    */
   public function setPayload($payload, $format) {
     $this->payload= $payload;
-    if ($format instanceof \RestFormat) {
+    if ($format instanceof RestFormat) {
       $this->contentType= $format->serializer()->contentType();
-    } else if ($format instanceof \RestSerializer) {
+    } else if ($format instanceof RestSerializer) {
       $this->contentType= $format->contentType();
     } else {
       $this->contentType= $format;

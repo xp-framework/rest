@@ -1,16 +1,14 @@
 <?php namespace webservices\rest;
 
-use lang\Enum;
 use io\streams\InputStream;
 use io\streams\OutputStream;
-
 
 /**
  * Rest format
  *
  * @test  xp://net.xp_framework.unittest.webservices.rest.RestFormatTest
  */
-class RestFormat extends Enum {
+class RestFormat extends \lang\Enum {
   public static $UNKNOWN;
   public static $JSON;
   public static $XML;
@@ -74,7 +72,7 @@ class RestFormat extends Enum {
    * @param  io.streams.OutputStream out
    * @param  webservices.rest.Payload value
    */
-  public function write(OutputStream $out, \Payload $value= null) {
+  public function write(OutputStream $out, Payload $value= null) {
     $out->write($this->serializer->serialize($value));
   }
 

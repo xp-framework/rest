@@ -1,5 +1,20 @@
 <?php namespace webservices\rest;
 
+use lang\XPClass;
+use lang\Type;
+use lang\Primitive;
+use lang\reflect\Modifiers;
+use lang\types\String;
+use lang\types\Character;
+use lang\types\Integer;
+use lang\types\Long;
+use lang\types\Short;
+use lang\types\Byte;
+use lang\types\Float;
+use lang\types\Double;
+use lang\types\Boolean;
+use lang\types\ArrayList;
+
 /**
  * Marshalling takes care of converting the data to a simple output 
  * format consisting solely of primitives, arrays and maps; and vice
@@ -28,7 +43,7 @@ class RestMarshalling extends \lang\Object {
     $keys= $this->marshallers->keys();
 
     // Add marshaller
-    $t= $type instanceof \lang\Type ? $type : \lang\Type::forName($type);
+    $t= $type instanceof Type ? $type : Type::forName($type);
     $this->marshallers[$t]= $m;
 
     // Iterate over map keys before having altered the map, checking for
@@ -50,7 +65,7 @@ class RestMarshalling extends \lang\Object {
    * @return webservices.rest.TypeMarshaller The added marshaller
    */
   public function getMarshaller($type) {
-    return $this->marshallers[$type instanceof \lang\Type ? $type : \lang\Type::forName($type)];
+    return $this->marshallers[$type instanceof Type ? $type : Type::forName($type)];
   }
 
   /**
@@ -77,15 +92,15 @@ class RestMarshalling extends \lang\Object {
   public function marshal($data) {
     if ($data instanceof \util\Date) {
       return $data->toString('c');    // ISO 8601, e.g. "2004-02-12T15:19:21+00:00"
-    } else if ($data instanceof \lang\types\String || $data instanceof \lang\types\Character) {
+    } else if ($data instanceof String || $data instanceof Character) {
       return $data->toString();
-    } else if ($data instanceof \lang\types\Integer || $data instanceof Long || $data instanceof Short || $data instanceof \lang\types\Byte) {
+    } else if ($data instanceof Integer || $data instanceof Long || $data instanceof Short || $data instanceof Byte) {
       return $data->intValue();
-    } else if ($data instanceof Float || $data instanceof \lang\types\Double) {
+    } else if ($data instanceof Float || $data instanceof Double) {
       return $data->doubleValue();
-    } else if ($data instanceof \lang\types\Boolean) {
+    } else if ($data instanceof Boolean) {
       return (bool)$data->value;
-    } else if ($data instanceof \lang\types\ArrayList) {
+    } else if ($data instanceof ArrayList) {
       return (array)$data->values;
     } else if ($data instanceof \lang\Generic) {
       foreach ($this->marshallers->keys() as $t) {      // Specific class marshalling
@@ -167,15 +182,15 @@ class RestMarshalling extends \lang\Object {
    * @return  var
    */
   public function unmarshal($type, $data) {
-    if (null === $type || $type->equals(\lang\Type::$VAR)) {  // No conversion
+    if (null === $type || $type->equals(Type::$VAR)) {  // No conversion
       return $data;
     } else if (null === $data) {                        // Valid for any type
       return null;
-    } else if ($type->equals(\lang\XPClass::forName('lang.types.String'))) {
-      return new \lang\types\String($this->valueOf($data));
-    } else if ($type->equals(\lang\XPClass::forName('util.Date'))) {
+    } else if ($type->equals(XPClass::forName('lang.types.String'))) {
+      return new String($this->valueOf($data));
+    } else if ($type->equals(XPClass::forName('util.Date'))) {
       return $type->newInstance($data);
-    } else if ($type instanceof \lang\XPClass) {
+    } else if ($type instanceof XPClass) {
       foreach ($this->marshallers->keys() as $t) {
         if ($t->isAssignableFrom($type)) return $this->marshallers[$t]->unmarshal($type, $data);
       }
@@ -187,7 +202,7 @@ class RestMarshalling extends \lang\Object {
       // [ "4711" ] or "4711" - in all cases pass just "4711".
       if ($type->hasMethod('valueOf')) {
         $m= $type->getMethod('valueOf');
-        if (\lang\reflect\Modifiers::isStatic($m->getModifiers()) && \lang\reflect\Modifiers::isPublic($m->getModifiers()) && 1 === $m->numParameters()) {
+        if (Modifiers::isStatic($m->getModifiers()) && Modifiers::isPublic($m->getModifiers()) && 1 === $m->numParameters()) {
           if (null !== ($arg= $this->keyOf($data))) {
             return $m->invoke(null, array($this->unmarshal($m->getParameter(0)->getType(), $arg[0])));
           }
@@ -245,13 +260,13 @@ class RestMarshalling extends \lang\Object {
         $return[$key]= $this->unmarshal($type->componentType(), $element);
       }
       return $return;
-    } else if ($type->equals(\lang\Primitive::$STRING)) {
+    } else if ($type->equals(Primitive::$STRING)) {
       return (string)$this->valueOf($data);
-    } else if ($type->equals(\lang\Primitive::$INT)) {
+    } else if ($type->equals(Primitive::$INT)) {
       return (int)$this->valueOf($data);
-    } else if ($type->equals(\lang\Primitive::$DOUBLE)) {
+    } else if ($type->equals(Primitive::$DOUBLE)) {
       return (double)$this->valueOf($data);
-    } else if ($type->equals(\lang\Primitive::$BOOL)) {
+    } else if ($type->equals(Primitive::$BOOL)) {
       return (bool)$this->valueOf($data);
     } else {
       throw new \lang\FormatException('Cannot convert to '.\xp::stringOf($type));

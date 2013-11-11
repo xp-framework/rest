@@ -216,7 +216,7 @@ class RestContextTest extends TestCase {
       protected $context;
 
       #[@inject]
-      public function __construct(RestContext $context) { $this->context= $context; }
+      public function __construct(\webservices\rest\srv\RestContext $context) { $this->context= $context; }
       public function equals($cmp) { return $cmp instanceof self && $this->context->equals($cmp->context); }
     }');
     $this->assertEquals(
@@ -420,7 +420,7 @@ class RestContextTest extends TestCase {
   public function marshal_exceptions() {
     $this->fixture->addMarshaller('unittest.AssertionFailedError', newinstance('webservices.rest.TypeMarshaller', array(), '{
       public function marshal($t) {
-        return "expected ".xp::stringOf($t->expect)." but was ".xp::stringOf($t->actual);
+        return "expected ".\xp::stringOf($t->expect)." but was ".\xp::stringOf($t->actual);
       }
       public function unmarshal(\lang\Type $target, $name) {
         // Not needed

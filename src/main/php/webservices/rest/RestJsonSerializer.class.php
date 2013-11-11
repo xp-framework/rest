@@ -2,7 +2,6 @@
 
 use webservices\json\JsonFactory;
 
-
 /**
  * A JSON serializer
  *
@@ -27,15 +26,15 @@ class RestJsonSerializer extends RestSerializer {
   public function contentType() {
     return 'application/json; charset=utf-8';
   }
-  
+
   /**
    * Serialize
    *
-   * @param   var value
+   * @param   var $payload
    * @return  string
    */
   public function serialize($payload) {
-    if ($payload instanceof \Payload) {
+    if ($payload instanceof Payload) {
       return $this->json->encode($payload->value);
     } else {
       return $this->json->encode($payload);

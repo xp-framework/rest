@@ -59,7 +59,7 @@ class RestScriptlet extends HttpScriptlet implements Traceable {
    *
    * @param  webservices.rest.srv.AbstractRestRouter router
    */
-  public function setRouter(\AbstractRestRouter $router) {
+  public function setRouter(AbstractRestRouter $router) {
     $this->router= $router;
   }
 

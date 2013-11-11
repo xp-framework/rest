@@ -215,7 +215,7 @@ class RestContext extends \lang\Object implements Traceable {
     // use its status, headers and payload. For any other methods, set status to "OK".
     if (\lang\Type::$VOID->equals($method->getReturnType())) {
       return Response::status(HttpConstants::STATUS_NO_CONTENT);
-    } else if ($result instanceof \Output) {
+    } else if ($result instanceof Output) {
       $result->payload= $this->marshal($result->payload, $properties);
       return $result;
     } else {
