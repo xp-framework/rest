@@ -39,7 +39,7 @@ class RestContextHandleTest extends TestCase {
   public function response_instance_return() {
     $handler= newinstance('lang.Object', array(), '{
       #[@webmethod(verb= "GET")]
-      public function fixture() { return Response::created("/resource/4711"); }
+      public function fixture() { return \webservices\rest\srv\Response::created("/resource/4711"); }
     }');
     $this->assertEquals(
       Response::status(201)->withHeader('Location', '/resource/4711'),

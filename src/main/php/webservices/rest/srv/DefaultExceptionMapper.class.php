@@ -1,7 +1,5 @@
 <?php namespace webservices\rest\srv;
 
-
-
 /**
  * Default exception mapping - uses a given error code and then uses the
  * context's marshalling for exceptions.
@@ -27,6 +25,6 @@ class DefaultExceptionMapper extends \lang\Object implements ExceptionMapper {
    * @return webservices.rest.srv.Response
    */
   public function asResponse($t, RestContext $ctx) {
-    return \Response::error($this->statusCode)->withPayload($ctx->marshal(new \webservices\rest\Payload($t)));
+    return Response::error($this->statusCode)->withPayload($ctx->marshal(new \webservices\rest\Payload($t)));
   }
 }
