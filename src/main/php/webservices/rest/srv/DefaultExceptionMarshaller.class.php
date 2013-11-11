@@ -1,39 +1,35 @@
-<?php
-/* This class is part of the XP framework
- *
- * $Id$
- */
+<?php namespace webservices\rest\srv;
 
-  uses('webservices.rest.TypeMarshaller');
+use webservices\rest\TypeMarshaller;
+
+
+/**
+ * Default exception mapping
+ *
+ * <code>
+ *   { "message" : "Exception message" }
+ * </code>
+ */
+class DefaultExceptionMarshaller extends \lang\Object implements TypeMarshaller {
 
   /**
-   * Default exception mapping
+   * Marshals the type
    *
-   * <code>
-   *   { "message" : "Exception message" }
-   * </code>
+   * @param  lang.Throwable type
+   * @return var
    */
-  class DefaultExceptionMarshaller extends Object implements TypeMarshaller {
-
-    /**
-     * Marshals the type
-     *
-     * @param  lang.Throwable type
-     * @return var
-     */
-    public function marshal($t) {
-      return array('message' => $t->getMessage());
-    }
-
-    /**
-     * Unmarshals input
-     *
-     * @param  lang.Type target
-     * @param  var in
-     * @return lang.Throwable
-     */
-    public function unmarshal(Type $target, $in) {
-      return $in instanceof Throwable ? $in : $target->newInstance((string)$in);
-    }
+  public function marshal($t) {
+    return array('message' => $t->getMessage());
   }
-?>
+
+  /**
+   * Unmarshals input
+   *
+   * @param  lang.Type target
+   * @param  var in
+   * @return lang.Throwable
+   */
+  public function unmarshal(\lang\Type $target, $in) {
+    return $in instanceof \lang\Throwable ? $in : $target->newInstance((string)$in);
+  }
+}

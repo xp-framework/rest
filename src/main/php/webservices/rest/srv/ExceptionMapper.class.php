@@ -1,24 +1,19 @@
-<?php
-/* This class is part of the XP framework
- *
- * $Id$
- */
+<?php namespace webservices\rest\srv;
 
-  uses('webservices.rest.srv.Response');
+
+
+/**
+ * Exception mapping
+ *
+ */
+interface ExceptionMapper {
 
   /**
-   * Exception mapping
+   * Maps an exception
    *
+   * @param  lang.Throwable t
+   * @param  webservices.rest.srv.RestContext ctx
+   * @return webservices.rest.srv.Response
    */
-  interface ExceptionMapper {
-
-    /**
-     * Maps an exception
-     *
-     * @param  lang.Throwable t
-     * @param  webservices.rest.srv.RestContext ctx
-     * @return webservices.rest.srv.Response
-     */
-    public function asResponse($t, RestContext $ctx);
-  }
-?>
+  public function asResponse($t, RestContext $ctx);
+}

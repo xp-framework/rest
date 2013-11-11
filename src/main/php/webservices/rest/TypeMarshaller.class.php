@@ -1,32 +1,27 @@
-<?php
-/* This class is part of the XP framework
- *
- * $Id$
- */
+<?php namespace webservices\rest;
 
-  uses('webservices.rest.srv.Response');
+
+
+/**
+ * Exception mapping
+ *
+ */
+interface TypeMarshaller {
 
   /**
-   * Exception mapping
+   * Marshals the type
    *
+   * @param  T type
+   * @return var
    */
-  interface TypeMarshaller {
+  public function marshal($t);
 
-    /**
-     * Marshals the type
-     *
-     * @param  T type
-     * @return var
-     */
-    public function marshal($t);
-
-    /**
-     * Unmarshals input
-     *
-     * @param  lang.Type target
-     * @param  var in
-     * @return T
-     */
-    public function unmarshal(Type $target, $in);
-  }
-?>
+  /**
+   * Unmarshals input
+   *
+   * @param  lang.Type target
+   * @param  var in
+   * @return T
+   */
+  public function unmarshal(\lang\Type $target, $in);
+}

@@ -1,14 +1,9 @@
-<?php
-/* This class is part of the XP framework
- *
- * $Id$ 
- */
+<?php namespace webservices\rest;
 
-  /**
-   * Indicates a REST call failed
-   *
-   */
-  class RestException extends XPException {
-    
-  }
-?>
+/**
+ * Indicates a REST call failed
+ *
+ */
+class RestException extends \lang\XPException {
+  
+}
