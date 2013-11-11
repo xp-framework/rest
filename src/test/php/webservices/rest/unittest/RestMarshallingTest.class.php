@@ -45,7 +45,7 @@ class RestMarshallingTest extends \unittest\TestCase {
         return sprintf("%.2f %s", $money->amount()->floatValue(), $money->currency()->name());
       }
 
-      public function unmarshal(Type $t, $input) {
+      public function unmarshal(\lang\Type $t, $input) {
         sscanf($input, "%f %s", $amount, $currency);
         return $t->newInstance($amount, Currency::getInstance($currency));
       }

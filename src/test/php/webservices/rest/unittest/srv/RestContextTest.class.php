@@ -62,7 +62,7 @@ class RestContextTest extends TestCase {
     $r= newinstance('scriptlet.HttpScriptletRequest', array($payload), '{
       public function __construct($payload) {
         if (NULL !== $payload) {
-          $this->inputStream= new MemoryInputStream($payload);
+          $this->inputStream= new \io\streams\MemoryInputStream($payload);
         }
       }
     }');
@@ -112,7 +112,7 @@ class RestContextTest extends TestCase {
       public function marshal($t) {
         return $t->getName();
       }
-      public function unmarshal(Type $target, $name) {
+      public function unmarshal(\lang\Type $target, $name) {
         // Not needed
       }
     }'));
@@ -128,7 +128,7 @@ class RestContextTest extends TestCase {
       public function marshal($t) {
         // Not needed
       }
-      public function unmarshal(Type $target, $name) {
+      public function unmarshal(\lang\Type $target, $name) {
         return $target->newInstance($name);
       }
     }'));
@@ -422,7 +422,7 @@ class RestContextTest extends TestCase {
       public function marshal($t) {
         return "expected ".xp::stringOf($t->expect)." but was ".xp::stringOf($t->actual);
       }
-      public function unmarshal(Type $target, $name) {
+      public function unmarshal(\lang\Type $target, $name) {
         // Not needed
       }
     }'));
@@ -505,7 +505,7 @@ class RestContextTest extends TestCase {
       public function marshal($t) {
         return $t->getName();
       }
-      public function unmarshal(Type $target, $name) {
+      public function unmarshal(\lang\Type $target, $name) {
         // Not needed
       }
     }');
@@ -518,7 +518,7 @@ class RestContextTest extends TestCase {
       public function marshal($t) {
         return $t->getName();
       }
-      public function unmarshal(Type $target, $name) {
+      public function unmarshal(\lang\Type $target, $name) {
         // Not needed
       }
     }');
