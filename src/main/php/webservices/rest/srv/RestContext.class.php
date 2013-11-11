@@ -9,7 +9,6 @@ use util\PropertyManager;
 use util\log\Logger;
 use util\log\Traceable;
 
-
 /**
  * The context of a rest call
  *
@@ -25,7 +24,7 @@ class RestContext extends \lang\Object implements Traceable {
    * Constructor
    */
   public function __construct() {
-    $this->mappers= create('new HashTable<XPClass, ExceptionMapper>');
+    $this->mappers= create('new util.collections.HashTable<lang.XPClass, webservices.rest.srv.ExceptionMapper>');
     $this->marshalling= new RestMarshalling();
 
     // Default exception mappings

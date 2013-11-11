@@ -1,8 +1,5 @@
 <?php namespace webservices\rest;
 
-use util\collections\HashTable;
-
-
 /**
  * Marshalling takes care of converting the data to a simple output 
  * format consisting solely of primitives, arrays and maps; and vice
@@ -17,7 +14,7 @@ class RestMarshalling extends \lang\Object {
    * Constructor
    */
   public function __construct() {
-    $this->marshallers= create('new HashTable<Type, TypeMarshaller>');
+    $this->marshallers= create('new util.collections.HashTable<lang.Type, webservices.rest.TypeMarshaller>');
   }
 
   /**

@@ -1,7 +1,5 @@
 <?php namespace webservices\rest\srv;
 
-
-
 /**
  * REST router based on class and method annotations
  *
@@ -66,12 +64,12 @@ class RestDefaultRouter extends AbstractRestRouter {
   public function addWebmethod($class, $method, $base= '') {
     try {
       $webmethod= $method->getAnnotation('webmethod');
-    } catch (ElementNotFoundException $e) {
+    } catch (\lang\ElementNotFoundException $e) {
       throw new \lang\IllegalArgumentException('Not a webmethod: '.$method->toString(), $e);
     }
 
     // Create route from @webmethod annotation
-    $route= $this->addRoute(new \RestRoute(
+    $route= $this->addRoute(new RestRoute(
       $webmethod['verb'],
       $base.(isset($webmethod['path']) ? rtrim($webmethod['path'], '/') : ''),
       $class,
@@ -86,7 +84,7 @@ class RestDefaultRouter extends AbstractRestRouter {
       foreach ($parameter->getAnnotations() as $source => $value) {
         $route->addParam($param, new RestParamSource(
           $value ? $value : $param,
-          \ParamReader::forName($source)
+          ParamReader::forName($source)
         ));
       }
     }
