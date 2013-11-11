@@ -1,14 +1,12 @@
 <?php namespace webservices\rest\srv;
 
-use lang\Enum;
 use webservices\rest\RestFormat;
 use webservices\rest\RestDeserializer;
-
 
 /**
  * Reads request parameters
  */
-abstract class ParamReader extends Enum {
+abstract class ParamReader extends \lang\Enum {
   protected static $sources= array();
   public static $COOKIE, $HEADER, $PARAM, $PATH, $BODY;
 
@@ -16,32 +14,32 @@ abstract class ParamReader extends Enum {
     self::$sources['cookie']= self::$COOKIE= newinstance(__CLASS__, array(1, 'cookie'), '{
       static function __static() { }
       public function read($name, $target, $request) {
-        if (NULL === ($cookie= $request->getCookie($name, NULL))) return NULL;
+        if (null === ($cookie= $request->getCookie($name, null))) return null;
         return $cookie->getValue();
       }
     }');
     self::$sources['header']= self::$HEADER= newinstance(__CLASS__, array(2, 'header'), '{
       static function __static() { }
       public function read($name, $target, $request) {
-        return $request->getHeader($name, NULL);
+        return $request->getHeader($name, null);
       }
     }');
     self::$sources['param']= self::$PARAM= newinstance(__CLASS__, array(3, 'param'), '{
       static function __static() { }
       public function read($name, $target, $request) {
-        return $request->getParam($name, NULL);
+        return $request->getParam($name, null);
       }
     }');
     self::$sources['path']= self::$PATH= newinstance(__CLASS__, array(4, 'path'), '{
       static function __static() { }
       public function read($name, $target, $request) {
-        return isset($target["segments"][$name]) ? rawurldecode($target["segments"][$name]) : NULL;
+        return isset($target["segments"][$name]) ? rawurldecode($target["segments"][$name]) : null;
       }
     }');
     self::$sources['body']= self::$BODY= newinstance(__CLASS__, array(5, 'body'), '{
       static function __static() { }
       public function read($name, $target, $request) {
-        return RestFormat::forMediaType($target["input"])->read($request->getInputStream(), Type::$VAR); 
+        return \webservices\rest\RestFormat::forMediaType($target["input"])->read($request->getInputStream(), \lang\Type::$VAR); 
       }
     }');
   }
