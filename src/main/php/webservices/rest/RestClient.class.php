@@ -4,7 +4,6 @@ use util\log\Traceable;
 use peer\Header;
 use peer\http\HttpConnection;
 
-
 /**
  * REST client
  *
@@ -260,7 +259,7 @@ class RestClient extends \lang\Object implements Traceable {
       throw new RestException('Cannot send request', $e);
     }
 
-    $reader= new \ResponseReader($this->deserializerFor(this($response->header('Content-Type'), 0), false), $this->marshalling);
+    $reader= new ResponseReader($this->deserializerFor(this($response->header('Content-Type'), 0), false), $this->marshalling);
     if (null === $type) {
       $rr= new RestResponse($response, $reader);
     } else if ($type instanceof \lang\XPClass && $type->isSubclassOf('webservices.rest.RestResponse')) {
