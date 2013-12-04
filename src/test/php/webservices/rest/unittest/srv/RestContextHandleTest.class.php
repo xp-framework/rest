@@ -101,7 +101,7 @@ class RestContextHandleTest extends TestCase {
   public function handle_string_class_in_parameters_and_return() {
     $handler= newinstance('lang.Object', array(), '{
       #[@webmethod(verb= "GET")]
-      public function fixture(String $name) {
+      public function fixture(\lang\types\String $name) {
         if ($name->startsWith("www.")) {
           return array("name" => $name->substring(4));
         } else {

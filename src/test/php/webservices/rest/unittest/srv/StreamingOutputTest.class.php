@@ -60,11 +60,12 @@ class StreamingOutputTest extends TestCase {
     $e= newinstance('io.collections.IOElement', array(new MemoryInputStream('Test')), '{
       protected $stream;
       public function __construct($stream) { $this->stream= $stream; }
+      public function getName() { return "test.txt"; }
       public function getURI() { return "/path/to/test.txt"; }
       public function getSize() { return 6100; }
       public function createdAt() { return null; }
       public function lastAccessed() { return null; }
-      public function lastModified() { return new Date("2013-03-26 10:53:00"); }
+      public function lastModified() { return new \util\Date("2013-03-26 10:53:00"); }
       public function getOrigin() { return null; }
       public function setOrigin(IOCollection $origin) { }
       public function getInputStream() { return $this->stream; }

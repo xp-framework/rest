@@ -26,7 +26,7 @@ class RestClientExecutionTest extends TestCase {
 
       public function __construct($status, $body, $headers) {
         parent::__construct("http://test");
-        if ($status instanceof Throwable) {
+        if ($status instanceof \lang\Throwable) {
           $this->exception= $status;
         } else {
           $this->result= "HTTP/1.1 ".$status."\r\n";
@@ -37,11 +37,11 @@ class RestClientExecutionTest extends TestCase {
         }
       }
       
-      public function send(HttpRequest $request) {
+      public function send(\peer\http\HttpRequest $request) {
         if ($this->exception) {
           throw $this->exception;
         } else {
-          return new HttpResponse(new MemoryInputStream($this->result));
+          return new \peer\http\HttpResponse(new \io\streams\MemoryInputStream($this->result));
         }
       }
     }');

@@ -27,9 +27,9 @@ class RestClientSendTest extends TestCase {
         parent::__construct("http://test");
       }
       
-      public function send(HttpRequest $request) {
+      public function send(\peer\http\HttpRequest $request) {
         $str= $request->getRequestString();
-        return new HttpResponse(new MemoryInputStream(sprintf(
+        return new \peer\http\HttpResponse(new \io\streams\MemoryInputStream(sprintf(
           "HTTP/1.0 200 OK\r\nContent-Type: text/plain\r\nContent-Length: %d\r\n\r\n%s",
           strlen($str),
           $str

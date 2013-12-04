@@ -104,7 +104,7 @@ class RestMarshalling extends \lang\Object {
       return (array)$data->values;
     } else if ($data instanceof \lang\Generic) {
       foreach ($this->marshallers->keys() as $t) {      // Specific class marshalling
-        if ($t->isInstance($data)) return $this->marshallers[$t]->marshal($data);
+        if ($t->isInstance($data)) return $this->marshallers[$t]->marshal($data, $this);
       }
 
       $class= $data->getClass();
@@ -192,7 +192,7 @@ class RestMarshalling extends \lang\Object {
       return $type->newInstance($data);
     } else if ($type instanceof XPClass) {
       foreach ($this->marshallers->keys() as $t) {
-        if ($t->isAssignableFrom($type)) return $this->marshallers[$t]->unmarshal($type, $data);
+        if ($t->isAssignableFrom($type)) return $this->marshallers[$t]->unmarshal($type, $data, $this);
       }
 
       // Check if a public static one-arg valueOf() method exists
