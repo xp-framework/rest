@@ -9,9 +9,9 @@
 class RaisesExceptionFromConstructor extends \lang\Object {
 
   /**
-   * Constructor. Raises a `lang.Error`.
+   * Constructor. Raises a `lang.IllegalStateException`.
    */
   public function __construct() {
-    throw new \lang\Error('Cannot instantiate');
+    throw new \lang\IllegalStateException('Cannot instantiate');
   }
 }

@@ -84,18 +84,21 @@ class RestContext extends \lang\Object implements Traceable {
   /**
    * Maps an exception
    *
-   * @param  lang.Throwable t
+   * @param  lang.Throwable $t
+   * @param  bool $useExceptionMappings
    * @return webservices.rest.srv.Response
    */
-  public function mapException($t) {
+  public function asResponse($t, $useExceptionMappings= true) {
     static $properties= array('name' => 'exception');   // XML root node
 
     // See if we can find an exception mapper
-    foreach ($this->mappers->keys() as $type) {
-      if (!$type->isInstance($t)) continue;
-      $r= $this->mappers[$type]->asResponse($t, $this);
-      $r->payload->properties= $properties;
-      return $r;
+    if ($useExceptionMappings) {
+      foreach ($this->mappers->keys() as $type) {
+        if (!$type->isInstance($t)) continue;
+        $r= $this->mappers[$type]->asResponse($t, $this);
+        $r->payload->properties= $properties;
+        return $r;
+      }
     }
 
     // Default: Use error 500 ("Internal Server Error") and the exception message
@@ -208,7 +211,7 @@ class RestContext extends \lang\Object implements Traceable {
       $this->cat && $this->cat->debug('<-', $result);
     } catch (\lang\reflect\TargetInvocationException $e) {
       $this->cat && $this->cat->warn('<-', $e);
-      return $this->mapException($e->getCause());
+      return $this->asResponse($e->getCause());
     }
 
     // For "VOID" methods, set status to "no content". If a response is returned, 
@@ -276,23 +279,22 @@ class RestContext extends \lang\Object implements Traceable {
    * @return  bool
    */
   public function process($target, $request, $response) {
-
-    // Invoke handler
     try {
+      $this->cat && $this->cat->debug('->', $target);
+
+      // Instantiate
+      $map= false;
       $instance= $this->handlerInstanceFor($target['handler']);
-      try {
-        $this->cat && $this->cat->debug('->', $target);
-        $result= $this->handle($instance, $target['target'], $this->argumentsFor($target, $request));
-      } catch (\lang\reflect\TargetInvocationException $e) {
-        $this->cat && $this->cat->warn('<-', $e);
-        $result= $this->mapException($e->getCause());
-      }
+
+      // Invoke handler
+      $map= true;
+      $result= $this->handle($instance, $target['target'], $this->argumentsFor($target, $request));
     } catch (\lang\reflect\TargetInvocationException $e) {
-      $this->cat && $this->cat->error('<-', $e);
-      $result= $this->mapException($e->getCause());
+      $this->cat && $this->cat->warn('<-', $e);
+      $result= $this->asResponse($e->getCause(), $map);
     } catch (\lang\Throwable $t) {
       $this->cat && $this->cat->error('<-', $t);
-      $result= $this->mapException($t);
+      $result= $this->asResponse($t, $map);
     }
 
     // Have a result
