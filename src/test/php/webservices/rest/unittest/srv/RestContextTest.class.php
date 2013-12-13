@@ -530,4 +530,38 @@ class RestContextTest extends TestCase {
   public function get_non_existant_marshaller() {
     $this->assertNull($this->fixture->getMarshaller('unittest.TestCase'));
   }
+
+  #[@test]
+  public function process_exceptions_from_handler_constructor() {
+    $route= array(
+      'handler'  => $this->fixtureClass('RaisesExceptionFromConstructor'),
+      'target'   => null,
+      'params'   => array(),
+      'segments' => array(),
+      'input'    => null,
+      'output'   => 'text/json'
+    );
+
+    $this->assertProcess(
+      500, array('Content-Type: text/json'), '{ "message" : "Cannot instantiate" }',
+      $route, $this->newRequest()
+    );
+  }
+
+  #[@test]
+  public function process_exceptions_from_handler_method() {
+    $route= array(
+      'handler'  => $this->fixtureClass('RaisesExceptionFromMethod'),
+      'target'   => $this->fixtureMethod('RaisesExceptionFromMethod', 'fixture'),
+      'params'   => array(),
+      'segments' => array(),
+      'input'    => null,
+      'output'   => 'text/json'
+    );
+
+    $this->assertProcess(
+      500, array('Content-Type: text/json'), '{ "message" : "Invocation failed" }',
+      $route, $this->newRequest()
+    );
+  }
 }

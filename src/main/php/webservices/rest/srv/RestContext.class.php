@@ -279,16 +279,18 @@ class RestContext extends \lang\Object implements Traceable {
 
     // Invoke handler
     try {
-      $this->cat && $this->cat->debug('->', $target);
-      $result= $this->handle(
-        $this->handlerInstanceFor($target['handler']),
-        $target['target'],
-        $this->argumentsFor($target, $request)
-      );
+      $instance= $this->handlerInstanceFor($target['handler']);
+      try {
+        $this->cat && $this->cat->debug('->', $target);
+        $result= $this->handle($instance, $target['target'], $this->argumentsFor($target, $request));
+      } catch (\lang\reflect\TargetInvocationException $e) {
+        $this->cat && $this->cat->warn('<-', $e);
+        $result= $this->mapException($e->getCause());
+      }
     } catch (\lang\reflect\TargetInvocationException $e) {
       $this->cat && $this->cat->error('<-', $e);
       $result= $this->mapException($e->getCause());
-    } catch (\lang\Throwable $t) {                         // Marshalling, parameters, instantiation
+    } catch (\lang\Throwable $t) {
       $this->cat && $this->cat->error('<-', $t);
       $result= $this->mapException($t);
     }
