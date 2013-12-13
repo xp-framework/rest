@@ -428,7 +428,7 @@ class RestContextTest extends TestCase {
     }'));
     $this->assertEquals(
       \webservices\rest\srv\Response::error(500)->withPayload(new \webservices\rest\Payload('expected 1 but was 2', array('name' => 'exception'))),
-      $this->fixture->mapException(new \unittest\AssertionFailedError('Test', 2, 1))
+      $this->fixture->asResponse(new \unittest\AssertionFailedError('Test', 2, 1))
     );
   }
 
@@ -534,6 +534,23 @@ class RestContextTest extends TestCase {
   #[@test]
   public function process_exceptions_from_handler_constructor() {
     $route= array(
+      'handler'  => $this->fixtureClass('RaisesErrorFromConstructor'),
+      'target'   => null,
+      'params'   => array(),
+      'segments' => array(),
+      'input'    => null,
+      'output'   => 'text/json'
+    );
+
+    $this->assertProcess(
+      500, array('Content-Type: text/json'), '{ "message" : "Cannot instantiate" }',
+      $route, $this->newRequest()
+    );
+  }
+
+  #[@test]
+  public function process_exceptions_from_handler_constructor_are_not_mapped() {
+    $route= array(
       'handler'  => $this->fixtureClass('RaisesExceptionFromConstructor'),
       'target'   => null,
       'params'   => array(),
@@ -549,10 +566,10 @@ class RestContextTest extends TestCase {
   }
 
   #[@test]
-  public function process_exceptions_from_handler_method() {
+  public function process_errors_from_handler_method() {
     $route= array(
-      'handler'  => $this->fixtureClass('RaisesExceptionFromMethod'),
-      'target'   => $this->fixtureMethod('RaisesExceptionFromMethod', 'fixture'),
+      'handler'  => $this->fixtureClass('RaisesFromMethod'),
+      'target'   => $this->fixtureMethod('RaisesFromMethod', 'error'),
       'params'   => array(),
       'segments' => array(),
       'input'    => null,
@@ -561,6 +578,23 @@ class RestContextTest extends TestCase {
 
     $this->assertProcess(
       500, array('Content-Type: text/json'), '{ "message" : "Invocation failed" }',
+      $route, $this->newRequest()
+    );
+  }
+
+  #[@test]
+  public function process_exceptions_from_handler_method_are_mapped() {
+    $route= array(
+      'handler'  => $this->fixtureClass('RaisesFromMethod'),
+      'target'   => $this->fixtureMethod('RaisesFromMethod', 'exception'),
+      'params'   => array(),
+      'segments' => array(),
+      'input'    => null,
+      'output'   => 'text/json'
+    );
+
+    $this->assertProcess(
+      409, array('Content-Type: text/json'), '{ "message" : "Invocation failed" }',
       $route, $this->newRequest()
     );
   }
