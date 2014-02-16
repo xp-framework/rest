@@ -115,7 +115,7 @@ class RestResponse extends \lang\Object {
    */
   protected function handleStatus($code) {
     if ($code > 399) {
-      throw new \RestException($code.': '.$this->response->message());
+      throw new RestException($code.': '.$this->response->message());
     }
   }
 
