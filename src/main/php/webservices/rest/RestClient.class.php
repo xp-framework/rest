@@ -204,9 +204,9 @@ class RestClient extends \lang\Object implements Traceable {
   /**
    * Execute a request
    *
-   * <code>
-   *   $client->execute(new RestRequest('GET', '/'));
-   * </code>
+   * ```php
+   * $client->execute(new RestRequest('/', HttpConstants::GET));
+   * ```
    *
    * @param   var t either a string or a lang.Type - response type, defaults to webservices.rest.RestResponse
    * @param   webservices.rest.RestRequest request
