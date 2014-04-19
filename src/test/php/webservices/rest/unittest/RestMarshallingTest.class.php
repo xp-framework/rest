@@ -70,7 +70,7 @@ class RestMarshallingTest extends \unittest\TestCase {
   public static function defineMoneyMarshaller() {
     self::$moneyMarshaller= newinstance('webservices.rest.TypeMarshaller', array(), '{
       public function marshal($money) {
-        return sprintf("%.2f %s", $money->amount()->floatValue(), $money->currency()->name());
+        return sprintf("%.2f %s", $money->amount()->doubleValue(), $money->currency()->name());
       }
 
       public function unmarshal(\lang\Type $t, $input) {
