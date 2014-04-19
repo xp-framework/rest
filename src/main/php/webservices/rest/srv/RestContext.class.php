@@ -262,7 +262,7 @@ class RestContext extends \lang\Object implements Traceable {
         if ($parameter->isOptional()) {
           $arg= $parameter->getDefaultValue();
         } else {
-          throw new \lang\IllegalArgumentException('Parameter "'.$param.'" required but found in '.$src->toString());
+          throw new \lang\IllegalArgumentException('Parameter "'.$param.'" required, but not found in '.$src->toString());
         }
       }
       $args[]= $this->unmarshal($parameter->getType(), $arg);
