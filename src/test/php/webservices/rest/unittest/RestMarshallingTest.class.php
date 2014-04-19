@@ -55,29 +55,27 @@ class RestMarshallingTest extends \unittest\TestCase {
         return $cmp instanceof self && \util\Objects::equal($cmp->values, $this->values);
       }
     }');
-    self::$walletMarshaller= newinstance('webservices.rest.TypeMarshaller', array(), '{
-      public function marshal($wallet, $marshalling= null) {
+    self::$walletMarshaller= newinstance('webservices.rest.TypeMarshaller', [], [
+      'marshal' => function($wallet, $marshalling= null) {
         return $marshalling->marshal($wallet->values);
+      },
+      'unmarshal' => function(\lang\Type $t, $input, $marshalling= null) {
+        return $t->newInstance($marshalling->unmarshal(new \lang\ArrayType('util.Money'), $input));
       }
-
-      public function unmarshal(\lang\Type $t, $input, $marshalling= null) {
-        return $t->newInstance($marshalling->unmarshal(new \lang\ArrayType("util.Money"), $input));
-      }
-    }');
+    ]);
   }
 
   #[@beforeClass]
   public static function defineMoneyMarshaller() {
-    self::$moneyMarshaller= newinstance('webservices.rest.TypeMarshaller', array(), '{
-      public function marshal($money) {
-        return sprintf("%.2f %s", $money->amount()->doubleValue(), $money->currency()->name());
-      }
-
-      public function unmarshal(\lang\Type $t, $input) {
-        sscanf($input, "%f %s", $amount, $currency);
+    self::$moneyMarshaller= newinstance('webservices.rest.TypeMarshaller', [], [
+      'marshal' => function($money, $marshalling= null) {
+        return sprintf('%.2f %s', $money->amount()->doubleValue(), $money->currency()->name());
+      },
+      'unmarshal' => function(\lang\Type $t, $input, $marshalling= null) {
+        sscanf($input, '%f %s', $amount, $currency);
         return $t->newInstance($amount, \util\Currency::getInstance($currency));
       }
-    }');
+    ]);
   }
 
   #[@test]
