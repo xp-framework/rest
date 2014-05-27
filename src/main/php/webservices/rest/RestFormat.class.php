@@ -59,11 +59,10 @@ class RestFormat extends \lang\Enum {
    * Deserialize from input
    *
    * @param  io.streams.InputStream in
-   * @param  lang.Type type
    * @return var
    */
-  public function read(InputStream $in, $type) {
-    return $this->deserializer->deserialize($in, $type);
+  public function read(InputStream $in) {
+    return $this->deserializer->deserialize($in);
   }
 
   /**
