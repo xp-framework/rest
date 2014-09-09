@@ -2,7 +2,6 @@
 
 use webservices\rest\RestJsonDeserializer;
 
-
 /**
  * TestCase
  *
@@ -19,27 +18,19 @@ class RestJsonDeserializerTest extends RestDeserializerTest {
     return new RestJsonDeserializer();
   }
 
-  /**
-   * Test
-   *
-   */
   #[@test]
   public function one_keyvalue_pair() {
     $this->assertEquals(
       array('name' => 'Timm'), 
-      $this->fixture->deserialize($this->input('{ "name" : "Timm" }'), \lang\Type::forName('[:string]'))
+      $this->fixture->deserialize($this->input('{ "name" : "Timm" }'))
     );
   }
 
-  /**
-   * Test
-   *
-   */
   #[@test]
   public function two_keyvalue_pairs() {
     $this->assertEquals(
       array('name' => 'Timm', 'id' => '1549'), 
-      $this->fixture->deserialize($this->input('{ "name" : "Timm", "id" : "1549" }'), \lang\Type::forName('[:string]'))
+      $this->fixture->deserialize($this->input('{ "name" : "Timm", "id" : "1549" }'))
     );
   }
 }

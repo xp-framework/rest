@@ -26,6 +26,6 @@ class ResponseReader extends \lang\Object {
    * @return var
    */
   public function read(\lang\Type $t, \io\streams\InputStream $is) {
-    return $this->marshalling->unmarshal($t, $this->deserializer->deserialize($is, \lang\Type::$VAR));
+    return $this->marshalling->unmarshal($t, $this->deserializer->deserialize($is));
   }
 }
