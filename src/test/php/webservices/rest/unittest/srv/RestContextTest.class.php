@@ -154,10 +154,13 @@ class RestContextTest extends TestCase {
 
   #[@test]
   public function handle_xmlfactory_annotated_class() {
-    $handler= self::$package->loadClass('GreetingHandler')->newInstance();
+    $handler= newinstance('#[@webservice, @xmlfactory(element= "greeting")] lang.Object', [], '{
+      #[@webmethod]
+      public function greet() { return "Test"; }
+    }');
     $this->assertEquals(
-      \webservices\rest\srv\Response::error(200)->withPayload(new \webservices\rest\Payload('Hello Test', array('name' => 'greeting'))),
-      $this->fixture->handle($handler, $handler->getClass()->getMethod('greet'), array('Test'))
+      \webservices\rest\srv\Response::error(200)->withPayload(new \webservices\rest\Payload('Test', array('name' => 'greeting'))),
+      $this->fixture->handle($handler, $handler->getClass()->getMethod('greet'), array())
     );
   }
 
@@ -420,15 +423,15 @@ class RestContextTest extends TestCase {
   public function marshal_exceptions() {
     $this->fixture->addMarshaller('unittest.AssertionFailedError', newinstance('webservices.rest.TypeMarshaller', array(), '{
       public function marshal($t) {
-        return "expected ".\xp::stringOf($t->expect)." but was ".\xp::stringOf($t->actual);
+        return "assert:".$t->message;
       }
       public function unmarshal(\lang\Type $target, $name) {
         // Not needed
       }
     }'));
     $this->assertEquals(
-      \webservices\rest\srv\Response::error(500)->withPayload(new \webservices\rest\Payload('expected 1 but was 2', array('name' => 'exception'))),
-      $this->fixture->asResponse(new \unittest\AssertionFailedError('Test', 2, 1))
+      \webservices\rest\srv\Response::error(500)->withPayload(new \webservices\rest\Payload('assert:expected 1 but was 2', array('name' => 'exception'))),
+      $this->fixture->asResponse(new \unittest\AssertionFailedError('expected 1 but was 2'))
     );
   }
 
