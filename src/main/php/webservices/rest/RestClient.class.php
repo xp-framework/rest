@@ -3,19 +3,21 @@
 use util\log\Traceable;
 use peer\Header;
 use peer\http\HttpConnection;
+use lang\IllegalStateException;
+use lang\IllegalArgumentException;
 
 /**
  * REST client
  *
- * @test    xp://net.xp_framework.unittest.webservices.rest.RestClientTest
- * @test    xp://net.xp_framework.unittest.webservices.rest.RestClientSendTest
- * @test    xp://net.xp_framework.unittest.webservices.rest.RestClientExecutionTest
+ * @test xp://net.xp_framework.unittest.webservices.rest.RestClientTest
+ * @test xp://net.xp_framework.unittest.webservices.rest.RestClientSendTest
+ * @test xp://net.xp_framework.unittest.webservices.rest.RestClientExecutionTest
  */
 class RestClient extends \lang\Object implements Traceable {
   protected $connection= null;
   protected $cat= null;
-  protected $serializers= array();
-  protected $deserializers= array();
+  protected $serializers= [];
+  protected $deserializers= [];
   protected $marshalling= null;
 
   /**
@@ -83,7 +85,7 @@ class RestClient extends \lang\Object implements Traceable {
    */
   public function setConnectTimeout($timeout) {
     if (null === $this->connection) {
-      throw new \lang\IllegalStateException('No connection set');
+      throw new IllegalStateException('No connection set');
     }
 
     $this->connection->setConnectTimeout($timeout);
@@ -97,7 +99,7 @@ class RestClient extends \lang\Object implements Traceable {
    */
   public function getConnectTimeout() {
     if (null === $this->connection) {
-      throw new \lang\IllegalStateException('No connection set');
+      throw new IllegalStateException('No connection set');
     }
 
     return $this->connection->getConnectTimeout();
@@ -111,7 +113,7 @@ class RestClient extends \lang\Object implements Traceable {
    */
   public function setTimeout($timeout) {
     if (null === $this->connection) {
-      throw new \lang\IllegalStateException('No connection set');
+      throw new IllegalStateException('No connection set');
     }
 
     $this->connection->setTimeout($timeout);
@@ -125,7 +127,7 @@ class RestClient extends \lang\Object implements Traceable {
    */
   public function getTimeout() {
     if (null === $this->connection) {
-      throw new \lang\IllegalStateException('No connection set');
+      throw new IllegalStateException('No connection set');
     }
 
     return $this->connection->getTimeout();
@@ -157,7 +159,7 @@ class RestClient extends \lang\Object implements Traceable {
       $format= RestFormat::forMediaType($mediaType);
       if (RestFormat::$UNKNOWN->equals($format)) {
         if ($throw) {
-          throw new \lang\IllegalArgumentException('No deserializer for "'.$contentType.'"');
+          throw new IllegalArgumentException('No deserializer for "'.$contentType.'"');
         } else {
           return null;
         }
@@ -192,7 +194,7 @@ class RestClient extends \lang\Object implements Traceable {
       $format= RestFormat::forMediaType($mediaType);
       if (RestFormat::$UNKNOWN->equals($format)) {
         if ($throw) {
-          throw new \lang\IllegalArgumentException('No serializer for "'.$contentType.'"');
+          throw new IllegalArgumentException('No serializer for "'.$contentType.'"');
         } else {
           return null;
         }
@@ -222,15 +224,15 @@ class RestClient extends \lang\Object implements Traceable {
     } else if ($t instanceof \lang\Type) {  // Overloaded version with Type instance
       $type= $t;
     } else {
-      throw new \lang\IllegalArgumentException('Given type is neither a Type nor a string, '.\xp::typeOf($request).' given');
+      throw new IllegalArgumentException('Given type is neither a Type nor a string, '.\xp::typeOf($request).' given');
     }
 
     if (!$request instanceof RestRequest) {
-      throw new \lang\IllegalArgumentException('Given request is not a RestRequest, '.\xp::typeOf($request).' given');
+      throw new IllegalArgumentException('Given request is not a RestRequest, '.\xp::typeOf($request).' given');
     }
 
     if (null === $this->connection) {
-      throw new \lang\IllegalStateException('No connection set');
+      throw new IllegalStateException('No connection set');
     }
 
     $send= $this->connection->create(new \peer\http\HttpRequest());
@@ -259,7 +261,11 @@ class RestClient extends \lang\Object implements Traceable {
       throw new RestException('Cannot send request', $e);
     }
 
-    $reader= new ResponseReader($this->deserializerFor(this($response->header('Content-Type'), 0), false), $this->marshalling);
+    $contentType= $response->header('Content-Type')[0];
+    $reader= new ResponseReader(
+      $this->deserializerFor($contentType, false) ?: new CannotDeserialize($contentType),
+      $this->marshalling
+    );
     if (null === $type) {
       $rr= new RestResponse($response, $reader);
     } else if ($type instanceof \lang\XPClass && $type->isSubclassOf('webservices.rest.RestResponse')) {
