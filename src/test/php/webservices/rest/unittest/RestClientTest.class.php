@@ -2,7 +2,8 @@
 
 use unittest\TestCase;
 use webservices\rest\RestClient;
-
+use webservices\rest\CannotSerialize;
+use webservices\rest\CannotDeserialize;
 
 /**
  * TestCase
@@ -147,9 +148,9 @@ class RestClientTest extends TestCase {
     );
   }
 
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test]
   public function unknownDeserializer() {
-    $this->assertNull($this->newFixture()->deserializerFor('text/html'));
+    $this->assertEquals(new CannotDeserialize('text/html'), $this->newFixture()->deserializerFor('text/html'));
   }
 
   #[@test]
@@ -200,9 +201,9 @@ class RestClientTest extends TestCase {
     );
   }
 
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test]
   public function unknownSerializer() {
-    $this->assertNull($this->newFixture()->serializerFor('text/html'));
+    $this->assertEquals(new CannotSerialize('text/html'), $this->newFixture()->serializerFor('text/html'));
   }
 
   #[@test]

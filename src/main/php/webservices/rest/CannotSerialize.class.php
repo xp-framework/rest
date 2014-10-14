@@ -3,9 +3,9 @@
 use lang\FormatException;
 
 /**
- * Indicates a certain type cannot be deserialized
+ * Indicates a certain type cannot be serialized
  */
-class CannotDeserialize extends RestDeserializer {
+class CannotSerialize extends RestSerializer {
   protected $contentType;
 
   /** @param  string $contentType */
@@ -13,16 +13,15 @@ class CannotDeserialize extends RestDeserializer {
 
   /** @return string */
   public function contentType() { return $this->contentType; }
-
+  
   /**
    * Deserialize
    *
-   * @param   io.streams.InputStream in
-   * @return  var
-   * @throws  lang.FormatException
+   * @param   var $value
+   * @return  string
    */
-  public function deserialize($in) {
-    throw new FormatException('Cannot deserialize '.$this->contentType);
+  public function serialize($value) {
+    throw new FormatException('Cannot serialize '.$this->contentType);
   }
 
   /**

@@ -3,8 +3,11 @@
 use util\log\Traceable;
 use peer\Header;
 use peer\http\HttpConnection;
+use peer\http\HttpRequest;
+use peer\http\RequestData;
 use lang\IllegalStateException;
 use lang\IllegalArgumentException;
+use lang\XPClass;
 
 /**
  * REST client
@@ -147,24 +150,14 @@ class RestClient extends \lang\Object implements Traceable {
    * Returns a deserializer
    *
    * @param   string contentType
-   * @param   bool throw
    * @return  webservices.rest.RestDeserializer
-   * @throws  lang.IllegalArgumentException
    */
-  public function deserializerFor($contentType, $throw= true) {
+  public function deserializerFor($contentType) {
     $mediaType= substr($contentType, 0, strcspn($contentType, ';'));
     if (isset($this->deserializers[$mediaType])) {
       return $this->deserializers[$mediaType];
     } else {
-      $format= RestFormat::forMediaType($mediaType);
-      if (RestFormat::$UNKNOWN->equals($format)) {
-        if ($throw) {
-          throw new IllegalArgumentException('No deserializer for "'.$contentType.'"');
-        } else {
-          return null;
-        }
-      }
-      return $format->deserializer();
+      return RestFormat::forMediaType($mediaType)->deserializer() ?: new CannotDeserialize($contentType);
     }
   }
 
@@ -182,24 +175,14 @@ class RestClient extends \lang\Object implements Traceable {
    * Returns a serializer
    *
    * @param   string contentType
-   * @param   bool throw
    * @return  webservices.rest.RestSerializer
-   * @throws  lang.IllegalArgumentException
    */
-  public function serializerFor($contentType, $throw= true) {
+  public function serializerFor($contentType) {
     $mediaType= substr($contentType, 0, strcspn($contentType, ';'));
     if (isset($this->serializers[$mediaType])) {
       return $this->serializers[$mediaType];
     } else {
-      $format= RestFormat::forMediaType($mediaType);
-      if (RestFormat::$UNKNOWN->equals($format)) {
-        if ($throw) {
-          throw new IllegalArgumentException('No serializer for "'.$contentType.'"');
-        } else {
-          return null;
-        }
-      }
-      return $format->serializer();
+      return RestFormat::forMediaType($mediaType)->serializer() ?: new CannotSerialize($contentType);
     }
   }
 
@@ -235,7 +218,7 @@ class RestClient extends \lang\Object implements Traceable {
       throw new IllegalStateException('No connection set');
     }
 
-    $send= $this->connection->create(new \peer\http\HttpRequest());
+    $send= $this->connection->create(new HttpRequest());
     $send->addHeaders($request->headerList());
     $send->setMethod($request->getMethod());
     $send->setTarget($request->getTarget($this->connection->getUrl()->getPath('/')));
@@ -245,7 +228,7 @@ class RestClient extends \lang\Object implements Traceable {
     // * Use bodies as-is, e.g. file uploads
     // * If no body and no payload is set, use parameters
     if ($request->hasPayload()) {
-      $send->setParameters(new \peer\http\RequestData($this->serializerFor($request->getContentType())->serialize(
+      $send->setParameters(new RequestData($this->serializerFor($request->getContentType())->serialize(
         $this->marshalling->marshal($request->getPayload())
       )));
     } else if ($request->hasBody()) {
@@ -261,14 +244,10 @@ class RestClient extends \lang\Object implements Traceable {
       throw new RestException('Cannot send request', $e);
     }
 
-    $contentType= $response->header('Content-Type')[0];
-    $reader= new ResponseReader(
-      $this->deserializerFor($contentType, false) ?: new CannotDeserialize($contentType),
-      $this->marshalling
-    );
+    $reader= new ResponseReader($this->deserializerFor($response->header('Content-Type')[0]), $this->marshalling );
     if (null === $type) {
       $rr= new RestResponse($response, $reader);
-    } else if ($type instanceof \lang\XPClass && $type->isSubclassOf('webservices.rest.RestResponse')) {
+    } else if ($type instanceof XPClass && $type->isSubclassOf('webservices.rest.RestResponse')) {
       $rr= $type->newInstance($response, $reader);
     } else {
       $rr= new RestResponse($response, $reader, $type);   // Deprecated!
