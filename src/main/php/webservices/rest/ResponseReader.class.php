@@ -13,7 +13,7 @@ class ResponseReader extends \lang\Object {
    * @param webservices.rest.RestDeserializer $deserializer
    * @param webservices.rest.RestMarshalling $marshalling
    */
-  public function __construct($deserializer, $marshalling) {
+  public function __construct(RestDeserializer $deserializer, RestMarshalling $marshalling) {
     $this->deserializer= $deserializer;
     $this->marshalling= $marshalling;
   }

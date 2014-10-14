@@ -3,9 +3,11 @@
 use unittest\TestCase;
 use scriptlet\HttpScriptletRequest;
 use scriptlet\HttpScriptletResponse;
+use scriptlet\Cookie;
 use webservices\rest\srv\RestContext;
 use util\log\Logger;
 use util\log\LogCategory;
+use lang\reflect\Package;
 
 /**
  * Test default router
@@ -21,7 +23,7 @@ class RestContextTest extends TestCase {
    */
   #[@beforeClass]
   public static function fixturePackage() {
-    self::$package= \lang\reflect\Package::forName('webservices.rest.unittest.srv.fixture');
+    self::$package= Package::forName('webservices.rest.unittest.srv.fixture');
   }
 
   /**
@@ -72,7 +74,7 @@ class RestContextTest extends TestCase {
     if (isset($headers['Cookie'])) {
       foreach (explode(';', $headers['Cookie']) as $cookie) {
         sscanf(trim($cookie), '%[^=]=%s', $name, $value);
-        $r->addCookie(new \scriptlet\Cookie($name, $value));
+        $r->addCookie(new Cookie($name, $value));
       }
       unset($headers['Cookie']);
     }
@@ -276,7 +278,7 @@ class RestContextTest extends TestCase {
   public function injection_error() {
     $class= \lang\ClassLoader::defineClass('AbstractRestRouterTest_InjectionError', 'lang.Object', array(), '{
       #[@inject(type = "util.log.LogCategory")]
-      public function setTrace($cat) { throw new IllegalStateException("Test"); }
+      public function setTrace($cat) { throw new \lang\IllegalStateException("Test"); }
     }');
     $this->fixture->handlerInstanceFor($class);
   }
@@ -284,7 +286,7 @@ class RestContextTest extends TestCase {
   #[@test, @expect(class = 'lang.reflect.TargetInvocationException', withMessage= '/InstantiationError::<init>/')]
   public function instantiation_error() {
     $class= \lang\ClassLoader::defineClass('AbstractRestRouterTest_InstantiationError', 'lang.Object', array(), '{
-      public function __construct() { throw new IllegalStateException("Test"); }
+      public function __construct() { throw new \lang\IllegalStateException("Test"); }
     }');
     $this->fixture->handlerInstanceFor($class);
   }

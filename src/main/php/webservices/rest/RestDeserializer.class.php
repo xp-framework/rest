@@ -1,7 +1,5 @@
 <?php namespace webservices\rest;
 
-
-
 /**
  * Abstract base class for deserialization. Deserializers are responsible 
  * for reading the input format representation such as XML or JSON from a 
