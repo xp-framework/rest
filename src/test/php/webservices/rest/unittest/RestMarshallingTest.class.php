@@ -42,9 +42,9 @@ class RestMarshallingTest extends \unittest\TestCase {
 
   #[@beforeClass]
   public static function defineWalletClassAndMarshaller() {
-    self::$walletClass= ClassLoader::defineClass('Wallet', 'lang.Object', array(), '{
-      public $values= array();
-      public function __construct($values= array()) {
+    self::$walletClass= ClassLoader::defineClass('Wallet', 'lang.Object', [], '{
+      public $values= [];
+      public function __construct($values= []) {
         $this->values= $values;
       }
       public function add(\util\Money $m) {
@@ -160,19 +160,19 @@ class RestMarshallingTest extends \unittest\TestCase {
 
   #[@test]
   public function marshal_string_array() {
-    $this->assertEquals(array('Hello', 'World'), $this->fixture->marshal(array('Hello', 'World')));
+    $this->assertEquals(['Hello', 'World'], $this->fixture->marshal(['Hello', 'World']));
   }
 
   #[@test]
   public function marshal_string_arraylist() {
-    $this->assertEquals(array('Hello', 'World'), $this->fixture->marshal(new ArrayList('Hello', 'World')));
+    $this->assertEquals(['Hello', 'World'], $this->fixture->marshal(new ArrayList('Hello', 'World')));
   }
 
   #[@test]
   public function marshal_string_map() {
     $this->assertEquals(
-      array('greeting' => 'Hello', 'name' => 'World'),
-      $this->fixture->marshal(array('greeting' => 'Hello', 'name' => 'World'))
+      ['greeting' => 'Hello', 'name' => 'World'],
+      $this->fixture->marshal(['greeting' => 'Hello', 'name' => 'World'])
     );
   }
 
@@ -187,8 +187,8 @@ class RestMarshallingTest extends \unittest\TestCase {
   #[@test]
   public function marshal_date_array() {
     $this->assertEquals(
-      array('2012-12-31T18:00:00+01:00'),
-      $this->fixture->marshal(array(new Date('2012-12-31 18:00:00', new TimeZone('Europe/Berlin'))))
+      ['2012-12-31T18:00:00+01:00'],
+      $this->fixture->marshal([new Date('2012-12-31 18:00:00', new TimeZone('Europe/Berlin'))])
     );
   }
 
@@ -196,7 +196,7 @@ class RestMarshallingTest extends \unittest\TestCase {
   public function marshal_issue_with_field() {
     $issue= new IssueWithField(1, 'test');
     $this->assertEquals(
-      array('issueId' => 1, 'title' => 'test'), 
+      ['issueId' => 1, 'title' => 'test'], 
       $this->fixture->marshal($issue)
     );
   }
@@ -205,42 +205,42 @@ class RestMarshallingTest extends \unittest\TestCase {
   public function marshal_issue_with_getter() {
     $issue= new IssueWithGetter(1, 'test');
     $this->assertEquals(
-      array('issueId' => 1, 'title' => 'test', 'createdAt' => null), 
+      ['issueId' => 1, 'title' => 'test', 'createdAt' => null], 
       $this->fixture->marshal($issue)
     );
   }
 
   #[@test]
   public function marshal_array_of_issues() {
-    $issues= array(
+    $issues= [
       new IssueWithField(1, 'test1'),
       new IssueWithField(2, 'test2')
-    );
+    ];
     $this->assertEquals(
-      array(array('issueId' => 1, 'title' => 'test1'), array('issueId' => 2, 'title' => 'test2')),
+      [['issueId' => 1, 'title' => 'test1'], ['issueId' => 2, 'title' => 'test2']],
       $this->fixture->marshal($issues)
     );
   }
 
   #[@test]
   public function marshal_map_of_issues() {
-    $issues= array(
+    $issues= [
       'one' => new IssueWithField(1, 'test1'),
       'two' => new IssueWithField(2, 'test2')
-    );
+    ];
     $this->assertEquals(
-      array('one' => array('issueId' => 1, 'title' => 'test1'), 'two' => array('issueId' => 2, 'title' => 'test2')),
+      ['one' => ['issueId' => 1, 'title' => 'test1'], 'two' => ['issueId' => 2, 'title' => 'test2']],
       $this->fixture->marshal($issues)
     );
   }
 
   #[@test]
   public function marshal_static_member_excluded() {
-    $o= newinstance('lang.Object', array(), '{
+    $o= newinstance('lang.Object', [], '{
       public $name= "Test";
       public static $instance;
     }');
-    $this->assertEquals(array('name' => 'Test'), $this->fixture->marshal($o));
+    $this->assertEquals(['name' => 'Test'], $this->fixture->marshal($o));
   }
 
   #[@test]
@@ -256,8 +256,8 @@ class RestMarshallingTest extends \unittest\TestCase {
   public function marshal_array_of_money() {
     $this->fixture->addMarshaller('util.Money', self::$moneyMarshaller);
     $this->assertEquals(
-      array('6.10 USD'),
-      $this->fixture->marshal(array(new Money(6.10, Currency::$USD)))
+      ['6.10 USD'],
+      $this->fixture->marshal([new Money(6.10, Currency::$USD)])
     );
   }
 
@@ -309,12 +309,12 @@ class RestMarshallingTest extends \unittest\TestCase {
 
   #[@test]
   public function unmarshal_array_as_string() {
-    $this->assertEquals('Test', $this->fixture->unmarshal(Primitive::$STRING, array('Test')));
+    $this->assertEquals('Test', $this->fixture->unmarshal(Primitive::$STRING, ['Test']));
   }
 
   #[@test]
   public function unmarshal_map_as_string() {
-    $this->assertEquals('Test', $this->fixture->unmarshal(Primitive::$STRING, array('name' => 'Test')));
+    $this->assertEquals('Test', $this->fixture->unmarshal(Primitive::$STRING, ['name' => 'Test']));
   }
 
   #[@test]
@@ -340,12 +340,12 @@ class RestMarshallingTest extends \unittest\TestCase {
 
   #[@test]
   public function unmarshal_array_as_int() {
-    $this->assertEquals(1, $this->fixture->unmarshal(Primitive::$INT, array(1)));
+    $this->assertEquals(1, $this->fixture->unmarshal(Primitive::$INT, [1]));
   }
 
   #[@test]
   public function unmarshal_map_as_int() {
-    $this->assertEquals(1, $this->fixture->unmarshal(Primitive::$INT, array('one' => 1)));
+    $this->assertEquals(1, $this->fixture->unmarshal(Primitive::$INT, ['one' => 1]));
   }
 
   #[@test]
@@ -371,12 +371,12 @@ class RestMarshallingTest extends \unittest\TestCase {
 
   #[@test]
   public function unmarshal_array_as_double() {
-    $this->assertEquals(1.0, $this->fixture->unmarshal(Primitive::$DOUBLE, array(1.0)));
+    $this->assertEquals(1.0, $this->fixture->unmarshal(Primitive::$DOUBLE, [1.0]));
   }
 
   #[@test]
   public function unmarshal_map_as_double() {
-    $this->assertEquals(1.0, $this->fixture->unmarshal(Primitive::$DOUBLE, array('one' => 1.0)));
+    $this->assertEquals(1.0, $this->fixture->unmarshal(Primitive::$DOUBLE, ['one' => 1.0]));
   }
 
   #[@test]
@@ -405,45 +405,45 @@ class RestMarshallingTest extends \unittest\TestCase {
 
   #[@test]
   public function unmarshal_array_as_bool() {
-    $this->assertEquals(true, $this->fixture->unmarshal(Primitive::$BOOL, array(true)));
-    $this->assertEquals(false, $this->fixture->unmarshal(Primitive::$BOOL, array(false)));
+    $this->assertEquals(true, $this->fixture->unmarshal(Primitive::$BOOL, [true]));
+    $this->assertEquals(false, $this->fixture->unmarshal(Primitive::$BOOL, [false]));
   }
 
   #[@test]
   public function unmarshal_map_as_bool() {
-    $this->assertEquals(true, $this->fixture->unmarshal(Primitive::$BOOL, array('one' => true)));
-    $this->assertEquals(false, $this->fixture->unmarshal(Primitive::$BOOL, array('one' => false)));
+    $this->assertEquals(true, $this->fixture->unmarshal(Primitive::$BOOL, ['one' => true]));
+    $this->assertEquals(false, $this->fixture->unmarshal(Primitive::$BOOL, ['one' => false]));
   }
 
   #[@test]
   public function unmarshal_var_array() {
     $this->assertEquals(
-      array(1, 2, 3), 
-      $this->fixture->unmarshal(ArrayType::forName('var[]'), array(1, 2, 3))
+      [1, 2, 3],
+      $this->fixture->unmarshal(ArrayType::forName('var[]'), [1, 2, 3])
     );
   }
 
   #[@test]
   public function unmarshal_int_array() {
     $this->assertEquals(
-      array(1, 2, 3), 
-      $this->fixture->unmarshal(ArrayType::forName('int[]'), array(1, '2', 3.0))
+      [1, 2, 3],
+      $this->fixture->unmarshal(ArrayType::forName('int[]'), [1, '2', 3.0])
     );
   }
 
   #[@test]
   public function unmarshal_var_map() {
     $this->assertEquals(
-      array('one' => 1, 'two' => 2, 'three' => 3),
-      $this->fixture->unmarshal(MapType::forName('[:var]'), array('one' => 1, 'two' => 2, 'three' => 3))
+      ['one' => 1, 'two' => 2, 'three' => 3],
+      $this->fixture->unmarshal(MapType::forName('[:var]'), ['one' => 1, 'two' => 2, 'three' => 3])
     );
   }
 
   #[@test]
   public function unmarshal_int_map() {
     $this->assertEquals(
-      array('one' => 1, 'two' => 2, 'three' => 3),
-      $this->fixture->unmarshal(MapType::forName('[:int]'), array('one' => 1, 'two' => '2', 'three' => 3.0))
+      ['one' => 1, 'two' => 2, 'three' => 3],
+      $this->fixture->unmarshal(MapType::forName('[:int]'), ['one' => 1, 'two' => '2', 'three' => 3.0])
     );
   }
 
@@ -452,7 +452,7 @@ class RestMarshallingTest extends \unittest\TestCase {
     $issue= new IssueWithField(1, 'test');
     $this->assertEquals(
       $issue, 
-      $this->fixture->unmarshal($issue->getClass(), array('issue_id' => 1, 'title' => 'test'))
+      $this->fixture->unmarshal($issue->getClass(), ['issue_id' => 1, 'title' => 'test'])
     );
   }
 
@@ -461,7 +461,7 @@ class RestMarshallingTest extends \unittest\TestCase {
     $issue= new IssueWithUnderscoreField(1, 'test');
     $this->assertEquals(
       $issue, 
-      $this->fixture->unmarshal($issue->getClass(), array('issue_id' => 1, 'title' => 'test'))
+      $this->fixture->unmarshal($issue->getClass(), ['issue_id' => 1, 'title' => 'test'])
     );
   }
 
@@ -470,7 +470,7 @@ class RestMarshallingTest extends \unittest\TestCase {
     $issue= new IssueWithSetter(1, 'test');
     $this->assertEquals(
       $issue, 
-      $this->fixture->unmarshal($issue->getClass(), array('issue_id' => 1, 'title' => 'test'))
+      $this->fixture->unmarshal($issue->getClass(), ['issue_id' => 1, 'title' => 'test'])
     );
   }
 
@@ -479,7 +479,7 @@ class RestMarshallingTest extends \unittest\TestCase {
     $issue= new IssueWithUnderscoreSetter(1, 'test');
     $this->assertEquals(
       $issue, 
-      $this->fixture->unmarshal($issue->getClass(), array('issue_id' => 1, 'title' => 'test'))
+      $this->fixture->unmarshal($issue->getClass(), ['issue_id' => 1, 'title' => 'test'])
     );
   }
 
@@ -487,74 +487,74 @@ class RestMarshallingTest extends \unittest\TestCase {
   public function unmarshal_array_of_issues() {
     $issue1= new IssueWithField(1, 'test1');
     $issue2= new IssueWithField(2, 'test2');
-    $this->assertEquals(array($issue1, $issue2), $this->fixture->unmarshal(
-      ArrayType::forName($issue1->getClassName().'[]'), 
-      array(array('issue_id' => 1, 'title' => 'test1'), array('issue_id' => 2, 'title' => 'test2')))
-    );
+    $this->assertEquals([$issue1, $issue2], $this->fixture->unmarshal(
+      new ArrayType($issue1->getClassName()),
+      [['issue_id' => 1, 'title' => 'test1'], ['issue_id' => 2, 'title' => 'test2']]
+    ));
   }
 
   #[@test]
   public function unmarshal_map_of_issues() {
     $issue1= new IssueWithField(1, 'test1');
     $issue2= new IssueWithField(2, 'test2');
-    $this->assertEquals(array('one' => $issue1, 'two' => $issue2), $this->fixture->unmarshal(
+    $this->assertEquals(['one' => $issue1, 'two' => $issue2], $this->fixture->unmarshal(
       MapType::forName('[:'.$issue1->getClassName().']'), 
-      array('one' => array('issue_id' => 1, 'title' => 'test1'), 'two' => array('issue_id' => 2, 'title' => 'test2')))
-    );
+      ['one' => ['issue_id' => 1, 'title' => 'test1'], 'two' => ['issue_id' => 2, 'title' => 'test2']]
+    ));
   }
 
   #[@test]
   public function unmarshal_no_constructor() {
-    $class= ClassLoader::defineClass('RestConversionTest_NoConstructor', 'webservices.rest.unittest.ConstructorFixture', array(), '{
+    $class= ClassLoader::defineClass('RestConversionTest_NoConstructor', 'webservices.rest.unittest.ConstructorFixture', [], '{
     }');
     $c= $class->newInstance();
     $c->id= 4711;
     $this->assertEquals(
       $c,
-      $this->fixture->unmarshal($class, array('id' => 4711))
+      $this->fixture->unmarshal($class, ['id' => 4711])
     );
   }
 
   #[@test]
   public function unmarshal_static_valueof_method() {
-    $class= ClassLoader::defineClass('RestConversionTest_StaticValueOf', 'webservices.rest.unittest.ConstructorFixture', array(), '{
+    $class= ClassLoader::defineClass('RestConversionTest_StaticValueOf', 'webservices.rest.unittest.ConstructorFixture', [], '{
       protected function __construct($id) { $this->id= (int)$id; }
       public static function valueOf($id) { return new self($id); }
     }');
     $this->assertEquals(
-      $class->getMethod('valueOf')->invoke(null, array(4711)),
-      $this->fixture->unmarshal($class, array('id' => 4711))
+      $class->getMethod('valueOf')->invoke(null, [4711]),
+      $this->fixture->unmarshal($class, ['id' => 4711])
     );
   }
 
   #[@test]
   public function unmarshal_public_valueof_instance_method_not_invoked() {
-    $class= ClassLoader::defineClass('RestConversionTest_PublicValueOf', 'webservices.rest.unittest.ConstructorFixture', array(), '{
+    $class= ClassLoader::defineClass('RestConversionTest_PublicValueOf', 'webservices.rest.unittest.ConstructorFixture', [], '{
       public function valueOf($id) { throw new IllegalStateException("Should not reach this point!"); }
     }');
     $c= $class->newInstance();
     $c->id= 4711;
-    $this->assertEquals($c, $this->fixture->unmarshal($class, array('id' => 4711)));
+    $this->assertEquals($c, $this->fixture->unmarshal($class, ['id' => 4711]));
   }
 
   #[@test]
   public function unmarshal_private_valueof_instance_method_not_invoked() {
-    $class= ClassLoader::defineClass('RestConversionTest_PrivateValueOf', 'webservices.rest.unittest.ConstructorFixture', array(), '{
+    $class= ClassLoader::defineClass('RestConversionTest_PrivateValueOf', 'webservices.rest.unittest.ConstructorFixture', [], '{
       private static function valueOf($id) { throw new IllegalStateException("Should not reach this point!"); }
     }');
     $c= $class->newInstance();
     $c->id= 4711;
-    $this->assertEquals($c, $this->fixture->unmarshal($class, array('id' => 4711)));
+    $this->assertEquals($c, $this->fixture->unmarshal($class, ['id' => 4711]));
   }
 
   #[@test]
   public function unmarshal_protected_valueof_instance_method_not_invoked() {
-    $class= ClassLoader::defineClass('RestConversionTest_ProtectedValueOf', 'webservices.rest.unittest.ConstructorFixture', array(), '{
+    $class= ClassLoader::defineClass('RestConversionTest_ProtectedValueOf', 'webservices.rest.unittest.ConstructorFixture', [], '{
       protected static function valueOf($id) { throw new IllegalStateException("Should not reach this point!"); }
     }');
     $c= $class->newInstance();
     $c->id= 4711;
-    $this->assertEquals($c, $this->fixture->unmarshal($class, array('id' => 4711)));
+    $this->assertEquals($c, $this->fixture->unmarshal($class, ['id' => 4711]));
   }
 
   #[@test]
@@ -567,7 +567,7 @@ class RestMarshallingTest extends \unittest\TestCase {
 
   #[@test]
   public function unmarshal_constructor_not_used_with_complex_payload() {
-    $class= ClassLoader::defineClass('RestConversionTest_ConstructorVsSetter', 'webservices.rest.unittest.ConstructorFixture', array(), '{
+    $class= ClassLoader::defineClass('RestConversionTest_ConstructorVsSetter', 'webservices.rest.unittest.ConstructorFixture', [], '{
       public $name;
       public function __construct() { 
         if (func_num_args() > 0) throw new IllegalStateException("Should not reach this point!");
@@ -579,13 +579,13 @@ class RestMarshallingTest extends \unittest\TestCase {
     }');
     $this->assertEquals(
       $class->newInstance()->withId(4711)->withName('Test'),
-      $this->fixture->unmarshal($class, array('id' => 4711, 'name' => 'Test'))
+      $this->fixture->unmarshal($class, ['id' => 4711, 'name' => 'Test'])
     );
   }
 
   #[@test]
   public function unmarshal_valueof_not_used_with_complex_payload() {
-    $class= ClassLoader::defineClass('RestConversionTest_ValueOfVsSetter', 'webservices.rest.unittest.ConstructorFixture', array(), '{
+    $class= ClassLoader::defineClass('RestConversionTest_ValueOfVsSetter', 'webservices.rest.unittest.ConstructorFixture', [], '{
       public $name;
       public static function valueOf($id) { 
         throw new IllegalStateException("Should not reach this point!");
@@ -597,17 +597,17 @@ class RestMarshallingTest extends \unittest\TestCase {
     }');
     $this->assertEquals(
       $class->newInstance()->withId(4711)->withName('Test'),
-      $this->fixture->unmarshal($class, array('id' => 4711, 'name' => 'Test'))
+      $this->fixture->unmarshal($class, ['id' => 4711, 'name' => 'Test'])
     );
   }
 
   #[@test]
   public function unmarshal_static_member_excluded() {
-    $class= ClassLoader::defineClass('RestConversionTest_StaticMemberExcluded', 'lang.Object', array(), '{
+    $class= ClassLoader::defineClass('RestConversionTest_StaticMemberExcluded', 'lang.Object', [], '{
       public $name;
       public static $instance= null;
     }');
-    $this->assertnull($this->fixture->unmarshal($class, array('name' => 'Test', 'instance' => 'Value'))
+    $this->assertnull($this->fixture->unmarshal($class, ['name' => 'Test', 'instance' => 'Value'])
       ->getClass()
       ->getField('instance')
       ->get(null)
@@ -659,8 +659,8 @@ class RestMarshallingTest extends \unittest\TestCase {
   public function unmarshal_array_of_money() {
     $this->fixture->addMarshaller('util.Money', self::$moneyMarshaller);
     $this->assertEquals(
-      array(new Money(6.10, Currency::$USD)),
-      $this->fixture->unmarshal(ArrayType::forName('util.Money[]'), array('6.10 USD'))
+      [new Money(6.10, Currency::$USD)],
+      $this->fixture->unmarshal(ArrayType::forName('util.Money[]'), ['6.10 USD'])
     );
   }
 
@@ -669,7 +669,7 @@ class RestMarshallingTest extends \unittest\TestCase {
     $this->fixture->addMarshaller('util.Money', self::$moneyMarshaller);
     $this->fixture->addMarshaller(self::$walletClass, self::$walletMarshaller);
     $this->assertEquals(
-      array('0.25 USD'),
+      ['0.25 USD'],
       $this->fixture->marshal(self::$walletClass->newInstance()->add(new Money(0.25, Currency::$USD)))
     );
   }
@@ -680,7 +680,7 @@ class RestMarshallingTest extends \unittest\TestCase {
     $this->fixture->addMarshaller(self::$walletClass, self::$walletMarshaller);
     $this->assertEquals(
       self::$walletClass->newInstance()->add(new Money(0.25, Currency::$USD)),
-      $this->fixture->unmarshal(self::$walletClass, array('0.25 USD'))
+      $this->fixture->unmarshal(self::$walletClass, ['0.25 USD'])
     );
   }
 }
