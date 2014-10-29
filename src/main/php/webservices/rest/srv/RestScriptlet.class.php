@@ -1,17 +1,17 @@
 <?php namespace webservices\rest\srv;
 
-use scriptlet\HttpScriptlet;
+use peer\http\HttpConstants;
 use scriptlet\Preference;
 use webservices\rest\RestFormat;
-use util\log\Traceable;
-
+use webservices\rest\Payload;
+use lang\XPClass;
 
 /**
  * REST scriptlet
  *
  * @test  xp://net.xp_framework.unittest.webservices.rest.srv.RestScriptletTest
  */
-class RestScriptlet extends HttpScriptlet implements Traceable {
+class RestScriptlet extends \scriptlet\HttpScriptlet implements \util\log\Traceable {
   protected 
     $cat     = null,
     $router  = null,
@@ -30,18 +30,18 @@ class RestScriptlet extends HttpScriptlet implements Traceable {
     $this->base= rtrim($base, '/');
 
     // Context class
-    $class= \lang\XPClass::forName('' === (string)$context ? 'webservices.rest.srv.RestContext' : $context); 
+    $class= XPClass::forName('' === (string)$context ? 'webservices.rest.srv.RestContext' : $context); 
     $this->context= $class->newInstance();
 
     // Create router
     if ('' === (string)$router) {
       $this->router= new RestDefaultRouter();
     } else {
-      $this->router= \lang\XPClass::forName($router)->newInstance();
+      $this->router= XPClass::forName($router)->newInstance();
     }
     $this->router->configure($package, $this->base);
-    $this->router->setInputFormats(array('*json', '*xml', 'application/x-www-form-urlencoded'));
-    $this->router->setOutputFormats(array('application/json', 'text/json', 'text/xml', 'application/xml'));
+    $this->router->setInputFormats(['*json', '*xml', 'application/x-www-form-urlencoded']);
+    $this->router->setOutputFormats(['application/json', 'text/json', 'text/xml', 'application/xml']);
   }
 
   /**
@@ -126,12 +126,7 @@ class RestScriptlet extends HttpScriptlet implements Traceable {
     $url= $request->getURL();
     $type= $this->contentTypeOf($request);
     $accept= new Preference($request->getHeader('Accept', '*/*'));
-    $this->cat && $this->cat->info(
-      $request->getMethod(),
-      $type ?: '(null)',
-      $url->getURL(),
-      $accept
-    );
+    $this->cat && $this->cat->info($request->getMethod(), $type ?: '(null)', $url->getURL(), $accept);
 
     // Iterate over all applicable routes
     $ctx= clone $this->context;
@@ -145,11 +140,12 @@ class RestScriptlet extends HttpScriptlet implements Traceable {
     }
 
     // No route
-    $response->setStatus(\peer\http\HttpConstants::STATUS_NOT_FOUND);
+    $response->setStatus(HttpConstants::STATUS_NOT_FOUND);
     $format= $accept->match($this->router->getOutputFormats());
     $response->setContentType($format);
-    RestFormat::forMediaType($format)->write($response->getOutputStream(), new \webservices\rest\Payload(
-      array('message' => 'Could not route request to '.$url->getURL()), array('name' => 'error')
+    RestFormat::forMediaType($format)->write($response->getOutputStream(), new Payload(
+      ['message' => 'Could not route request to '.$url->getURL()],
+      ['name' => 'error']
     ));
   }
 }
