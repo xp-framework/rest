@@ -52,24 +52,40 @@ class RestJsonSerializerTest extends TestCase {
 
   #[@test]
   public function empty_array() {
-    $this->assertEquals('[ ]', $this->fixture->serialize(array()));
+    $this->assertEquals('[ ]', $this->fixture->serialize([]));
   }
 
   #[@test]
   public function int_array() {
-    $this->assertEquals('[ 1 , 2 , 3 ]', $this->fixture->serialize(array(1, 2, 3)));
+    $this->assertEquals('[ 1 , 2 , 3 ]', $this->fixture->serialize([1, 2, 3]));
   }
 
   #[@test]
   public function string_array() {
-    $this->assertEquals('[ "a" , "b" , "c" ]', $this->fixture->serialize(array('a', 'b', 'c')));
+    $this->assertEquals('[ "a" , "b" , "c" ]', $this->fixture->serialize(['a', 'b', 'c']));
   }
 
   #[@test]
   public function string_map() {
     $this->assertEquals(
       '{ "a" : "One" , "b" : "Two" , "c" : "Three" }',
-      $this->fixture->serialize(array('a' => 'One', 'b' => 'Two', 'c' => 'Three'))
+      $this->fixture->serialize(['a' => 'One', 'b' => 'Two', 'c' => 'Three'])
+    );
+  }
+
+  #[@test]
+  public function traversable_array() {
+    $this->assertEquals(
+      '[ 1 , 2 , 3 ]',
+      $this->fixture->serialize(new \ArrayIterator([1, 2, 3]))
+    );
+  }
+
+  #[@test]
+  public function traversable_map() {
+    $this->assertEquals(
+      '{ "color" : "green" , "price" : "$12.99" }',
+      $this->fixture->serialize(new \ArrayIterator(['color' => 'green', 'price' => '$12.99']))
     );
   }
 }

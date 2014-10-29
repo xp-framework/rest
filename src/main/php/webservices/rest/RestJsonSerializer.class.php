@@ -34,10 +34,12 @@ class RestJsonSerializer extends RestSerializer {
    * @return  string
    */
   public function serialize($payload) {
-    if ($payload instanceof Payload) {
-      return $this->json->encode($payload->value);
+    $val= $payload instanceof Payload ? $payload->value : $payload;
+
+    if ($val instanceof \Traversable) {
+      return $this->json->encode(iterator_to_array($val));
     } else {
-      return $this->json->encode($payload);
+      return $this->json->encode($val);
     }
   }
 }
