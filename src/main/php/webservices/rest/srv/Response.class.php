@@ -1,19 +1,19 @@
 <?php namespace webservices\rest\srv;
 
 use webservices\rest\Payload;
-
+use webservices\rest\RestFormat;
 
 /**
  * The Response class can be used to control the HTTP status code and headers
  * of a REST call.
  *
- * <code>
- *   #[@webservice(verb= 'POST', path= '/resources')]
- *   public function addElement(Element $element) {
- *     // TBI: Create element
- *     return Response::created();
- *   }
- * </code>
+ * ```php
+ * #[@webservice(verb= 'POST', path= '/resources')]
+ * public function addElement(Element $element) {
+ *   // TBI: Create element
+ *   return Response::created();
+ * }
+ * ```
  *
  * @test  xp://net.xp_framework.unittest.webservices.rest.srv.ResponseTest
  */
@@ -23,7 +23,7 @@ class Response extends Output {
   /**
    * Creates a new response instance
    *
-   * @param  int status
+   * @param  int $status
    */
   public function __construct($status= null) {
     $this->status= $status;
@@ -35,9 +35,7 @@ class Response extends Output {
    * @return  self
    */
   public static function ok() {
-    $self= new self();
-    $self->status= 200;
-    return $self;
+    return new self(200);
   }
 
   /**
@@ -48,8 +46,7 @@ class Response extends Output {
    * @return  self
    */
   public static function created($location= null) {
-    $self= new self();
-    $self->status= 201;
+    $self= new self(201);
     if (null !== $location) $self->headers['Location']= $location;
     return $self;
   }
@@ -60,9 +57,7 @@ class Response extends Output {
    * @return  self
    */
   public static function noContent() {
-    $self= new self();
-    $self->status= 204;
-    return $self;
+    return new self(204);
   }
 
   /**
@@ -73,8 +68,7 @@ class Response extends Output {
    * @return  self
    */
   public static function see($location) {
-    $self= new self();
-    $self->status= 302;
+    $self= new self(302);
     $self->headers['Location']= $location;
     return $self;
   }
@@ -85,9 +79,7 @@ class Response extends Output {
    * @return  self
    */
   public static function notModified() {
-    $self= new self();
-    $self->status= 304;
-    return $self;
+    return new self(304);
   }
 
   /**
@@ -96,9 +88,7 @@ class Response extends Output {
    * @return  self
    */
   public static function notFound() {
-    $self= new self();
-    $self->status= 404;
-    return $self;
+    return new self(404);
   }
 
   /**
@@ -107,9 +97,7 @@ class Response extends Output {
    * @return  self
    */
   public static function notAcceptable() {
-    $self= new self();
-    $self->status= 406;
-    return $self;
+    return new self(406);
   }
 
   /**
@@ -119,9 +107,7 @@ class Response extends Output {
    * @return  self
    */
   public static function status($code) {
-    $self= new self();
-    $self->status= $code;
-    return $self;
+    return new self($code);
   }
 
   /**
@@ -132,9 +118,7 @@ class Response extends Output {
    * @return  self
    */
   public static function error($code= 500) {
-    $self= new self();
-    $self->status= $code;
-    return $self;
+    return new self($code);
   }
 
   /**
@@ -174,7 +158,7 @@ class Response extends Output {
    */
   protected function writeBody($response, $base, $format) {
     if (null !== $this->payload) {
-      \webservices\rest\RestFormat::forMediaType($format)->write($response->getOutputStream(), $this->payload);
+      RestFormat::forMediaType($format)->write($response->getOutputStream(), $this->payload);
     }
   }
 
