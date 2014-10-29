@@ -4,10 +4,17 @@ use peer\http\HttpConstants;
 use scriptlet\Preference;
 use webservices\rest\RestMarshalling;
 use webservices\rest\RestFormat;
+use webservices\rest\Payload;
+use webservices\rest\TypeMarshaller;
 use util\collections\HashTable;
 use util\PropertyManager;
 use util\log\Logger;
-use util\log\Traceable;
+use lang\XPClass;
+use lang\Type;
+use lang\Throwable;
+use lang\IllegalStateException;
+use lang\IllegalArgumentException;
+use lang\reflect\TargetInvocationException;
 
 /**
  * The context of a rest call
@@ -15,7 +22,7 @@ use util\log\Traceable;
  * @test  xp://net.xp_framework.unittest.webservices.rest.srv.RestContextTest
  * @test  xp://net.xp_framework.unittest.webservices.rest.srv.RestContextHandleTest
  */
-class RestContext extends \lang\Object implements Traceable {
+class RestContext extends \lang\Object implements \util\log\Traceable {
   protected $mappers;
   protected $marshalling;
   protected $cat= null;
@@ -46,7 +53,7 @@ class RestContext extends \lang\Object implements Traceable {
    * @return webservices.rest.srv.ExceptionMapper The added mapper
    */
   public function addExceptionMapping($type, ExceptionMapper $m) {
-    $this->mappers[$type instanceof \lang\XPClass ? $type : \lang\XPClass::forName($type)]= $m;
+    $this->mappers[$type instanceof XPClass ? $type : XPClass::forName($type)]= $m;
     return $m;
   }
 
@@ -57,7 +64,7 @@ class RestContext extends \lang\Object implements Traceable {
    * @return webservices.rest.srv.ExceptionMapper or NULL if no mapper exists
    */
   public function getExceptionMapping($type) {
-    return $this->mappers[$type instanceof \lang\XPClass ? $type : \lang\XPClass::forName($type)];
+    return $this->mappers[$type instanceof XPClass ? $type : XPClass::forName($type)];
   }
 
   /**
@@ -67,7 +74,7 @@ class RestContext extends \lang\Object implements Traceable {
    * @param  webservices.rest.TypeMarshaller m
    * @return webservices.rest.TypeMarshaller The added marshaller
    */
-  public function addMarshaller($type, \webservices\rest\TypeMarshaller $m) {
+  public function addMarshaller($type, TypeMarshaller $m) {
     return $this->marshalling->addMarshaller($type, $m);
   }
 
@@ -89,7 +96,7 @@ class RestContext extends \lang\Object implements Traceable {
    * @return webservices.rest.srv.Response
    */
   public function asResponse($t, $useExceptionMappings= true) {
-    static $properties= array('name' => 'exception');   // XML root node
+    static $properties= ['name' => 'exception'];   // XML root node
 
     // See if we can find an exception mapper
     if ($useExceptionMappings) {
@@ -103,7 +110,7 @@ class RestContext extends \lang\Object implements Traceable {
 
     // Default: Use error 500 ("Internal Server Error") and the exception message
     return Response::error(HttpConstants::STATUS_INTERNAL_SERVER_ERROR)
-      ->withPayload($this->marshal(new \webservices\rest\Payload($t), $properties))
+      ->withPayload($this->marshal(new Payload($t), $properties))
     ;
   }
 
@@ -113,11 +120,13 @@ class RestContext extends \lang\Object implements Traceable {
    * @param  webservices.rest.Payload payload
    * @return webservices.rest.Payload
    */
-  public function marshal(\webservices\rest\Payload $payload= null, $properties= array()) {
-    if (null === $payload) return null;
-
-    $marshalled= $this->marshalling->marshal($payload->value);
-    return null === $marshalled ? null : new \webservices\rest\Payload($marshalled, $properties);
+  public function marshal(Payload $payload= null, $properties= []) {
+    if (null === $payload) {
+      return null;
+    } else {
+      $marshalled= $this->marshalling->marshal($payload->value);
+      return null === $marshalled ? null : new Payload($marshalled, $properties);
+    }
   }
 
   /**
@@ -127,7 +136,7 @@ class RestContext extends \lang\Object implements Traceable {
    * @param  var in
    * @return webservices.rest.srv.Response
    */
-  public function unmarshal(\lang\Type $target, $in) {
+  public function unmarshal(Type $target, $in) {
     return $this->marshalling->unmarshal($target, $in);
   }
 
@@ -144,19 +153,19 @@ class RestContext extends \lang\Object implements Traceable {
     $type= isset($inject['type']) ? $inject['type'] : $routine->getParameter(0)->getType()->getName();
     switch ($type) {
       case 'util.log.LogCategory': 
-        $args= array(isset($inject['name']) ? Logger::getInstance()->getCategory($inject['name']) : $this->cat);
+        $args= [isset($inject['name']) ? Logger::getInstance()->getCategory($inject['name']) : $this->cat];
         break;
 
       case 'util.Properties': 
-        $args= array(PropertyManager::getInstance()->getProperties($inject['name']));
+        $args= [PropertyManager::getInstance()->getProperties($inject['name'])];
         break;
 
       case 'webservices.rest.srv.RestContext':
-        $args= array($this);
+        $args= [$this];
         break;
 
       default:
-        throw new \lang\IllegalStateException('Unkown injection type '.$type);
+        throw new IllegalStateException('Unkown injection type '.$type);
     }
 
     return $args;
@@ -216,14 +225,14 @@ class RestContext extends \lang\Object implements Traceable {
 
     // For "VOID" methods, set status to "no content". If a response is returned, 
     // use its status, headers and payload. For any other methods, set status to "OK".
-    if (\lang\Type::$VOID->equals($method->getReturnType())) {
+    if (Type::$VOID->equals($method->getReturnType())) {
       return Response::status(HttpConstants::STATUS_NO_CONTENT);
     } else if ($result instanceof Output) {
       $result->payload= $this->marshal($result->payload, $properties);
       return $result;
     } else {
       return Response::status(HttpConstants::STATUS_OK)
-        ->withPayload($this->marshal(new \webservices\rest\Payload($result), $properties))
+        ->withPayload($this->marshal(new Payload($result), $properties))
       ;
     }
   }
@@ -236,7 +245,7 @@ class RestContext extends \lang\Object implements Traceable {
    * @return var[] args
    */
   public function argumentsFor($target, $request) {
-    $args= array();
+    $args= [];
     foreach ($target['target']->getParameters() as $parameter) {
       $param= $parameter->getName();
 
@@ -262,7 +271,7 @@ class RestContext extends \lang\Object implements Traceable {
         if ($parameter->isOptional()) {
           $arg= $parameter->getDefaultValue();
         } else {
-          throw new \lang\IllegalArgumentException('Parameter "'.$param.'" required, but not found in '.$src->toString());
+          throw new IllegalArgumentException('Parameter "'.$param.'" required, but not found in '.$src->toString());
         }
       }
       $args[]= $this->unmarshal($parameter->getType(), $arg);
@@ -289,10 +298,10 @@ class RestContext extends \lang\Object implements Traceable {
       // Invoke handler
       $map= true;
       $result= $this->handle($instance, $target['target'], $this->argumentsFor($target, $request));
-    } catch (\lang\reflect\TargetInvocationException $e) {
+    } catch (TargetInvocationException $e) {
       $this->cat && $this->cat->warn('<-', $e);
       $result= $this->asResponse($e->getCause(), $map);
-    } catch (\lang\Throwable $t) {
+    } catch (Throwable $t) {
       $this->cat && $this->cat->error('<-', $t);
       $result= $this->asResponse($t, $map);
     }
