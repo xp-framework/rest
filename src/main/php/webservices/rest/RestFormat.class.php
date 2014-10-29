@@ -72,6 +72,9 @@ class RestFormat extends \lang\Enum {
    * @param  webservices.rest.Payload value
    */
   public function write(OutputStream $out, Payload $value= null) {
+    if ($value->value instanceof \Traversable) {
+      var_dump($value);
+    }
     $out->write($this->serializer->serialize($value));
   }
 

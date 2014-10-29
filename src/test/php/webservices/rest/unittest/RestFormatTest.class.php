@@ -18,7 +18,7 @@ class RestFormatTest extends TestCase {
   #[@test]
   public function json_serialize() {
     $res= new MemoryOutputStream();
-    RestFormat::$JSON->write($res, new Payload(array('name' => 'Timm')));
+    RestFormat::$JSON->write($res, new Payload(['name' => 'Timm']));
     $this->assertEquals('{ "name" : "Timm" }', $res->getBytes());
   }
 
@@ -32,7 +32,7 @@ class RestFormatTest extends TestCase {
   #[@test]
   public function xml_serialize() {
     $res= new MemoryOutputStream();
-    RestFormat::$XML->write($res, new Payload(array('name' => 'Timm')));
+    RestFormat::$XML->write($res, new Payload(['name' => 'Timm']));
     $this->assertEquals(
       '<?xml version="1.0" encoding="UTF-8"?>'."\n".'<root><name>Timm</name></root>', 
       $res->getBytes()
@@ -43,21 +43,21 @@ class RestFormatTest extends TestCase {
   public function xml_deserialize() {
     $req= new MemoryInputStream('<?xml version="1.0" encoding="UTF-8"?>'."\n".'<root><name>Timm</name></root>');
     $v= RestFormat::$XML->read($req, MapType::forName('[:string]'));
-    $this->assertEquals(array('name' => 'Timm'), iterator_to_array($v));
+    $this->assertEquals(['name' => 'Timm'], iterator_to_array($v));
   }
 
   #[@test]
   public function xml_deserialize_without_xml_declaration() {
     $req= new MemoryInputStream('<root><name>Timm</name></root>');
     $v= RestFormat::$XML->read($req, MapType::forName('[:string]'));
-    $this->assertEquals(array('name' => 'Timm'), iterator_to_array($v)); 
+    $this->assertEquals(['name' => 'Timm'], iterator_to_array($v)); 
   }
 
   #[@test]
   public function form_deserialize() {
     $req= new MemoryInputStream('name=Timm');
     $v= RestFormat::$FORM->read($req, MapType::forName('[:string]'));
-    $this->assertEquals(array('name' => 'Timm'), $v);
+    $this->assertEquals(['name' => 'Timm'], $v);
   }
 
   #[@test]
