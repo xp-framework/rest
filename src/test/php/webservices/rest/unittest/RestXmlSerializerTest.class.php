@@ -110,4 +110,20 @@ class RestXmlSerializerTest extends TestCase {
       $this->fixture->serialize(new Date('2012-12-31 18:00:00', new TimeZone('Europe/Berlin')))
     );
   }
+
+  #[@test]
+  public function traversable_array() {
+    $this->assertXmlEquals(
+      '<root><root>1</root><root>2</root><root>3</root></root>',
+      $this->fixture->serialize(new \ArrayIterator([1, 2, 3]))
+    );
+  }
+
+  #[@test]
+  public function traversable_map() {
+    $this->assertXmlEquals(
+      '<root><color>green</color><price>$12.99</price></root>',
+      $this->fixture->serialize(new \ArrayIterator(['color' => 'green', 'price' => '$12.99']))
+    );
+  }
 }
