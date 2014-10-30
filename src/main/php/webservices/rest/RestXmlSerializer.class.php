@@ -24,9 +24,10 @@ class RestXmlSerializer extends RestSerializer {
    * Serialize
    *
    * @param   var $payload
-   * @return  string
+   * @param   io.streams.OutputStream $out
+   * @return  void
    */
-  public function serialize($payload) {
+  public function serialize($payload, $out) {
     $t= new Tree();
     $t->setEncoding('UTF-8');
 
@@ -37,6 +38,7 @@ class RestXmlSerializer extends RestSerializer {
       $root= 'root';
     }
 
+    $out->write($t->getDeclaration()."\n");
     if ($payload instanceof \Traversable) {
       $t->root= Node::fromArray(iterator_to_array($payload), $root);
     } else if ($payload instanceof \lang\Generic) {
@@ -46,6 +48,6 @@ class RestXmlSerializer extends RestSerializer {
     } else {
       $t->root= new Node($root, $payload);
     }
-    return $t->getDeclaration()."\n".$t->getSource(INDENT_NONE);
+    $out->write($t->getSource(INDENT_NONE));
   }
 }

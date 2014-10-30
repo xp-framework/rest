@@ -72,7 +72,7 @@ class RestFormat extends \lang\Enum {
    * @param  webservices.rest.Payload value
    */
   public function write(OutputStream $out, Payload $value= null) {
-    $out->write($this->serializer->serialize($value));
+    $this->serializer->serialize($value, $out);
   }
 
   /**

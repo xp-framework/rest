@@ -4,7 +4,6 @@ use util\log\Traceable;
 use peer\Header;
 use peer\http\HttpConnection;
 use peer\http\HttpRequest;
-use peer\http\RequestData;
 use lang\IllegalStateException;
 use lang\IllegalArgumentException;
 use lang\XPClass;
@@ -228,9 +227,10 @@ class RestClient extends \lang\Object implements Traceable {
     // * Use bodies as-is, e.g. file uploads
     // * If no body and no payload is set, use parameters
     if ($request->hasPayload()) {
-      $send->setParameters(new RequestData($this->serializerFor($request->getContentType())->serialize(
-        $this->marshalling->marshal($request->getPayload())
-      )));
+      $send->setParameters(new RequestData(
+        $this->marshalling->marshal($request->getPayload()),
+        $this->serializerFor($request->getContentType())
+      ));
     } else if ($request->hasBody()) {
       $send->setParameters($request->getBody());
     } else {
@@ -244,7 +244,7 @@ class RestClient extends \lang\Object implements Traceable {
       throw new RestException('Cannot send request', $e);
     }
 
-    $reader= new ResponseReader($this->deserializerFor($response->header('Content-Type')[0]), $this->marshalling );
+    $reader= new ResponseReader($this->deserializerFor($response->header('Content-Type')[0]), $this->marshalling);
     if (null === $type) {
       $rr= new RestResponse($response, $reader);
     } else if ($type instanceof XPClass && $type->isSubclassOf('webservices.rest.RestResponse')) {

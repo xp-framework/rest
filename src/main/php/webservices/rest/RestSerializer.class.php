@@ -23,8 +23,9 @@ abstract class RestSerializer extends \lang\Object {
    * Serialize
    *
    * @param   var value
-   * @return  string
+   * @param   io.streams.OutputStream $out
+   * @return  void
    */
-  public abstract function serialize($payload);
+  public abstract function serialize($payload, $out);
   
 }

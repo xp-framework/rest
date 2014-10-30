@@ -7,6 +7,7 @@ use webservices\rest\RestFormat;
 use io\streams\MemoryInputStream;
 use peer\http\HttpConstants;
 use peer\http\RequestData;
+use lang\ClassLoader;
 
 /**
  * TestCase
@@ -22,7 +23,7 @@ class RestClientSendTest extends TestCase {
    */
   #[@beforeClass]
   public static function requestEchoingConnectionClass() {
-    self::$conn= \lang\ClassLoader::defineClass('RestClientSendTest_Connection', 'peer.http.HttpConnection', array(), '{
+    self::$conn= ClassLoader::defineClass('RestClientSendTest_Connection', 'peer.http.HttpConnection', array(), '{
       public function __construct() {
         parent::__construct("http://test");
       }
@@ -56,7 +57,7 @@ class RestClientSendTest extends TestCase {
       "Content-Type: application/x-www-form-urlencoded\r\n".
       "\r\n".
       "Hello",
-      $this->fixture->execute(create(new RestRequest('/', HttpConstants::POST))->withBody(new RequestData('Hello')))->content()
+      $this->fixture->execute((new RestRequest('/', HttpConstants::POST))->withBody(new RequestData('Hello')))->content()
     );
   }
 
@@ -70,7 +71,7 @@ class RestClientSendTest extends TestCase {
       "Content-Length: 6\r\n".
       "\r\n".
       "\"Test\"",
-      $this->fixture->execute(create(new RestRequest('/', HttpConstants::POST))->withPayload('Test', RestFormat::$JSON))->content()
+      $this->fixture->execute((new RestRequest('/', HttpConstants::POST))->withPayload('Test', RestFormat::$JSON))->content()
     );
   }
 
@@ -85,7 +86,7 @@ class RestClientSendTest extends TestCase {
       "\r\n".
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".
       "<root>Test</root>",
-      $this->fixture->execute(create(new RestRequest('/', HttpConstants::POST))->withPayload('Test', RestFormat::$XML))->content()
+      $this->fixture->execute((new RestRequest('/', HttpConstants::POST))->withPayload('Test', RestFormat::$XML))->content()
     );
   }
 
@@ -99,7 +100,7 @@ class RestClientSendTest extends TestCase {
       "Content-Type: application/x-www-form-urlencoded\r\n".
       "\r\n".
       "key=value",
-      $this->fixture->execute(create(new RestRequest('/', HttpConstants::POST))->withParameter('key', 'value'))->content()
+      $this->fixture->execute((new RestRequest('/', HttpConstants::POST))->withParameter('key', 'value'))->content()
     );
   }
 }
