@@ -4,6 +4,7 @@ use unittest\TestCase;
 use webservices\rest\RestXmlSerializer;
 use util\Date;
 use util\TimeZone;
+use lang\types\ArrayList;
 
 /**
  * TestCase
@@ -111,19 +112,25 @@ class RestXmlSerializerTest extends TestCase {
     );
   }
 
-  #[@test]
-  public function traversable_array() {
+  #[@test, @values([
+  #  [new \ArrayIterator([1, 2, 3])],
+  #  [new ArrayList(1, 2, 3)]
+  #])]
+  public function traversable_array($in) {
     $this->assertXmlEquals(
       '<root><root>1</root><root>2</root><root>3</root></root>',
-      $this->fixture->serialize(new \ArrayIterator([1, 2, 3]))
+      $this->fixture->serialize($in)
     );
   }
 
-  #[@test]
-  public function traversable_map() {
+  #[@test, @values([
+  #  [new \ArrayIterator(['color' => 'green', 'price' => '$12.99'])],
+  #  [new ArrayMap(['color' => 'green', 'price' => '$12.99'])]
+  #])]
+  public function traversable_map($in) {
     $this->assertXmlEquals(
       '<root><color>green</color><price>$12.99</price></root>',
-      $this->fixture->serialize(new \ArrayIterator(['color' => 'green', 'price' => '$12.99']))
+      $this->fixture->serialize($in)
     );
   }
 }

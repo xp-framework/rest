@@ -37,10 +37,10 @@ class RestXmlSerializer extends RestSerializer {
       $root= 'root';
     }
 
-    if ($payload instanceof \lang\Generic) {
-      $t->root= Node::fromObject($payload, $root);
-    } else if ($payload instanceof \Traversable) {
+    if ($payload instanceof \Traversable) {
       $t->root= Node::fromArray(iterator_to_array($payload), $root);
+    } else if ($payload instanceof \lang\Generic) {
+      $t->root= Node::fromObject($payload, $root);
     } else if (is_array($payload)) {
       $t->root= Node::fromArray($payload, $root);
     } else {

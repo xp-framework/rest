@@ -4,6 +4,7 @@ use unittest\TestCase;
 use webservices\rest\RestJsonSerializer;
 use util\Date;
 use util\TimeZone;
+use lang\types\ArrayList;
 
 /**
  * TestCase
@@ -73,19 +74,25 @@ class RestJsonSerializerTest extends TestCase {
     );
   }
 
-  #[@test]
-  public function traversable_array() {
+  #[@test, @values([
+  #  [new \ArrayIterator([1, 2, 3])],
+  #  [new ArrayList(1, 2, 3)]
+  #])]
+  public function traversable_array($in) {
     $this->assertEquals(
       '[ 1 , 2 , 3 ]',
-      $this->fixture->serialize(new \ArrayIterator([1, 2, 3]))
+      $this->fixture->serialize($in)
     );
   }
 
-  #[@test]
-  public function traversable_map() {
+  #[@test, @values([
+  #  [new \ArrayIterator(['color' => 'green', 'price' => '$12.99'])],
+  #  [new ArrayMap(['color' => 'green', 'price' => '$12.99'])]
+  #])]
+  public function traversable_map($in) {
     $this->assertEquals(
       '{ "color" : "green" , "price" : "$12.99" }',
-      $this->fixture->serialize(new \ArrayIterator(['color' => 'green', 'price' => '$12.99']))
+      $this->fixture->serialize($in)
     );
   }
 }
