@@ -5,6 +5,7 @@ use webservices\rest\RestXmlSerializer;
 use util\Date;
 use util\TimeZone;
 use lang\types\ArrayList;
+use lang\types\ArrayMap;
 
 /**
  * TestCase
