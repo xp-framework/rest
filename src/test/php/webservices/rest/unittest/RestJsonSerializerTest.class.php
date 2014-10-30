@@ -101,4 +101,16 @@ class RestJsonSerializerTest extends TestCase {
       $this->serialize($in)
     );
   }
+
+  #[@test, @values([
+  #  [new \ArrayIterator([])],
+  #  [new ArrayList()],
+  #  [new ArrayMap([])]
+  #])]
+  public function empty_traversable($in) {
+    $this->assertEquals(
+      '[ ]',
+      $this->serialize($in)
+    );
+  }
 }

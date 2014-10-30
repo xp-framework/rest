@@ -139,4 +139,16 @@ class RestXmlSerializerTest extends TestCase {
       $this->serialize($in)
     );
   }
+
+  #[@test, @values([
+  #  [new \ArrayIterator([])],
+  #  [new ArrayList()],
+  #  [new ArrayMap([])]
+  #])]
+  public function empty_traversable($in) {
+    $this->assertXmlEquals(
+      '<root/>',
+      $this->serialize($in)
+    );
+  }
 }

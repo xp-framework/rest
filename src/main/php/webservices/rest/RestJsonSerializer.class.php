@@ -38,6 +38,7 @@ class RestJsonSerializer extends RestSerializer {
     $val= $payload instanceof Payload ? $payload->value : $payload;
     if ($val instanceof \Traversable) {
       $i= 0;
+      $map= null;
       foreach ($val as $key => $element) {
         if (0 === $i++) {
           $map= 0 !== $key;
@@ -52,7 +53,11 @@ class RestJsonSerializer extends RestSerializer {
         }
         $this->json->encodeTo($element, $out);
       }
-      $out->write($map ? ' }' : ' ]');
+      if (null === $map) {
+        $out->write('[ ]');
+      } else {
+        $out->write($map ? ' }' : ' ]');
+      }
     } else {
       $this->json->encodeTo($val, $out);
     }
