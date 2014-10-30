@@ -36,9 +36,23 @@ class RestJsonSerializer extends RestSerializer {
    */
   public function serialize($payload, $out) {
     $val= $payload instanceof Payload ? $payload->value : $payload;
-
     if ($val instanceof \Traversable) {
-      $this->json->encodeTo(iterator_to_array($val), $out);
+      $i= 0;
+      foreach ($val as $key => $element) {
+        if (0 === $i++) {
+          $map= 0 !== $key;
+          $out->write($map ? '{ ' : '[ ');
+        } else {
+          $out->write(' , ');
+        }
+
+        if ($map) {
+          $this->json->encodeTo($key, $out);
+          $out->write(' : ');
+        }
+        $this->json->encodeTo($element, $out);
+      }
+      $out->write($map ? ' }' : ' ]');
     } else {
       $this->json->encodeTo($val, $out);
     }
