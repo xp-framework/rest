@@ -1,7 +1,5 @@
 <?php namespace webservices\rest;
 
-
-
 /**
  * Abstract base class for serialization. Serializers are responsible for
  * creating the output format representation such as XML or JSON from a 
@@ -22,7 +20,7 @@ abstract class RestSerializer extends \lang\Object {
   /**
    * Serialize
    *
-   * @param   var value
+   * @param   var $payload
    * @param   io.streams.OutputStream $out
    * @return  void
    */
