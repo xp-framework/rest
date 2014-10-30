@@ -1,12 +1,18 @@
 <?php namespace webservices\rest;
 
+/**
+ * Iterates over a given traversable data structure and maps its elements
+ * onto a given function.
+ *
+ * @see  php://traversable
+ */
 class Iteration extends \lang\Object implements \Iterator {
   protected $it, $mapping;
 
   /**
    * Creates a new iteration
    *
-   * @param  var $traversable Either a traversable or an array
+   * @param  var $traversable Either a Traversable instance or an array
    * @param  function(var): var $mapping
    */
   public function __construct($traversable, $mapping) {
