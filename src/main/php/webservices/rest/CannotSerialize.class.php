@@ -18,9 +18,10 @@ class CannotSerialize extends RestSerializer {
    * Deserialize
    *
    * @param   var $value
-   * @return  string
+   * @param   io.streams.OutputStream $out
+   * @return  void
    */
-  public function serialize($value) {
+  public function serialize($payload, $out) {
     throw new FormatException('Cannot serialize '.$this->contentType);
   }
 

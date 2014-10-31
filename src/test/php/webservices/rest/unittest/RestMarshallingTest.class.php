@@ -19,6 +19,7 @@ use lang\types\Double;
 use lang\types\Float;
 use lang\types\Boolean;
 use lang\types\ArrayList;
+use lang\types\ArrayMap;
 use lang\types\Character;
 use webservices\rest\RestMarshalling;
 
@@ -163,9 +164,20 @@ class RestMarshallingTest extends \unittest\TestCase {
     $this->assertEquals(['Hello', 'World'], $this->fixture->marshal(['Hello', 'World']));
   }
 
-  #[@test]
-  public function marshal_string_arraylist() {
-    $this->assertEquals(['Hello', 'World'], $this->fixture->marshal(new ArrayList('Hello', 'World')));
+  #[@test, @values([
+  #  [new \ArrayIterator(['Hello', 'World'])],
+  #  [new ArrayList('Hello', 'World')]
+  #])]
+  public function marshal_traversable_array($in) {
+    $this->assertEquals(['Hello', 'World'], iterator_to_array($this->fixture->marshal($in)));
+  }
+
+  #[@test, @values([
+  #  [new \ArrayIterator(['Hello' => 'World'])],
+  #  [new ArrayMap(['Hello' => 'World'])]
+  #])]
+  public function marshal_traversable_map($in) {
+    $this->assertEquals(['Hello' => 'World'], iterator_to_array($this->fixture->marshal($in)));
   }
 
   #[@test]

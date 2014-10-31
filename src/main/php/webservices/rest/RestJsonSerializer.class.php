@@ -31,13 +31,35 @@ class RestJsonSerializer extends RestSerializer {
    * Serialize
    *
    * @param   var $payload
-   * @return  string
+   * @param   io.streams.OutputStream $out
+   * @return  void
    */
-  public function serialize($payload) {
-    if ($payload instanceof Payload) {
-      return $this->json->encode($payload->value);
+  public function serialize($payload, $out) {
+    $val= $payload instanceof Payload ? $payload->value : $payload;
+    if ($val instanceof \Traversable) {
+      $i= 0;
+      $map= null;
+      foreach ($val as $key => $element) {
+        if (0 === $i++) {
+          $map= 0 !== $key;
+          $out->write($map ? '{ ' : '[ ');
+        } else {
+          $out->write(' , ');
+        }
+
+        if ($map) {
+          $this->json->encodeTo($key, $out);
+          $out->write(' : ');
+        }
+        $this->json->encodeTo($element, $out);
+      }
+      if (null === $map) {
+        $out->write('[ ]');
+      } else {
+        $out->write($map ? ' }' : ' ]');
+      }
     } else {
-      return $this->json->encode($payload);
+      $this->json->encodeTo($val, $out);
     }
   }
 }

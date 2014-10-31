@@ -19,31 +19,55 @@ class RestXmlSerializer extends RestSerializer {
   public function contentType() {
     return 'text/xml; charset=utf-8';
   }
+
+  protected function node($name, $in) {
+    if ($in instanceof \lang\Generic) {
+      return Node::fromObject($in, $name);
+    } else if (is_array($in)) {
+      return Node::fromArray($in, $name);
+    } else {
+      return new Node($name, $in);
+    }
+  }
   
   /**
    * Serialize
    *
    * @param   var $payload
-   * @return  string
+   * @param   io.streams.OutputStream $out
+   * @return  void
    */
-  public function serialize($payload) {
+  public function serialize($payload, $out) {
     $t= new Tree();
     $t->setEncoding('UTF-8');
 
     if ($payload instanceof Payload) {
       $root= isset($payload->properties['name']) ? $payload->properties['name'] : 'root';
-      $payload= $payload->value;
+      $val= $payload->value;
     } else {
       $root= 'root';
+      $val= $payload;
     }
 
-    if ($payload instanceof \lang\Generic) {
-      $t->root= Node::fromObject($payload, $root);
-    } else if (is_array($payload)) {
-      $t->root= Node::fromArray($payload, $root);
+    $out->write($t->getDeclaration()."\n");
+    if ($val instanceof \Traversable) {      
+      $i= 0;
+      $map= null;
+      foreach ($val as $key => $element) {
+        if (0 === $i++) {
+          $out->write('<'.$root.'>');
+          $map= 0 !== $key;
+        }
+
+        $out->write($this->node($map ? $key : $root, $element)->getSource(INDENT_NONE, 'utf-8'));
+      }
+      if (null === $map) {
+        $out->write('<'.$root.'/>');
+      } else {
+        $out->write('</'.$root.'>');
+      }
     } else {
-      $t->root= new Node($root, $payload);
+      $out->write($t->withRoot($this->node($root, $val))->getSource(INDENT_NONE));
     }
-    return $t->getDeclaration()."\n".$t->getSource(INDENT_NONE);
   }
 }
