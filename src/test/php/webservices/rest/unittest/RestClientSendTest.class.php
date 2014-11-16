@@ -91,16 +91,16 @@ class RestClientSendTest extends TestCase {
   }
 
   #[@test]
-  public function with_parameters() {
+  public function with_form_data_payload() {
     $this->assertEquals(
       "POST / HTTP/1.1\r\n".
       "Connection: close\r\n".
       "Host: test\r\n".
+      "Content-Type: application/x-www-form-urlencoded; charset=utf-8\r\n".
       "Content-Length: 9\r\n".
-      "Content-Type: application/x-www-form-urlencoded\r\n".
       "\r\n".
       "key=value",
-      $this->fixture->execute((new RestRequest('/', HttpConstants::POST))->withParameter('key', 'value'))->content()
+      $this->fixture->execute((new RestRequest('/', HttpConstants::POST))->withPayload(['key' => 'value'], RestFormat::$FORM))->content()
     );
   }
 }

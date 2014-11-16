@@ -20,7 +20,7 @@ class RestFormat extends \lang\Enum {
     self::$UNKNOWN= new self(0, 'UNKNOWN', null, null);
     self::$JSON= new self(1, 'JSON', new RestJsonSerializer(), new RestJsonDeserializer());
     self::$XML= new self(2, 'XML', new RestXmlSerializer(), new RestXmlDeserializer());
-    self::$FORM= new self(3, 'FORM', null, new RestFormDeserializer());
+    self::$FORM= new self(3, 'FORM', new RestFormSerializer(), new RestFormDeserializer());
   }
 
   /**
