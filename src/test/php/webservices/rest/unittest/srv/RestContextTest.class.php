@@ -94,10 +94,16 @@ class RestContextTest extends TestCase {
    */
   protected function assertProcess($status, $headers, $content, $route, $request) {
     $response= new HttpScriptletResponse();
+    ob_start();
+
     $this->fixture->process($route, $request, $response);
     $this->assertEquals($status, $response->statusCode, 'Status code');
     $this->assertEquals($headers, $response->headers, 'Headers');
-    $this->assertEquals($content, $response->content, 'Content');
+
+    $response->sendContent();
+    $sent= ob_get_contents();
+    ob_end_clean();
+    $this->assertEquals($content, $sent, 'Content');
   }
 
   #[@test]
@@ -416,7 +422,7 @@ class RestContextTest extends TestCase {
       'output'   => 'text/json'
     );
     $this->assertProcess(
-      204, array(), null,
+      204, array(), '',
       $route, $this->newRequest()
     );
   }
