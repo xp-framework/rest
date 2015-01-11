@@ -10,14 +10,8 @@ use webservices\rest\RestXmlMap;
  */
 class RestXmlDeserializerTest extends RestDeserializerTest {
 
-  /**
-   * Creates and returns a new fixture
-   *
-   * @return  webservices.rest.RestDeserializer
-   */
-  protected function newFixture() {
-    return new RestXmlDeserializer();
-  }
+  /** @return webservices.rest.RestDeserializer */
+  protected function newFixture() { return new RestXmlDeserializer(); }
 
   /**
    * Flattens a RestXmlMap into a map
@@ -26,7 +20,7 @@ class RestXmlDeserializerTest extends RestDeserializerTest {
    * @return [:var]
    */
   protected function flatten(RestXmlMap $in) {
-    $result= array();
+    $result= [];
     foreach ($in as $key => $value) {
       $result[$key]= $value;
     }

@@ -29,7 +29,7 @@ $request->addParameter('details', 'true'); // POST or querystring
 
 $response= $client->execute($request);
 $content= $response->content();            // Raw data as string
-$content= $response->data();               // Deserialize to map
+$value= $response->data();                 // Deserialize to map
 ```
 
 ### Automatic deserialization
@@ -56,7 +56,7 @@ $client= new RestClient('http://user:pass@api.example.com/');
 The `RestRequest` class provides a fluent interface:
 
 ```php
-$request= create(new RestRequest('/resource/{id}'))
+$request= (new RestRequest('/resource/{id}'))
  ->withMethod(HttpConstants::GET)
  ->withSegment('id', 5000)
  ->withParameter('details', 'true')
