@@ -1,9 +1,0 @@
-{
-  "name"    : "xp-framework/rest",
-  "version" : "6.0.0",
-  "require" : {
-    "xp-framework/webservices" : "~6.0",
-    "xp-framework/xml"         : "~6.0",
-    "xp-framework/scriptlet"   : "~6.0"
-  }
-}

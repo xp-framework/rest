@@ -1,0 +1,18 @@
+{
+  "name" : "xp-framework/rest",
+  "type" : "library",
+  "homepage" : "http://xp-framework.net/",
+  "license" : "BSD-3-Clause",
+  "description" : "REST Client and Server APIs for the XP Framework",
+  "keywords": ["module", "xp"],
+  "require" : {
+    "xp-framework/core"        : "dev-master",
+    "xp-framework/webservices" : "~6.0",
+    "xp-framework/xml"         : "~6.0",
+    "xp-framework/scriptlet"   : "~6.0",
+    "php" : ">=5.4.0"
+  },
+  "autoload" : {
+    "files" : ["src/main/php/autoload.php"]
+  }
+}
