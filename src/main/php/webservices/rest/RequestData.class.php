@@ -8,7 +8,6 @@ use io\streams\MemoryOutputStream;
  * @see   xp://peer.http.RequestData
  */
 class RequestData extends \peer\http\RequestData {
-  protected $payload, $serializer;
 
   /**
    * Constructor
@@ -17,18 +16,8 @@ class RequestData extends \peer\http\RequestData {
    * @param webservices.rest.RestSerializer $deserializer
    */
   public function __construct($payload, RestSerializer $serializer) {
-    $this->payload= $payload;
-    $this->serializer= $serializer;
-  }
-
-  /**
-   * Retrieve data
-   *
-   * @return  string
-   */
-  public function getData() {
     $s= new MemoryOutputStream();
-    $this->serializer->serialize($this->payload, $s);
-    return $s->getBytes();
+    $serializer->serialize($payload, $s);
+    parent::__construct($s->getBytes(), $serializer->contentType());
   }
 }
