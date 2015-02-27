@@ -1,7 +1,7 @@
 <?php namespace webservices\rest;
 
 use peer\http\HttpConstants;
-
+use peer\Header;
 
 /**
  * A REST request
@@ -133,6 +133,47 @@ class RestRequest extends \lang\Object {
   }
 
   /**
+   * Adds a cookie
+   *
+   * @param   string $name cookie name
+   * @param   string $value default ''
+   * @param   var $expires default 0 the UNIX timestamp on which this cookie expires
+   * @param   string $path default ''
+   * @param   string $domain default ''
+   * @param   bool $secure default FALSE
+   * @param   bool $httpOnly default FALSE
+   * @return  void
+   */
+  public function addCookie($name, $value= '', $expires= 0, $path= '', $domain= '', $secure= false, $httpOnly= false) {
+    $this->headers[]= new Header('Cookie', (
+      $name.'='.
+      (null === $value ? 'deleted' : $value).
+      (0 === $expires ? '' : '; expires='.gmdate('D, d-M-Y H:i:s \G\M\T', $expires)).
+      ($path !== '' ? '; path='.$path : '').
+      ($domain !== '' ? '; domain='.$domain : '').
+      ($secure ? '; secure' : '').
+      ($httpOnly ? '; HTTPOnly' : '')
+    ));
+  }
+
+  /**
+   * Adds a cookie
+   *
+   * @param   string $name cookie name
+   * @param   string $value default ''
+   * @param   var $expires default 0 the UNIX timestamp on which this cookie expires
+   * @param   string $path default ''
+   * @param   string $domain default ''
+   * @param   bool $secure default FALSE
+   * @param   bool $httpOnly default FALSE
+   * @return  self
+   */
+  public function withCookie($name, $value= '', $expires= 0, $path= '', $domain= '', $secure= false, $httpOnly= false) {
+    $this->addCookie($name, $value, $expires, $path, $domain, $secure, $httpOnly);
+    return $this;
+  }
+
+  /**
    * Sets payload
    *
    * @param   var payload
@@ -258,10 +299,10 @@ class RestRequest extends \lang\Object {
    * @return  peer.Header
    */
   public function addHeader($arg, $value= null) {
-    if ($arg instanceof \peer\Header) {
+    if ($arg instanceof Header) {
       $h= $arg;
     } else {
-      $h= new \peer\Header($arg, $value);
+      $h= new Header($arg, $value);
     }
     $this->headers[]= $h;
     return $h;
@@ -366,8 +407,8 @@ class RestRequest extends \lang\Object {
   public function headerList() {
     return array_merge(
       $this->headers,
-      $this->contentType ? array(new \peer\Header('Content-Type', $this->contentType)) : array(),
-      $this->accept ? array(new \peer\Header('Accept', implode(', ', $this->accept))) : array()
+      $this->contentType ? array(new Header('Content-Type', $this->contentType)) : array(),
+      $this->accept ? array(new Header('Accept', implode(', ', $this->accept))) : array()
     );
   }
 

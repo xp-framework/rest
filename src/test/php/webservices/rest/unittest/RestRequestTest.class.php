@@ -4,6 +4,7 @@ use unittest\TestCase;
 use webservices\rest\RestRequest;
 use webservices\rest\Payload;
 use peer\http\HttpConstants;
+use peer\Header;
 
 /**
  * TestCase
@@ -297,7 +298,7 @@ class RestRequestTest extends TestCase {
   #[@test]
   public function oneHeaderObject() {
     $fixture= new RestRequest();
-    $fixture->addHeader(new \peer\Header('Accept', 'text/xml'));
+    $fixture->addHeader(new Header('Accept', 'text/xml'));
     $this->assertEquals(
       array('Accept' => 'text/xml'), 
       $fixture->getHeaders()
@@ -318,8 +319,8 @@ class RestRequestTest extends TestCase {
   #[@test]
   public function twoHeaderObjects() {
     $fixture= new RestRequest('/issues');
-    $fixture->addHeader(new \peer\Header('Accept', 'text/xml'));
-    $fixture->addHeader(new \peer\Header('Referer', 'http://localhost'));
+    $fixture->addHeader(new Header('Accept', 'text/xml'));
+    $fixture->addHeader(new Header('Referer', 'http://localhost'));
     $this->assertEquals(
       array('Accept' => 'text/xml', 'Referer' => 'http://localhost'), 
       $fixture->getHeaders()
@@ -338,7 +339,7 @@ class RestRequestTest extends TestCase {
   #[@test]
   public function headerListWithOneHeader() {
     $fixture= new RestRequest('/issues');
-    $h= $fixture->addHeader(new \peer\Header('Accept', 'text/xml'));
+    $h= $fixture->addHeader(new Header('Accept', 'text/xml'));
     $this->assertEquals(
       array($h),
       $fixture->headerList()
@@ -347,7 +348,7 @@ class RestRequestTest extends TestCase {
 
   #[@test]
   public function addHeaderReturnsAddedHeaderObject() {
-    $h= new \peer\Header('Accept', 'text/xml');
+    $h= new Header('Accept', 'text/xml');
     $fixture= new RestRequest('/issues');
     $this->assertEquals($h, $fixture->addHeader($h));
   }
@@ -355,7 +356,7 @@ class RestRequestTest extends TestCase {
   #[@test]
   public function addHeaderReturnsAddedHeader() {
     $fixture= new RestRequest('/issues');
-    $this->assertEquals(new \peer\Header('Accept', 'text/xml'), $fixture->addHeader('Accept', 'text/xml'));
+    $this->assertEquals(new Header('Accept', 'text/xml'), $fixture->addHeader('Accept', 'text/xml'));
   }
 
   #[@test]
@@ -445,6 +446,25 @@ class RestRequestTest extends TestCase {
       "  Accept: text/xml\n".
       "]",
       create(new RestRequest())->withHeader('Referer', 'http://localhost')->withAccept('text/xml')->toString()
+    );
+  }
+
+  #[@test]
+  public function addCookie() {
+    $fixture= new RestRequest();
+    $fixture->addCookie('name', 'value');
+    $this->assertEquals(
+      [new Header('Cookie', 'name=value')],
+      $fixture->headerList()
+    );
+  }
+
+  #[@test]
+  public function withCookies() {
+    $fixture= (new RestRequest())->withCookie('one', '1')->withCookie('two', '2');
+    $this->assertEquals(
+      [new Header('Cookie', 'one=1'), new Header('Cookie', 'two=2')],
+      $fixture->headerList()
     );
   }
 }

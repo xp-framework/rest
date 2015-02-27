@@ -19,8 +19,10 @@ class RestResponseTest extends TestCase {
   const XML  = 'text/xml';
 
   protected static $deserializers= array();
- 
-  static function __static() {
+
+  /** @return void */
+  #[@beforeClass]
+  public static function deserializers() {
     self::$deserializers[self::JSON]= new RestJsonDeserializer();
     self::$deserializers[self::XML]= new RestXmlDeserializer();
   }
