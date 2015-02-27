@@ -18,7 +18,7 @@ class RestResponseTest extends TestCase {
   const JSON = 'application/json';
   const XML  = 'text/xml';
 
-  protected static $deserializers= array();
+  protected static $deserializers= [];
 
   /** @return void */
   #[@beforeClass]
@@ -47,10 +47,6 @@ class RestResponseTest extends TestCase {
     );
   }
 
-  /**
-   * Test content()
-   *
-   */
   #[@test]
   public function content() {
     $fixture= $this->newFixture(self::JSON, '{ "issue_id" : 1, "title" : "test" }');
@@ -60,10 +56,6 @@ class RestResponseTest extends TestCase {
     );
   }
 
-  /**
-   * Test headers()
-   *
-   */
   #[@test]
   public function headers() {
     $fixture= $this->newFixture(self::JSON, '');
@@ -73,37 +65,21 @@ class RestResponseTest extends TestCase {
     );
   }
 
-  /**
-   * Test header()
-   *
-   */
   #[@test]
   public function content_type_header() {
     $this->assertEquals(self::JSON, $this->newFixture(self::JSON, '')->header('Content-Type'));
   }
 
-  /**
-   * Test header()
-   *
-   */
   #[@test]
   public function content_type_header_case_insensitive() {
     $this->assertEquals(self::JSON, $this->newFixture(self::JSON, '')->header('content-type'));
   }
 
-  /**
-   * Test header()
-   *
-   */
   #[@test]
   public function non_existant_header() {
     $this->assertNull($this->newFixture(self::JSON, '')->header('@@non-existant@@'));
   }
   
-  /**
-   * Test data()
-   *
-   */
   #[@test]
   public function dataAsMap() {
     $fixture= $this->newFixture(self::JSON, '{ "issue_id" : 1, "title" : "test" }');
@@ -113,10 +89,6 @@ class RestResponseTest extends TestCase {
     );
   }
 
-  /**
-   * Test data()
-   *
-   */
   #[@test]
   public function dataAsMapWithNull() {
     $fixture= $this->newFixture(self::JSON, '{ "issue_id" : 1, "title" : null }');
@@ -126,10 +98,6 @@ class RestResponseTest extends TestCase {
     );
   }
 
-  /**
-   * Test data()
-   *
-   */
   #[@test]
   public function dataAsTypeWithField() {
     $fixture= $this->newFixture(self::JSON, '{ "issue_id" : 1, "title" : "test" }');
@@ -139,10 +107,6 @@ class RestResponseTest extends TestCase {
     );
   }
 
-  /**
-   * Test data()
-   *
-   */
   #[@test]
   public function dataAsTypeWithUnderscoreField() {
     $fixture= $this->newFixture(self::JSON, '{ "issue_id" : 1, "title" : "test" }');
@@ -152,10 +116,6 @@ class RestResponseTest extends TestCase {
     );
   }
 
-  /**
-   * Test data()
-   *
-   */
   #[@test]
   public function dataAsTypeWithSetter() {
     $fixture= $this->newFixture(self::JSON, '{ "issue_id" : 1, "title" : "test" }');
@@ -165,10 +125,6 @@ class RestResponseTest extends TestCase {
     );
   }
 
-  /**
-   * Test data()
-   *
-   */
   #[@test]
   public function dataAsTypeWithUnderscoreSetter() {
     $fixture= $this->newFixture(self::JSON, '{ "issue_id" : 1, "title" : "test" }');
@@ -178,10 +134,6 @@ class RestResponseTest extends TestCase {
     );
   }
 
-  /**
-   * Test data()
-   *
-   */
   #[@test]
   public function dataAsTypeByName() {
     $fixture= $this->newFixture(self::JSON, '{ "issue_id" : 1, "title" : "test" }');
@@ -191,10 +143,6 @@ class RestResponseTest extends TestCase {
     );
   }
 
-  /**
-   * Test data()
-   *
-   */
   #[@test]
   public function dataAsTypeByNameWithNull() {
     $fixture= $this->newFixture(self::JSON, '{ "issue_id" : 1, "title" : null }');
@@ -204,20 +152,12 @@ class RestResponseTest extends TestCase {
     );
   }
 
-  /**
-   * Test data()
-   *
-   */
   #[@test, @expect('lang.ClassNotFoundException')]
   public function dataAsNonExistantType() {
     $fixture= $this->newFixture(self::JSON, '{ "issue_id" : 1, "title" : "test" }');
     $fixture->data('non.existant.Type');
   }
 
-  /**
-   * Test data()
-   *
-   */
   #[@test]
   public function typedArrayData() {
     $fixture= $this->newFixture(self::JSON, '[ { "issue_id" : 1, "title" : "Found a bug" }, { "issue_id" : 2, "title" : "Another" } ]');
@@ -226,10 +166,6 @@ class RestResponseTest extends TestCase {
     $this->assertEquals(new IssueWithField(2, 'Another'), $list[1]);
   }
 
-  /**
-   * Test if object collections are built as class fields
-   *
-   */
   #[@test]
   public function nestedDataAsTypeWithSetter() {
     $fixture= $this->newFixture(self::JSON, '{ "issues" : [ { "issue_id" : 1, "title" : "Found a bug" }, { "issue_id" : 2, "title" : "Another" } ] }');
@@ -244,10 +180,6 @@ class RestResponseTest extends TestCase {
     );
   }
 
-  /**
-   * Test if object collections are built as class fields
-   *
-   */
   #[@test]
   public function nestedDataAsTypeWithField() {
     $fixture= $this->newFixture(self::JSON, '{ "issues" : [ { "issue_id" : 1, "title" : "Found a bug" }, { "issue_id" : 2, "title" : "Another" } ] }');
@@ -262,10 +194,6 @@ class RestResponseTest extends TestCase {
     );
   }
 
-  /**
-   * Test data()
-   *
-   */
   #[@test]
   public function xmlAsMap() {
     $fixture= $this->newFixture(self::XML, '<issue><issue_id>1</issue_id><title/></issue>');
@@ -275,10 +203,6 @@ class RestResponseTest extends TestCase {
     );
   }
 
-  /**
-   * Test data()
-   *
-   */
   #[@test]
   public function nestedXmlAsMap() {
     $fixture= $this->newFixture(self::XML, '<book><author><id>1549</id><name>Timm</name></author></book>');
@@ -288,10 +212,6 @@ class RestResponseTest extends TestCase {
     );
   }
 
-  /**
-   * Test if object collections are built as class fields
-   *
-   */
   #[@test]
   public function nestedXmlAsTypeWithSetter() {
     $fixture= $this->newFixture(self::XML, '<object>
@@ -311,10 +231,6 @@ class RestResponseTest extends TestCase {
     );
   }
 
-  /**
-   * Test if object collections are built as class fields
-   *
-   */
   #[@test]
   public function nestedXmlAsTypeWithField() {
     $fixture= $this->newFixture(self::XML, '<object>
@@ -334,10 +250,6 @@ class RestResponseTest extends TestCase {
     );
   }
 
-  /**
-   * Test toString()
-   *
-   */
   #[@test]
   public function stringRepresentation() {
     $this->assertEquals(
