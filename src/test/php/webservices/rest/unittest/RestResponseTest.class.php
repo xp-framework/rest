@@ -38,9 +38,10 @@ class RestResponseTest extends TestCase {
   protected function newFixture($content, $headers, $body) {
     return new RestResponse(
       new \peer\http\HttpResponse(new MemoryInputStream(sprintf(
-        "HTTP/1.1 200 OK\r\nContent-Type: %s\r\nContent-Length: %d\r\n\r\n%s",
+        "HTTP/1.1 200 OK\r\nContent-Type: %s\r\nContent-Length: %d%s\r\n\r\n%s",
         $content,
         strlen($body),
+        $headers ? "\r\n".implode("\r\n", $headers) : '',
         $body
       ))),
       new ResponseReader(self::$deserializers[$content], new RestMarshalling()),
@@ -80,7 +81,24 @@ class RestResponseTest extends TestCase {
   public function non_existant_header() {
     $this->assertNull($this->newFixture(self::JSON, [], '')->header('@@non-existant@@'));
   }
-  
+
+  #[@test]
+  public function without_cookies() {
+    $this->assertEquals([], $this->newFixture(self::JSON, [], '')->cookies());
+  }
+
+  #[@test]
+  public function with_cookies() {
+    $headers= [
+      'Set-Cookie: one=1',
+      'Set-Cookie: two=2; httpOnly'
+    ];
+    $this->assertEquals(
+      ['one' => '1', 'two' => '2; httpOnly'],
+      $this->newFixture(self::JSON, $headers, '')->cookies()
+    );
+  }
+
   #[@test]
   public function dataAsMap() {
     $fixture= $this->newFixture(self::JSON, [], '{ "issue_id" : 1, "title" : "test" }');
