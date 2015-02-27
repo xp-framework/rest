@@ -61,19 +61,19 @@ class RestResponseTest extends TestCase {
   public function headers() {
     $fixture= $this->newFixture(self::JSON, [], '');
     $this->assertEquals(
-      array('Content-Type' => self::JSON, [], 'Content-Length' => '0'),
+      ['Content-Type' => self::JSON, 'Content-Length' => '0'],
       $fixture->headers()
     );
   }
 
   #[@test]
   public function content_type_header() {
-    $this->assertEquals(self::JSON, [], $this->newFixture(self::JSON, [], '')->header('Content-Type'));
+    $this->assertEquals(self::JSON, $this->newFixture(self::JSON, [], '')->header('Content-Type'));
   }
 
   #[@test]
   public function content_type_header_case_insensitive() {
-    $this->assertEquals(self::JSON, [], $this->newFixture(self::JSON, [], '')->header('content-type'));
+    $this->assertEquals(self::JSON, $this->newFixture(self::JSON, [], '')->header('content-type'));
   }
 
   #[@test]
@@ -85,7 +85,7 @@ class RestResponseTest extends TestCase {
   public function dataAsMap() {
     $fixture= $this->newFixture(self::JSON, [], '{ "issue_id" : 1, "title" : "test" }');
     $this->assertEquals(
-      array('issue_id' => 1, 'title' => 'test'), 
+      ['issue_id' => 1, 'title' => 'test'],
       $fixture->data()
     );
   }
@@ -94,7 +94,7 @@ class RestResponseTest extends TestCase {
   public function dataAsMapWithNull() {
     $fixture= $this->newFixture(self::JSON, [], '{ "issue_id" : 1, "title" : null }');
     $this->assertEquals(
-      array('issue_id' => 1, 'title' => null), 
+      ['issue_id' => 1, 'title' => null], 
       $fixture->data()
     );
   }
@@ -173,10 +173,10 @@ class RestResponseTest extends TestCase {
     $list= $fixture->data(\lang\Type::forName('webservices.rest.unittest.IssuesWithSetter'));
 
     $this->assertEquals(
-      new IssuesWithSetter(array(
+      new IssuesWithSetter([
         new IssueWithField(1, 'Found a bug'),
         new IssueWithField(2, 'Another')
-      )),
+      ]),
       $list
     );
   }
@@ -187,10 +187,10 @@ class RestResponseTest extends TestCase {
     $list= $fixture->data(\lang\Type::forName('webservices.rest.unittest.IssuesWithField'));
 
     $this->assertEquals(
-      new IssuesWithField(array(
+      new IssuesWithField([
         new IssueWithField(1, 'Found a bug'),
         new IssueWithField(2, 'Another')
-      )),
+      ]),
       $list
     );
   }
@@ -199,7 +199,7 @@ class RestResponseTest extends TestCase {
   public function xmlAsMap() {
     $fixture= $this->newFixture(self::XML, [], '<issue><issue_id>1</issue_id><title/></issue>');
     $this->assertEquals(
-      array('issue_id' => '1', 'title' => ''), 
+      ['issue_id' => '1', 'title' => ''], 
       $fixture->data()
     );
   }
@@ -208,7 +208,7 @@ class RestResponseTest extends TestCase {
   public function nestedXmlAsMap() {
     $fixture= $this->newFixture(self::XML, [], '<book><author><id>1549</id><name>Timm</name></author></book>');
     $this->assertEquals(
-      array('author' => array('id' => '1549', 'name' => 'Timm')),
+      ['author' => ['id' => '1549', 'name' => 'Timm']],
       $fixture->data()
     );
   }
@@ -224,10 +224,10 @@ class RestResponseTest extends TestCase {
     $list= $fixture->data(\lang\Type::forName('webservices.rest.unittest.IssuesWithSetter'));
 
     $this->assertEquals(
-      new IssuesWithSetter(array(
+      new IssuesWithSetter([
         new IssueWithField(1, 'Found a bug'),
         new IssueWithField(2, 'Another')
-      )),
+      ]),
       $list
     );
   }
@@ -243,10 +243,10 @@ class RestResponseTest extends TestCase {
     $list= $fixture->data(\lang\Type::forName('webservices.rest.unittest.IssuesWithField'));
 
     $this->assertEquals(
-      new IssuesWithField(array(
+      new IssuesWithField([
         new IssueWithField(1, 'Found a bug'),
         new IssueWithField(2, 'Another')
-      )),
+      ]),
       $list
     );
   }
