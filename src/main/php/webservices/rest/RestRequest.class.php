@@ -137,23 +137,10 @@ class RestRequest extends \lang\Object {
    *
    * @param   string $name cookie name
    * @param   string $value default ''
-   * @param   var $expires default 0 the UNIX timestamp on which this cookie expires
-   * @param   string $path default ''
-   * @param   string $domain default ''
-   * @param   bool $secure default FALSE
-   * @param   bool $httpOnly default FALSE
    * @return  void
    */
-  public function addCookie($name, $value= '', $expires= 0, $path= '', $domain= '', $secure= false, $httpOnly= false) {
-    $this->headers[]= new Header('Cookie', (
-      $name.'='.
-      (null === $value ? 'deleted' : $value).
-      (0 === $expires ? '' : '; expires='.gmdate('D, d-M-Y H:i:s \G\M\T', $expires)).
-      ($path !== '' ? '; path='.$path : '').
-      ($domain !== '' ? '; domain='.$domain : '').
-      ($secure ? '; secure' : '').
-      ($httpOnly ? '; HTTPOnly' : '')
-    ));
+  public function addCookie($name, $value= '') {
+    $this->headers[]= new Header('Cookie', $name.'='.$value);
   }
 
   /**
@@ -161,15 +148,10 @@ class RestRequest extends \lang\Object {
    *
    * @param   string $name cookie name
    * @param   string $value default ''
-   * @param   var $expires default 0 the UNIX timestamp on which this cookie expires
-   * @param   string $path default ''
-   * @param   string $domain default ''
-   * @param   bool $secure default FALSE
-   * @param   bool $httpOnly default FALSE
    * @return  self
    */
-  public function withCookie($name, $value= '', $expires= 0, $path= '', $domain= '', $secure= false, $httpOnly= false) {
-    $this->addCookie($name, $value, $expires, $path, $domain, $secure, $httpOnly);
+  public function withCookie($name, $value= '') {
+    $this->addCookie($name, $value);
     return $this;
   }
 
