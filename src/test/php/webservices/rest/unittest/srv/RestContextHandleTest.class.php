@@ -130,14 +130,14 @@ class RestContextHandleTest extends \unittest\TestCase {
   #  [500, XPException::class],
   #  [501, MethodNotImplementedException::class]
   #])]
-  public function raised_exception($status, $class) {
-    $handler= newinstance('lang.Object', [$class], [
-      'class' => null,
-      '__construct' => function($class) {
-        $this->class= $class;
+  public function raised_exception($status, $exception) {
+    $handler= newinstance('lang.Object', [$exception], [
+      'exception' => null,
+      '__construct' => function($exception) {
+        $this->exception= $exception;
       },
       '#[@webmethod(verb= "GET")] fixture' => function() {
-        throw new $this->class('Test', null);
+        throw new $this->exception('Test', null);
       }
     ]);
     $this->assertEquals(
