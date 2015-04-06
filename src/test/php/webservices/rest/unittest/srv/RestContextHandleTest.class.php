@@ -1,16 +1,22 @@
 <?php namespace webservices\rest\unittest\srv;
 
-use unittest\TestCase;
 use webservices\rest\srv\RestContext;
 use webservices\rest\srv\Response;
 use webservices\rest\Payload;
+use lang\IllegalArgumentException;
+use lang\IllegalAccessException;
+use lang\ElementNotFoundException;
+use lang\IllegalStateException;
+use lang\FormatException;
+use lang\XPException;
+use lang\MethodNotImplementedException;
 
 /**
  * Test RestContext::handle() 
  *
  * @see  xp://webservices.rest.srv.RestContext
  */
-class RestContextHandleTest extends TestCase {
+class RestContextHandleTest extends \unittest\TestCase {
 
   /**
    * Convenience wrapper around RestContext::handle()
@@ -115,30 +121,27 @@ class RestContextHandleTest extends TestCase {
     );
   }
 
-  #[@test, @values(array(
-  #  array(400, "lang.IllegalArgumentException"),
-  #  array(403, "lang.IllegalAccessException"),
-  #  array(404, "lang.ElementNotFoundException"),
-  #  array(409, "lang.IllegalStateException"),
-  #  array(422, "lang.FormatException"),
-  #  array(500, "lang.XPException"),
-  #  array(501, "lang.MethodNotImplementedException")
-  #))]
+  #[@test, @values([
+  #  [400, IllegalArgumentException::class],
+  #  [403, IllegalAccessException::class],
+  #  [404, ElementNotFoundException::class],
+  #  [409, IllegalStateException::class],
+  #  [422, FormatException::class],
+  #  [500, XPException::class],
+  #  [501, MethodNotImplementedException::class]
+  #])]
   public function raised_exception($status, $class) {
-    $handler= newinstance('lang.Object', array($class), '{
-      protected $class;
-
-      public function __construct($class) {
+    $handler= newinstance('lang.Object', [$class], [
+      'class' => null,
+      '__construct' => function($class) {
         $this->class= $class;
+      },
+      '#[@webmethod(verb= "GET")] fixture' => function() {
+        throw new $this->class('Test', null);
       }
-
-      #[@webmethod(verb= "GET")]
-      public function fixture() {
-        raise($this->class, "Test", NULL);
-      }
-    }');
+    ]);
     $this->assertEquals(
-      Response::error($status)->withPayload(new Payload(array('message' => 'Test'), array('name' => 'exception'))),
+      Response::error($status)->withPayload(new Payload(['message' => 'Test'], ['name' => 'exception'])),
       $this->handle($handler)
     );
   }
