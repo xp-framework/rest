@@ -388,7 +388,7 @@ class RestRequest extends \lang\Object {
       $offset+= $b;
       if ($offset >= $l) break;
       $e= strcspn($resource, '}', $offset);
-      $target.= $this->getSegment(substr($resource, $offset+ 1, $e- 1));
+      $target.= urlencode($this->getSegment(substr($resource, $offset+ 1, $e- 1)));
       $offset+= $e+ 1;
     } while ($offset < $l);
     return $target;

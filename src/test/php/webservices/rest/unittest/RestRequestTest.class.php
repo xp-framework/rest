@@ -255,6 +255,13 @@ class RestRequestTest extends TestCase {
   }
 
   #[@test]
+  public function segments_are_url_encoded() {
+    $fixture= new RestRequest('/users/{user}');
+    $fixture->addSegment('user', 'Timm Friebe');
+    $this->assertEquals('/users/Timm+Friebe', $fixture->getTarget());
+  }
+
+  #[@test]
   public function targetWithTwoSegmentParameters() {
     $fixture= new RestRequest('/repos/{user}/{repo}');
     $fixture->addSegment('user', 'thekid');
