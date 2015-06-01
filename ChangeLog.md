@@ -3,6 +3,8 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 6.1.0 / 2015-06-01
+
 * Added optional message parameter to Response::error(), status(), 
   notFound() and notAcceptable() methods
   (@thekid)
