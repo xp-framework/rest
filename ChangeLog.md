@@ -3,7 +3,9 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
-* Fixed fatal error when reading body with unknown media type - @thekid
+* Fixed fatal error when reading body with unknown media type. This now
+  returns a HTTP 415 status code ("Unsupported Media Typ")
+  (@thekid)
 * Fixed xp-framework/rest#4 - Segments need urlencoding - @thekid
 
 ## 6.0.1 / 2015-02-12

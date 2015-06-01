@@ -12,6 +12,7 @@ use util\log\Logger;
 use lang\XPClass;
 use lang\Type;
 use lang\Throwable;
+use lang\FormatException;
 use lang\IllegalStateException;
 use lang\IllegalArgumentException;
 use lang\reflect\TargetInvocationException;
@@ -89,29 +90,36 @@ class RestContext extends \lang\Object implements \util\log\Traceable {
   }
 
   /**
-   * Maps an exception
+   * Finds the exception mapper for the given throwable instance
+   *
+   * @param  lang.Throwable $throwale
+   * @return webservices.rest.srv.ExceptionMapper or NULL if no mapper exists
+   */
+  public function findMapper($throwable) {
+    foreach ($this->mappers->keys() as $type) {
+      if ($type->isInstance($throwable)) return $this->mappers[$type];
+    }
+    return null;
+  }
+
+  /**
+   * Maps an exception to a response, using the default exception mapper if 
+   * no more specific mapper is given.
    *
    * @param  lang.Throwable $t
-   * @param  bool $useExceptionMappings
+   * @param  webservices.rest.srv.ExceptionMapper $mapper
    * @return webservices.rest.srv.Response
    */
-  public function asResponse($t, $useExceptionMappings= true) {
+  public function asResponse($t, ExceptionMapper $mapper= null) {
     static $properties= ['name' => 'exception'];   // XML root node
 
-    // See if we can find an exception mapper
-    if ($useExceptionMappings) {
-      foreach ($this->mappers->keys() as $type) {
-        if (!$type->isInstance($t)) continue;
-        $r= $this->mappers[$type]->asResponse($t, $this);
-        $r->payload->properties= $properties;
-        return $r;
-      }
+    if (null === $mapper) {
+      $mapper= new DefaultExceptionMapper(HttpConstants::STATUS_INTERNAL_SERVER_ERROR);
     }
 
-    // Default: Use error 500 ("Internal Server Error") and the exception message
-    return Response::error(HttpConstants::STATUS_INTERNAL_SERVER_ERROR)
-      ->withPayload($this->marshal(new Payload($t), $properties))
-    ;
+    $response= $mapper->asResponse($t, $this);
+    $response->payload->properties= $properties;
+    return $response;
   }
 
   /**
@@ -183,7 +191,7 @@ class RestContext extends \lang\Object implements \util\log\Traceable {
     // Constructor injection
     if ($class->hasConstructor()) {
       $c= $class->getConstructor();
-      $instance= $c->newInstance($c->hasAnnotation('inject') ? $this->injectionArgs($c) : array());
+      $instance= $c->newInstance($c->hasAnnotation('inject') ? $this->injectionArgs($c) : []);
     } else {
       $instance= $class->newInstance();
     }
@@ -218,9 +226,10 @@ class RestContext extends \lang\Object implements \util\log\Traceable {
     try {
       $result= $method->invoke($instance, $args);
       $this->cat && $this->cat->debug('<-', $result);
-    } catch (\lang\reflect\TargetInvocationException $e) {
+    } catch (TargetInvocationException $e) {
       $this->cat && $this->cat->warn('<-', $e);
-      return $this->asResponse($e->getCause());
+      $cause= $e->getCause();
+      return $this->asResponse($cause, $this->findMapper($cause));
     }
 
     // For "VOID" methods, set status to "no content". If a response is returned, 
@@ -231,9 +240,8 @@ class RestContext extends \lang\Object implements \util\log\Traceable {
       $result->payload= $this->marshal($result->payload, $properties);
       return $result;
     } else {
-      return Response::status(HttpConstants::STATUS_OK)
-        ->withPayload($this->marshal(new Payload($result), $properties))
-      ;
+      $payload= $this->marshal(new Payload($result), $properties);
+      return Response::status(HttpConstants::STATUS_OK)->withPayload($payload);
     }
   }
 
@@ -288,22 +296,26 @@ class RestContext extends \lang\Object implements \util\log\Traceable {
    * @return  bool
    */
   public function process($target, $request, $response) {
+    $this->cat && $this->cat->debug('->', $target);
+
     try {
-      $this->cat && $this->cat->debug('->', $target);
-
-      // Instantiate
-      $map= false;
-      $instance= $this->handlerInstanceFor($target['handler']);
-
-      // Invoke handler
-      $map= true;
-      $result= $this->handle($instance, $target['target'], $this->argumentsFor($target, $request));
+      $result= $this->handle(
+        $this->handlerInstanceFor($target['handler']),
+        $target['target'],
+        $this->argumentsFor($target, $request)
+      );
     } catch (TargetInvocationException $e) {
-      $this->cat && $this->cat->warn('<-', $e);
-      $result= $this->asResponse($e->getCause(), $map);
+      $this->cat && $this->cat->error('<-', $e);
+      $result= $this->asResponse($e->getCause(), null);
+    } catch (FormatException $e) {
+      $this->cat && $this->cat->error('<-', $e);
+      $result= $this->asResponse($e, new DefaultExceptionMapper(HttpConstants::STATUS_UNSUPPORTED_MEDIA_TYPE));
+    } catch (IllegalArgumentException $e) {
+      $this->cat && $this->cat->error('<-', $e);
+      $result= $this->asResponse($e, new DefaultExceptionMapper(HttpConstants::STATUS_BAD_REQUEST));
     } catch (Throwable $t) {
       $this->cat && $this->cat->error('<-', $t);
-      $result= $this->asResponse($t, $map);
+      $result= $this->asResponse($t, null);
     }
 
     // Have a result
