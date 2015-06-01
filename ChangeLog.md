@@ -3,6 +3,9 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Added optional message parameter to Response::error(), status(), 
+  notFound() and notAcceptable() methods
+  (@thekid)
 * Fixed fatal error when reading body with unknown media type. This now
   returns a HTTP 415 status code ("Unsupported Media Typ")
   (@thekid)

@@ -104,6 +104,30 @@ class ResponseTest extends \unittest\TestCase {
   }
 
   #[@test]
+  public function not_found_with_message() {
+    $r= Response::notFound('No file named four-oh-four');
+    $this->assertEquals(new Payload('No file named four-oh-four'), $r->payload);
+  }
+
+  #[@test]
+  public function not_acceptable_with_message() {
+    $r= Response::notAcceptable('Cannot upload files named four-our-six');
+    $this->assertEquals(new Payload('Cannot upload files named four-our-six'), $r->payload);
+  }
+
+  #[@test]
+  public function error_with_message() {
+    $r= Response::error(503, 'Come back later');
+    $this->assertEquals(new Payload('Come back later'), $r->payload);
+  }
+
+  #[@test]
+  public function status_with_message() {
+    $r= Response::status(203, 'Eventually consistent');
+    $this->assertEquals(new Payload('Eventually consistent'), $r->payload);
+  }
+
+  #[@test]
   public function with_extra_header() {
     $r= (new Response())->withHeader('X-Exception', 'SQL');
     $this->assertEquals(['X-Exception' => 'SQL'], $r->headers);
