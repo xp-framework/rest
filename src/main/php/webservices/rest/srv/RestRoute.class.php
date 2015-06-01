@@ -1,7 +1,5 @@
 <?php namespace webservices\rest\srv;
 
-
-
 /**
  * REST route interface
  *
