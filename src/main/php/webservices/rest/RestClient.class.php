@@ -156,7 +156,7 @@ class RestClient extends \lang\Object implements Traceable {
     if (isset($this->deserializers[$mediaType])) {
       return $this->deserializers[$mediaType];
     } else {
-      return RestFormat::forMediaType($mediaType)->deserializer() ?: new CannotDeserialize($contentType);
+      return RestFormat::forMediaType($mediaType)->deserializer();
     }
   }
 
@@ -181,7 +181,7 @@ class RestClient extends \lang\Object implements Traceable {
     if (isset($this->serializers[$mediaType])) {
       return $this->serializers[$mediaType];
     } else {
-      return RestFormat::forMediaType($mediaType)->serializer() ?: new CannotSerialize($contentType);
+      return RestFormat::forMediaType($mediaType)->serializer();
     }
   }
 
