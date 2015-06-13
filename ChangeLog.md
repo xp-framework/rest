@@ -3,6 +3,9 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Added forward compatibility with PHP7 - @thekid
+* Changed dependency on xp-framework/webservices to ^6.1.0 - @thekid
+
 ## 6.1.0 / 2015-06-01
 
 * Added optional message parameter to Response::error(), status(), 
