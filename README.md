@@ -23,6 +23,9 @@ then invoke its `execute()` method to work with the resources.
 Here's an overview of the typical usage for working with the REST API.
 
 ```php
+use webservices\rest\RestClient;
+use webservices\rest\RestRequest;
+
 $client= new RestClient('http://api.example.com/');
 
 $request= new RestRequest('/resource/{id}');
@@ -50,6 +53,8 @@ Basic authentication is supported by embedding the credentials in the
 endpoint URL:
 
 ```php
+use webservices\rest\RestClient;
+
 $client= new RestClient('http://user:pass@api.example.com/');
 ```
 
@@ -58,6 +63,9 @@ $client= new RestClient('http://user:pass@api.example.com/');
 The `RestRequest` class provides a fluent interface:
 
 ```php
+use webservices\rest\RestRequest;
+use peer\http\HttpConstants;
+
 $request= (new RestRequest('/resource/{id}'))
  ->withMethod(HttpConstants::GET)
  ->withSegment('id', 5000)
