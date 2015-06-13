@@ -18,7 +18,7 @@ use webservices\rest\RestFormat;
  * @test  xp://net.xp_framework.unittest.webservices.rest.srv.ResponseTest
  */
 class Response extends Output {
-  public $payload;
+  public $status, $payload;
 
   /**
    * Creates a new response instance
@@ -85,29 +85,21 @@ class Response extends Output {
   /**
    * Creates a new response instance with the status code set to 404 (Not found)
    *
+   * @param   string message
    * @return  self
    */
-  public static function notFound() {
-    return new self(404);
+  public static function notFound($message= null) {
+    return self::status(404, $message);
   }
 
   /**
    * Creates a new response instance with the status code set to 406 (Not acceptable)
    *
+   * @param   string message
    * @return  self
    */
-  public static function notAcceptable() {
-    return new self(406);
-  }
-
-  /**
-   * Creates a new response instance with the status code set to a given status.
-   *
-   * @param   int code
-   * @return  self
-   */
-  public static function status($code) {
-    return new self($code);
+  public static function notAcceptable($message= null) {
+    return self::status(406, $message);
   }
 
   /**
@@ -115,10 +107,28 @@ class Response extends Output {
    * error code (defaulting to 500 - Internal Server Error).
    *
    * @param   int code
+   * @param   string message
    * @return  self
    */
-  public static function error($code= 500) {
-    return new self($code);
+  public static function error($code= 500, $message= null) {
+    return self::status($code, $message);
+  }
+
+  /**
+   * Creates a new response instance with the status code set to a given status.
+   *
+   * @param   int code
+   * @param   string message
+   * @return  self
+   */
+  public static function status($code, $message= null) {
+    $self= new self($code);
+    if (null === $message) {
+      return $self;
+    } else {
+      $self->payload= new Payload($message);
+      return $self;
+    }
   }
 
   /**

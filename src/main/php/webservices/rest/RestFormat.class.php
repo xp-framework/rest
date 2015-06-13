@@ -8,8 +8,7 @@ use io\streams\OutputStream;
  *
  * @test  xp://net.xp_framework.unittest.webservices.rest.RestFormatTest
  */
-class RestFormat extends \lang\Enum {
-  public static $UNKNOWN;
+class RestFormat extends \lang\Enum implements Format {
   public static $JSON;
   public static $XML;
   public static $FORM;
@@ -17,7 +16,6 @@ class RestFormat extends \lang\Enum {
   private $serializer, $deserializer;
 
   static function __static() {
-    self::$UNKNOWN= new self(0, 'UNKNOWN', null, null);
     self::$JSON= new self(1, 'JSON', new RestJsonSerializer(), new RestJsonDeserializer());
     self::$XML= new self(2, 'XML', new RestXmlSerializer(), new RestXmlDeserializer());
     self::$FORM= new self(3, 'FORM', new RestFormSerializer(), new RestFormDeserializer());
@@ -37,23 +35,14 @@ class RestFormat extends \lang\Enum {
     $this->deserializer= $deserializer;
   }
 
-  /**
-   * Get serializer
-   *
-   * @return webservices.rest.RestSerializer
-   */
-  public function serializer() {
-    return $this->serializer;
-  }
+  /** @return bool */
+  public function isHandled() { return true; }
 
-  /**
-   * Get deserializer
-   *
-   * @return webservices.rest.RestDeserializer
-   */
-  public function deserializer() {
-    return $this->deserializer;
-  }
+  /** @return webservices.rest.RestSerializer */
+  public function serializer() { return $this->serializer; }
+
+  /** @return webservices.rest.RestDeserializer */
+  public function deserializer() { return $this->deserializer; }
 
   /**
    * Deserialize from input
@@ -89,7 +78,7 @@ class RestFormat extends \lang\Enum {
     } else if (preg_match('#[/\+]xml$#', $mediatype)) {
       return self::$XML;
     } else {
-      return self::$UNKNOWN;
+      return new UnknownFormat($mediatype ?: 'without content type');
     }
   }
 }

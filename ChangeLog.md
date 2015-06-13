@@ -3,6 +3,19 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Added forward compatibility with PHP7 - @thekid
+* Changed dependency on xp-framework/webservices to ^6.1.0 - @thekid
+
+## 6.1.0 / 2015-06-01
+
+* Added optional message parameter to Response::error(), status(), 
+  notFound() and notAcceptable() methods
+  (@thekid)
+* Fixed fatal error when reading body with unknown media type. This now
+  returns a HTTP 415 status code ("Unsupported Media Type")
+  (@thekid)
+* Fixed xp-framework/rest#4 - Segments need urlencoding - @thekid
+
 ## 6.0.1 / 2015-02-12
 
 * Changed dependency to use XP ~6.0 (instead of dev-master) - @thekid

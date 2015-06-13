@@ -87,6 +87,6 @@ class RestFormatTest extends TestCase {
 
   #[@test]
   public function application_octet_stream_mediatype() {
-    $this->assertEquals(RestFormat::$UNKNOWN, RestFormat::forMediaType('application/octet-stream'));
+    $this->assertFalse(RestFormat::forMediaType('application/octet-stream')->isHandled());
   }
 }

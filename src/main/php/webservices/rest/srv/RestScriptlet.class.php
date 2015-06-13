@@ -23,22 +23,14 @@ class RestScriptlet extends \scriptlet\HttpScriptlet implements \util\log\Tracea
    * 
    * @param  string package The package containing handler classes
    * @param  string base The base URL (will be stripped off from request url)
-   * @param  string context The context class to use
-   * @param  string router The router class to use
+   * @param  string|webservices.rest.srv.RestContext context The context to use
+   * @param  string|webservices.rest.srv.AbstractRestRouter router The router class to use
    */
-  public function __construct($package, $base= '', $context= '', $router= '') {
+  public function __construct($package, $base= '', $context= null, $router= null) {
     $this->base= rtrim($base, '/');
+    $this->setContext($context);
+    $this->setRouter($router);
 
-    // Context class
-    $class= XPClass::forName('' === (string)$context ? 'webservices.rest.srv.RestContext' : $context); 
-    $this->context= $class->newInstance();
-
-    // Create router
-    if ('' === (string)$router) {
-      $this->router= new RestDefaultRouter();
-    } else {
-      $this->router= XPClass::forName($router)->newInstance();
-    }
     $this->router->configure($package, $this->base);
     $this->router->setInputFormats(['*json', '*xml', 'application/x-www-form-urlencoded']);
     $this->router->setOutputFormats(['application/json', 'text/json', 'text/xml', 'application/xml']);
@@ -57,10 +49,16 @@ class RestScriptlet extends \scriptlet\HttpScriptlet implements \util\log\Tracea
   /**
    * Sets a router
    *
-   * @param  webservices.rest.srv.AbstractRestRouter router
+   * @param  string|webservices.rest.srv.AbstractRestRouter router
    */
-  public function setRouter(AbstractRestRouter $router) {
-    $this->router= $router;
+  public function setRouter($router) {
+    if ($router instanceof AbstractRestRouter) {
+      $this->router= $router;
+    } else if ('' === (string)$router) {
+      $this->router= new RestDefaultRouter();
+    } else {
+      $this->router= XPClass::forName($router)->newInstance();
+    }
   }
 
   /**
@@ -75,10 +73,16 @@ class RestScriptlet extends \scriptlet\HttpScriptlet implements \util\log\Tracea
   /**
    * Sets a context
    *
-   * @param  webservices.rest.srv.RestContext context
+   * @param  string|webservices.rest.srv.RestContext context
    */
-  public function setContext(RestContext $context) {
-    $this->context= $context;
+  public function setContext($context) {
+    if ($context instanceof RestContext) {
+      $this->context= $context;
+    } else if ('' === (string)$context) {
+      $this->context= new RestContext();
+    } else {
+      $this->context= XPClass::forName($context)->newInstance();
+    }
   }
 
   /**

@@ -10,17 +10,6 @@ use util\Date;
 use util\TimeZone;
 use util\Money;
 use util\Currency;
-use lang\types\String;
-use lang\types\Long;
-use lang\types\Integer;
-use lang\types\Short;
-use lang\types\Byte;
-use lang\types\Double;
-use lang\types\Float;
-use lang\types\Boolean;
-use lang\types\ArrayList;
-use lang\types\ArrayMap;
-use lang\types\Character;
 use webservices\rest\RestMarshalling;
 
 /**
@@ -29,13 +18,15 @@ use webservices\rest\RestMarshalling;
  * @see   xp://webservices.rest.RestMarshalling
  */
 class RestMarshallingTest extends \unittest\TestCase {
-  protected $fixture= null;
-  protected static $walletClass= null;
-  protected static $moneyMarshaller= null;
-  protected static $walletMarshaller= null;
+  private static $walletClass;
+  private static $moneyMarshaller;
+  private static $walletMarshaller;
+  private $fixture;
 
   /**
    * Sets up test case
+   *
+   * @return void
    */
   public function setUp() {
     $this->fixture= new RestMarshalling();
@@ -90,43 +81,8 @@ class RestMarshallingTest extends \unittest\TestCase {
   }
 
   #[@test]
-  public function marshal_string_wrapper_object() {
-    $this->assertEquals('Hello', $this->fixture->marshal(new String('Hello')));
-  }
-
-  #[@test]
-  public function marshal_char_wrapper_object() {
-    $this->assertEquals('A', $this->fixture->marshal(new Character('A')));
-  }
-
-  #[@test]
-  public function marshal_string_wrapper_object_unicode() {
-    $this->assertEquals('Übercoder', $this->fixture->marshal(new String("\303\234bercoder", 'utf-8')));
-  }
-
-  #[@test]
   public function marshal_int() {
     $this->assertEquals(6100, $this->fixture->marshal(6100));
-  }
-
-  #[@test]
-  public function marshal_long_wrapper_object() {
-    $this->assertEquals(61000, $this->fixture->marshal(new Long(61000)));
-  }
-
-  #[@test]
-  public function marshal_int_wrapper_object() {
-    $this->assertEquals(6100, $this->fixture->marshal(new Integer(6100)));
-  }
-
-  #[@test]
-  public function marshal_short_wrapper_object() {
-    $this->assertEquals(610, $this->fixture->marshal(new Short(610)));
-  }
-
-  #[@test]
-  public function marshal_byte_wrapper_object() {
-    $this->assertEquals(61, $this->fixture->marshal(new Byte(61)));
   }
 
   #[@test]
@@ -135,28 +91,8 @@ class RestMarshallingTest extends \unittest\TestCase {
   }
 
   #[@test]
-  public function marshal_double_wrapper_object() {
-    $this->assertEquals(1.5, $this->fixture->marshal(new Double(1.5)));
-  }
-
-  #[@test]
-  public function marshal_float_wrapper_object() {
-    $this->assertEquals(1.5, $this->fixture->marshal(new Float(1.5)));
-  }
-
-  #[@test]
   public function marshal_bool() {
     $this->assertEquals(true, $this->fixture->marshal(true));
-  }
-
-  #[@test]
-  public function marshal_bool_wrapper_object_true() {
-    $this->assertEquals(true, $this->fixture->marshal(Boolean::$TRUE));
-  }
-
-  #[@test]
-  public function marshal_bool_wrapper_object_false() {
-    $this->assertEquals(false, $this->fixture->marshal(Boolean::$FALSE));
   }
 
   #[@test]
@@ -165,16 +101,14 @@ class RestMarshallingTest extends \unittest\TestCase {
   }
 
   #[@test, @values([
-  #  [new \ArrayIterator(['Hello', 'World'])],
-  #  [new ArrayList('Hello', 'World')]
+  #  [new \ArrayIterator(['Hello', 'World'])]
   #])]
   public function marshal_traversable_array($in) {
     $this->assertEquals(['Hello', 'World'], iterator_to_array($this->fixture->marshal($in)));
   }
 
   #[@test, @values([
-  #  [new \ArrayIterator(['Hello' => 'World'])],
-  #  [new ArrayMap(['Hello' => 'World'])]
+  #  [new \ArrayIterator(['Hello' => 'World'])]
   #])]
   public function marshal_traversable_map($in) {
     $this->assertEquals(['Hello' => 'World'], iterator_to_array($this->fixture->marshal($in)));
@@ -623,38 +557,6 @@ class RestMarshallingTest extends \unittest\TestCase {
       ->getClass()
       ->getField('instance')
       ->get(null)
-    );
-  }
-
-  #[@test]
-  public function unmarshal_string_wrapper() {
-    $this->assertEquals(
-      new String('Hello'),
-      $this->fixture->unmarshal(Primitive::$STRING->wrapperClass(), 'Hello')
-    );
-  }
-
-  #[@test]
-  public function unmarshal_integer_wrapper() {
-    $this->assertEquals(
-      new Integer(5),
-      $this->fixture->unmarshal(Primitive::$INT->wrapperClass(), 5)
-    );
-  }
-
-  #[@test]
-  public function unmarshal_double_wrapper() {
-    $this->assertEquals(
-      new Double(5.0),
-      $this->fixture->unmarshal(Primitive::$DOUBLE->wrapperClass(), 5.0)
-    );
-  }
-
-  #[@test]
-  public function unmarshal_bool_wrapper() {
-    $this->assertEquals(
-      new Boolean(true),
-      $this->fixture->unmarshal(Primitive::$BOOL->wrapperClass(), true)
     );
   }
 

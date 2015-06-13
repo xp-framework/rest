@@ -4,16 +4,6 @@ use lang\XPClass;
 use lang\Type;
 use lang\Primitive;
 use lang\reflect\Modifiers;
-use lang\types\String;
-use lang\types\Character;
-use lang\types\Integer;
-use lang\types\Long;
-use lang\types\Short;
-use lang\types\Byte;
-use lang\types\Float;
-use lang\types\Double;
-use lang\types\Boolean;
-use lang\types\ArrayList;
 
 /**
  * Marshalling takes care of converting the data to a simple output 
@@ -30,6 +20,35 @@ class RestMarshalling extends \lang\Object {
    */
   public function __construct() {
     $this->marshallers= create('new util.collections.HashTable<lang.Type, webservices.rest.TypeMarshaller>');
+
+    if (PHP_VERSION < '7.0.0') {
+      $strings= newinstance('webservices.rest.TypeMarshaller', [], [
+        'marshal'   => function($t) { return $t->toString(); },
+        'unmarshal' => function(Type $target, $in) { return $target->newInstance($in); }
+      ]);
+      $integers= newinstance('webservices.rest.TypeMarshaller', [], [
+        'marshal'   => function($t) { return $t->intValue(); },
+        'unmarshal' => function(Type $target, $in) { return $target->newInstance($in); }
+      ]);
+      $decimals= newinstance('webservices.rest.TypeMarshaller', [], [
+        'marshal'   => function($t) { return $t->doubleValue(); },
+        'unmarshal' => function(Type $target, $in) { return $target->newInstance($in); }
+      ]);
+      $booleans= newinstance('webservices.rest.TypeMarshaller', [], [
+        'marshal'   => function($t) { return (bool)$t->value; },
+        'unmarshal' => function(Type $target, $in) { return $target->newInstance($in); }
+      ]);
+
+      $this->marshallers[XPClass::forName('lang.types.String')]= $strings;
+      $this->marshallers[XPClass::forName('lang.types.Character')]= $strings;
+      $this->marshallers[XPClass::forName('lang.types.Long')]= $integers;
+      $this->marshallers[XPClass::forName('lang.types.Integer')]= $integers;
+      $this->marshallers[XPClass::forName('lang.types.Short')]= $integers;
+      $this->marshallers[XPClass::forName('lang.types.Byte')]= $integers;
+      $this->marshallers[XPClass::forName('lang.types.Float')]= $decimals;
+      $this->marshallers[XPClass::forName('lang.types.Double')]= $decimals;
+      $this->marshallers[XPClass::forName('lang.types.Boolean')]= $booleans;
+    }
   }
 
   /**
@@ -92,14 +111,6 @@ class RestMarshalling extends \lang\Object {
   public function marshal($data) {
     if ($data instanceof \util\Date) {
       return $data->toString('c');    // ISO 8601, e.g. "2004-02-12T15:19:21+00:00"
-    } else if ($data instanceof String || $data instanceof Character) {
-      return $data->toString();
-    } else if ($data instanceof Integer || $data instanceof Long || $data instanceof Short || $data instanceof Byte) {
-      return $data->intValue();
-    } else if ($data instanceof Float || $data instanceof Double) {
-      return $data->doubleValue();
-    } else if ($data instanceof Boolean) {
-      return (bool)$data->value;
     } else if ($data instanceof \Traversable) {
       return new Iteration($data, [$this, 'marshal']);
     } else if ($data instanceof \lang\Generic) {
@@ -186,8 +197,6 @@ class RestMarshalling extends \lang\Object {
       return $data;
     } else if (null === $data) {                        // Valid for any type
       return null;
-    } else if ($type->equals(XPClass::forName('lang.types.String'))) {
-      return new String($this->valueOf($data));
     } else if ($type->equals(XPClass::forName('util.Date'))) {
       return $type->newInstance($data);
     } else if ($type instanceof XPClass) {

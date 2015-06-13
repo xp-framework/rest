@@ -1,7 +1,5 @@
 <?php namespace webservices\rest\srv;
 
-
-
 /**
  * REST route interface
  *
@@ -12,9 +10,9 @@ class RestRoute extends \lang\Object {
   protected $path= '';
   protected $handler= null;
   protected $target= null;
-  protected $accepts= array();
-  protected $produces= array();
-  protected $params= array();
+  protected $accepts= [];
+  protected $produces= [];
+  protected $params= [];
   
   /**
    * Constructor

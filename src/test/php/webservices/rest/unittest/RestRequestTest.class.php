@@ -2,8 +2,12 @@
 
 use unittest\TestCase;
 use webservices\rest\RestRequest;
+use webservices\rest\RestFormat;
+use webservices\rest\RestJsonSerializer;
+use webservices\rest\RestXmlSerializer;
 use webservices\rest\Payload;
 use peer\http\HttpConstants;
+use peer\http\RequestData;
 use peer\Header;
 
 /**
@@ -55,7 +59,7 @@ class RestRequestTest extends TestCase {
 
   #[@test]
   public function setBody() {
-    $request= new \peer\http\RequestData('{ "title" : "New issue" }');
+    $request= new RequestData('{ "title" : "New issue" }');
     $fixture= new RestRequest();
     $fixture->setBody($request);
     $this->assertEquals($request, $fixture->getBody());
@@ -63,7 +67,7 @@ class RestRequestTest extends TestCase {
 
   #[@test]
   public function withBody() {
-    $request= new \peer\http\RequestData('{ "title" : "New issue" }');
+    $request= new RequestData('{ "title" : "New issue" }');
     $fixture= new RestRequest();
     $this->assertEquals($fixture, $fixture->withBody($request));
     $this->assertEquals($request, $fixture->getBody());
@@ -78,36 +82,36 @@ class RestRequestTest extends TestCase {
   #[@test]
   public function hasBody() {
     $fixture= new RestRequest();
-    $fixture->setBody(new \peer\http\RequestData('{ "title" : "New issue" }'));
+    $fixture->setBody(new RequestData('{ "title" : "New issue" }'));
     $this->assertTrue($fixture->hasBody());
   }
 
   #[@test]
   public function hasPayloadWithJsonPayload() {
     $fixture= new RestRequest();
-    $fixture->setPayload(array('title' => 'New issue'), new \webservices\rest\RestJsonSerializer());
+    $fixture->setPayload(['title' => 'New issue'], new RestJsonSerializer());
     $this->assertTrue($fixture->hasPayload());
   }
 
   #[@test]
   public function contentTypeWithJsonPayload() {
     $fixture= new RestRequest();
-    $fixture->setPayload(array('title' => 'New issue'), new \webservices\rest\RestJsonSerializer());
+    $fixture->setPayload(['title' => 'New issue'], new RestJsonSerializer());
     $this->assertEquals('application/json; charset=utf-8', $fixture->getHeader('Content-Type'));
   }
 
   #[@test]
   public function getPayloadWithJsonPayload() {
     $fixture= new RestRequest();
-    $fixture->setPayload(array('title' => 'New issue'), new \webservices\rest\RestJsonSerializer());
-    $this->assertEquals(array('title' => 'New issue'), $fixture->getPayload());
+    $fixture->setPayload(['title' => 'New issue'], new RestJsonSerializer());
+    $this->assertEquals(['title' => 'New issue'], $fixture->getPayload());
   }
 
   #[@test]
   public function getPayloadWithJsonPayloadUsingRestFormat() {
     $fixture= new RestRequest();
-    $fixture->setPayload(array('title' => 'New issue'), \webservices\rest\RestFormat::$JSON);
-    $this->assertEquals(array('title' => 'New issue'), $fixture->getPayload());
+    $fixture->setPayload(['title' => 'New issue'], RestFormat::$JSON);
+    $this->assertEquals(['title' => 'New issue'], $fixture->getPayload());
   }
 
   #[@test]
@@ -120,61 +124,61 @@ class RestRequestTest extends TestCase {
   #[@test]
   public function withPayloadAndSerializer() {
     $fixture= new RestRequest();
-    $this->assertEquals($fixture, $fixture->withPayload(null, new \webservices\rest\RestJsonSerializer()));
+    $this->assertEquals($fixture, $fixture->withPayload(null, new RestJsonSerializer()));
   }
 
   #[@test]
   public function withPayloadAndRestFormat() {
     $fixture= new RestRequest();
-    $this->assertEquals($fixture, $fixture->withPayload(null, \webservices\rest\RestFormat::$JSON));
+    $this->assertEquals($fixture, $fixture->withPayload(null, RestFormat::$JSON));
   }
 
   #[@test]
   public function withPayloadAndNull() {
-    $fixture= create(new RestRequest())->withPayload('Test', 'text/plain');
+    $fixture= (new RestRequest())->withPayload('Test', 'text/plain');
     $this->assertEquals('text/plain', $fixture->getContentType());
   }
 
   #[@test]
   public function hasPayloadWithXmlPayload() {
     $fixture= new RestRequest();
-    $fixture->setPayload(array('title' => 'New issue'), new \webservices\rest\RestXmlSerializer());
+    $fixture->setPayload(['title' => 'New issue'], new RestXmlSerializer());
     $this->assertTrue($fixture->hasPayload());
   }
 
   #[@test]
   public function contentTypeWithXmlPayload() {
     $fixture= new RestRequest();
-    $fixture->setPayload(array('title' => 'New issue'), new \webservices\rest\RestXmlSerializer());
+    $fixture->setPayload(['title' => 'New issue'], new RestXmlSerializer());
     $this->assertEquals('text/xml; charset=utf-8', $fixture->getHeader('Content-Type'));
   }
 
   #[@test]
   public function getPayloadWithXmlPayload() {
     $fixture= new RestRequest();
-    $fixture->setPayload(array('title' => 'New issue'), new \webservices\rest\RestXmlSerializer());
-    $this->assertEquals(array('title' => 'New issue'), $fixture->getPayload()); 
+    $fixture->setPayload(['title' => 'New issue'], new RestXmlSerializer());
+    $this->assertEquals(['title' => 'New issue'], $fixture->getPayload()); 
   }
 
   #[@test]
   public function getPayloadWithXmlPayloadAndRootNode() {
     $fixture= new RestRequest();
-    $fixture->setPayload(new Payload(array('title' => 'New issue'), array('name' => 'issue')), new \webservices\rest\RestXmlSerializer());
-    $this->assertEquals(new Payload(array('title' => 'New issue'), array('name' => 'issue')), $fixture->getPayload()); 
+    $fixture->setPayload(new Payload(['title' => 'New issue'], ['name' => 'issue']), new RestXmlSerializer());
+    $this->assertEquals(new Payload(['title' => 'New issue'], ['name' => 'issue']), $fixture->getPayload()); 
   }
 
   #[@test]
   public function setPayloadCalledTwice() {
     $fixture= new RestRequest();
-    $fixture->setPayload(array('title' => 'New issue'), new \webservices\rest\RestXmlSerializer());
-    $fixture->setPayload(array('title' => 'New issue'), new \webservices\rest\RestJsonSerializer());
+    $fixture->setPayload(['title' => 'New issue'], new RestXmlSerializer());
+    $fixture->setPayload(['title' => 'New issue'], new RestJsonSerializer());
     $this->assertEquals('application/json; charset=utf-8', $fixture->getHeader('Content-Type'));
   }
 
   #[@test]
   public function noParameters() {
     $fixture= new RestRequest();
-    $this->assertEquals(array(), $fixture->getParameters());
+    $this->assertEquals([], $fixture->getParameters());
   }
 
   #[@test]
@@ -182,7 +186,7 @@ class RestRequestTest extends TestCase {
     $fixture= new RestRequest();
     $fixture->addParameter('filter', 'assigned');
     $this->assertEquals(
-      array('filter' => 'assigned'), 
+      ['filter' => 'assigned'],
       $fixture->getParameters()
     );
   }
@@ -193,7 +197,7 @@ class RestRequestTest extends TestCase {
     $fixture->addParameter('filter', 'assigned');
     $fixture->addParameter('state', 'open');
     $this->assertEquals(
-      array('filter' => 'assigned', 'state' => 'open'), 
+      ['filter' => 'assigned', 'state' => 'open'],
       $fixture->getParameters()
     );
   }
@@ -201,7 +205,7 @@ class RestRequestTest extends TestCase {
   #[@test]
   public function noSegments() {
     $fixture= new RestRequest();
-    $this->assertEquals(array(), $fixture->getSegments());
+    $this->assertEquals([], $fixture->getSegments());
   }
 
   #[@test]
@@ -209,7 +213,7 @@ class RestRequestTest extends TestCase {
     $fixture= new RestRequest();
     $fixture->addSegment('user', 'thekid');
     $this->assertEquals(
-      array('user' => 'thekid'), 
+      ['user' => 'thekid'],
       $fixture->getSegments()
     );
   }
@@ -220,7 +224,7 @@ class RestRequestTest extends TestCase {
     $fixture->addSegment('user', 'thekid');
     $fixture->addSegment('repo', 'xp-framework');
     $this->assertEquals(
-      array('user' => 'thekid', 'repo' => 'xp-framework'), 
+      ['user' => 'thekid', 'repo' => 'xp-framework'],
       $fixture->getSegments()
     );
   }
@@ -248,6 +252,13 @@ class RestRequestTest extends TestCase {
     $fixture= new RestRequest('/users/{user}');
     $fixture->addSegment('user', 'thekid');
     $this->assertEquals('/users/thekid', $fixture->getTarget());
+  }
+
+  #[@test]
+  public function segments_are_url_encoded() {
+    $fixture= new RestRequest('/users/{user}');
+    $fixture->addSegment('user', 'Timm Friebe');
+    $this->assertEquals('/users/Timm+Friebe', $fixture->getTarget());
   }
 
   #[@test]
@@ -282,7 +293,7 @@ class RestRequestTest extends TestCase {
   #[@test]
   public function noHeaders() {
     $fixture= new RestRequest();
-    $this->assertEquals(array(), $fixture->getHeaders());
+    $this->assertEquals([], $fixture->getHeaders());
   }
 
   #[@test]
@@ -290,7 +301,7 @@ class RestRequestTest extends TestCase {
     $fixture= new RestRequest();
     $fixture->addHeader('Accept', 'text/xml');
     $this->assertEquals(
-      array('Accept' => 'text/xml'), 
+      ['Accept' => 'text/xml'],
       $fixture->getHeaders()
     );
   }
@@ -300,7 +311,7 @@ class RestRequestTest extends TestCase {
     $fixture= new RestRequest();
     $fixture->addHeader(new Header('Accept', 'text/xml'));
     $this->assertEquals(
-      array('Accept' => 'text/xml'), 
+      ['Accept' => 'text/xml'],
       $fixture->getHeaders()
     );
   }
@@ -311,7 +322,7 @@ class RestRequestTest extends TestCase {
     $fixture->addHeader('Accept', 'text/xml');
     $fixture->addHeader('Referer', 'http://localhost');
     $this->assertEquals(
-      array('Accept' => 'text/xml', 'Referer' => 'http://localhost'), 
+      ['Accept' => 'text/xml', 'Referer' => 'http://localhost'],
       $fixture->getHeaders()
     );
   }
@@ -322,7 +333,7 @@ class RestRequestTest extends TestCase {
     $fixture->addHeader(new Header('Accept', 'text/xml'));
     $fixture->addHeader(new Header('Referer', 'http://localhost'));
     $this->assertEquals(
-      array('Accept' => 'text/xml', 'Referer' => 'http://localhost'), 
+      ['Accept' => 'text/xml', 'Referer' => 'http://localhost'],
       $fixture->getHeaders()
     );
   }
@@ -331,7 +342,7 @@ class RestRequestTest extends TestCase {
   public function headerListEmpty() {
     $fixture= new RestRequest('/issues');
     $this->assertEquals(
-      array(),
+      [],
       $fixture->headerList()
     );
   }
@@ -341,7 +352,7 @@ class RestRequestTest extends TestCase {
     $fixture= new RestRequest('/issues');
     $h= $fixture->addHeader(new Header('Accept', 'text/xml'));
     $this->assertEquals(
-      array($h),
+      [$h],
       $fixture->headerList()
     );
   }
@@ -364,7 +375,7 @@ class RestRequestTest extends TestCase {
     $fixture= new RestRequest('/issues');
     $fixture->addAccept('text/xml');
     $this->assertEquals(
-      array('Accept' => 'text/xml'), 
+      ['Accept' => 'text/xml'],
       $fixture->getHeaders()
     );
   }
@@ -375,7 +386,7 @@ class RestRequestTest extends TestCase {
     $fixture->addAccept('text/xml');
     $fixture->addAccept('text/json');
     $this->assertEquals(
-      array('Accept' => 'text/xml, text/json'), 
+      ['Accept' => 'text/xml, text/json'],
       $fixture->getHeaders()
     );
   }
@@ -386,7 +397,7 @@ class RestRequestTest extends TestCase {
     $fixture->addAccept('text/xml', '0.5');
     $fixture->addAccept('text/json', '0.8');
     $this->assertEquals(
-      array('Accept' => 'text/xml;q=0.5, text/json;q=0.8'), 
+      ['Accept' => 'text/xml;q=0.5, text/json;q=0.8'],
       $fixture->getHeaders()
     );
   }
@@ -396,7 +407,7 @@ class RestRequestTest extends TestCase {
     $this->assertEquals(
       "webservices.rest.RestRequest(GET /)@[\n".
       "]",
-      create(new RestRequest())->toString()
+      (new RestRequest())->toString()
     );
   }
 
@@ -405,7 +416,7 @@ class RestRequestTest extends TestCase {
     $this->assertEquals(
       "webservices.rest.RestRequest(GET /books)@[\n".
       "]",
-      create(new RestRequest('/books'))->toString()
+      (new RestRequest('/books'))->toString()
     );
   }
 
@@ -414,7 +425,7 @@ class RestRequestTest extends TestCase {
     $this->assertEquals(
       "webservices.rest.RestRequest(POST /books)@[\n".
       "]",
-      create(new RestRequest('/books', 'POST'))->toString()
+      (new RestRequest('/books', 'POST'))->toString()
     );
   }
 
@@ -424,7 +435,7 @@ class RestRequestTest extends TestCase {
       "webservices.rest.RestRequest(GET /)@[\n".
       "  Referer: \"http://localhost\"\n".
       "]",
-      create(new RestRequest())->withHeader('Referer', 'http://localhost')->toString()
+      (new RestRequest())->withHeader('Referer', 'http://localhost')->toString()
     );
   }
 
@@ -434,7 +445,7 @@ class RestRequestTest extends TestCase {
       "webservices.rest.RestRequest(GET /)@[\n".
       "  Accept: text/xml\n".
       "]",
-      create(new RestRequest())->withAccept('text/xml')->toString()
+      (new RestRequest())->withAccept('text/xml')->toString()
     );
   }
 
@@ -445,7 +456,7 @@ class RestRequestTest extends TestCase {
       "  Referer: \"http://localhost\"\n".
       "  Accept: text/xml\n".
       "]",
-      create(new RestRequest())->withHeader('Referer', 'http://localhost')->withAccept('text/xml')->toString()
+      (new RestRequest())->withHeader('Referer', 'http://localhost')->withAccept('text/xml')->toString()
     );
   }
 
