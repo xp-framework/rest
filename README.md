@@ -25,7 +25,6 @@ use webservices\rest\RestClient;
 use webservices\rest\RestRequest;
 use peer\http\HttpConstants;
 
-
 $client= new RestClient('http://api.example.com/');
 
 $request= (new RestRequest('/resource/{id}'))
