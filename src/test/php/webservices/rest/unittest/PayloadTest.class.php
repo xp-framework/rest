@@ -1,10 +1,7 @@
 <?php namespace webservices\rest\unittest;
 
-
-
 use unittest\TestCase;
 use webservices\rest\Payload;
-
 
 /**
  * Test payload class
@@ -13,145 +10,85 @@ use webservices\rest\Payload;
  */
 class PayloadTest extends TestCase {
 
-  /**
-   * Test constructor
-   * 
-   */
   #[@test]
   public function create() {
     new Payload();
   }
 
-  /**
-   * Test value
-   * 
-   */
   #[@test]
   public function value() {
-    $value= array('key' => 'value');
+    $value= ['key' => 'value'];
     $this->assertEquals($value, create(new Payload($value))->value);
   }
 
-  /**
-   * Test properties
-   * 
-   */
   #[@test]
   public function properties() {
-    $properties= array('key' => 'value');
+    $properties= ['key' => 'value'];
     $this->assertEquals($properties, create(new Payload(null, $properties))->properties);
   }
 
-  /**
-   * Test equals()
-   * 
-   */
   #[@test]
   public function null_payloads_are_equal() {
     $this->assertEquals(new Payload(null), new Payload(null));
   }
 
-  /**
-   * Test equals()
-   * 
-   */
   #[@test]
   public function null_and_object_payloads_are_equal() {
     $this->assertNotEquals(new Payload($this), new Payload(null));
   }
 
-  /**
-   * Test equals()
-   * 
-   */
   #[@test]
   public function object_payloads_are_equal() {
-    $this->assertEquals(new Payload(new \lang\types\String('a')), new Payload(new \lang\types\String('a')));
+    $this->assertEquals(new Payload($this), new Payload($this));
   }
 
-  /**
-   * Test equals()
-   * 
-   */
   #[@test]
   public function array_of_object_payloads_are_equal() {
-    $this->assertEquals(new Payload(array(new \lang\types\String('a'))), new Payload(array(new \lang\types\String('a'))));
+    $this->assertEquals(new Payload(array($this)), new Payload(array($this)));
   }
 
-  /**
-   * Test equals()
-   * 
-   */
   #[@test]
   public function identical_object_payloads_are_equal() {
     $this->assertEquals(new Payload($this), new Payload($this));
   }
 
-  /**
-   * Test equals()
-   * 
-   */
   #[@test]
   public function different_object_payloads_are_not_equal() {
     $this->assertNotEquals(new Payload($this), new Payload(new \lang\Object()));
   }
 
-  /**
-   * Test equals()
-   * 
-   */
   #[@test]
   public function primitive_payloads_are_equal() {
     $this->assertEquals(new Payload('test'), new Payload('test'));
   }
 
-  /**
-   * Test equals()
-   * 
-   */
   #[@test]
   public function different_primitive_payloads_are_not_equal() {
     $this->assertNotEquals(new Payload('test1'), new Payload('test2'));
   }
 
-  /**
-   * Test equals()
-   * 
-   */
   #[@test]
   public function map_payloads_are_equal() {
-    $this->assertEquals(new Payload(array('key' => 'value')), new Payload(array('key' => 'value')));
+    $this->assertEquals(new Payload(['key' => 'value']), new Payload(['key' => 'value']));
   }
 
-  /**
-   * Test equals()
-   * 
-   */
   #[@test]
   public function different_map_payloads_are_not_equal() {
-    $this->assertNotEquals(new Payload(array('key' => 'value')), new Payload(array('test' => 'yes')));
+    $this->assertNotEquals(new Payload(['key' => 'value']), new Payload(array('test' => 'yes')));
   }
 
-  /**
-   * Test equals()
-   *
-   */
   #[@test]
   public function properties_are_equal() {
     $this->assertEquals(
-      new Payload(null, array('key' => 'value')),
-      new Payload(null, array('key' => 'value'))
+      new Payload(null, ['key' => 'value']),
+      new Payload(null, ['key' => 'value'])
     );
   }
 
-  /**
-   * Test equals()
-   *
-   */
   #[@test]
   public function different_properties_are_not_equal() {
     $this->assertNotEquals(
-      new Payload(null, array('key' => 'value')),
+      new Payload(null, ['key' => 'value']),
       new Payload(null, array('test' => 'yes'))
     );
   }
