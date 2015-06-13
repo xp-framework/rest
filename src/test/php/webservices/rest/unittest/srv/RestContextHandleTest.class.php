@@ -10,6 +10,7 @@ use lang\IllegalStateException;
 use lang\FormatException;
 use lang\XPException;
 use lang\MethodNotImplementedException;
+use unittest\actions\RuntimeVersion;
 
 /**
  * Test RestContext::handle() 
@@ -103,7 +104,7 @@ class RestContextHandleTest extends \unittest\TestCase {
     );
   }
 
-  #[@test]
+  #[@test, @action(new RuntimeVersion('<7.0.0-dev'))]
   public function handle_string_class_in_parameters_and_return() {
     $handler= newinstance('lang.Object', array(), '{
       #[@webmethod(verb= "GET")]
