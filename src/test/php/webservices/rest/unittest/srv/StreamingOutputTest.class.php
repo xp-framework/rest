@@ -13,20 +13,20 @@ class StreamingOutputTest extends TestCase {
 
   #[@test]
   public function no_input_stream() {
-    $this->assertEquals(null, create(new StreamingOutput())->inputStream);
+    $this->assertEquals(null, (new StreamingOutput())->inputStream);
   }
 
   #[@test]
   public function input_stream_given() {
     $s= new MemoryInputStream('Test');
-    $this->assertEquals($s, create(new StreamingOutput($s))->inputStream);
+    $this->assertEquals($s, (new StreamingOutput($s))->inputStream);
   }
 
   #[@test]
   public function of_with_input_stream() {
     $s= new MemoryInputStream('Test');
     $this->assertEquals(
-      create(new StreamingOutput($s))
+      (new StreamingOutput($s))
         ->withMediaType('application/octet-stream')
         ->withContentLength(null)
         ->withLastModified(null)
@@ -46,7 +46,7 @@ class StreamingOutputTest extends TestCase {
       public function lastModified() { return 1364291580; }
     }');
     $this->assertEquals(
-      create(new StreamingOutput($f->getInputStream()))
+      (new StreamingOutput($f->getInputStream()))
         ->withMediaType('text/plain')
         ->withContentLength(6100)
         ->withLastModified(new \util\Date('2013-03-26 10:53:00'))
@@ -72,7 +72,7 @@ class StreamingOutputTest extends TestCase {
       public function getOutputStream() { return null; }
     }');
     $this->assertEquals(
-      create(new StreamingOutput($e->getInputStream()))
+      (new StreamingOutput($e->getInputStream()))
         ->withMediaType('text/plain')
         ->withContentLength(6100)
         ->withLastModified(new \util\Date('2013-03-26 10:53:00'))
@@ -83,11 +83,11 @@ class StreamingOutputTest extends TestCase {
 
   #[@test]
   public function default_status_code_is_200() {
-    $this->assertEquals(200, create(new StreamingOutput())->status);
+    $this->assertEquals(200, (new StreamingOutput())->status);
   }
 
   #[@test]
   public function status_code_can_be_changed() {
-    $this->assertEquals(304, create(new StreamingOutput())->withStatus(304)->status);
+    $this->assertEquals(304, (new StreamingOutput())->withStatus(304)->status);
   }
 }

@@ -22,7 +22,7 @@ class RestXmlDeserializer extends RestDeserializer {
    */
   public function deserialize($in) {
     $tree= new Tree();
-    create(new XMLParser())->withCallback($tree)->parse(new StreamInputSource($in));
+    (new XMLParser())->withCallback($tree)->parse(new StreamInputSource($in));
     return new RestXmlMap($tree->root);
   }
 }

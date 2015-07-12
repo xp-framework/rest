@@ -37,13 +37,13 @@ class StreamingOutput extends Output {
     if ($arg instanceof \io\streams\InputStream) {
       return new self($arg);
     } else if ($arg instanceof \io\File) {
-      return create(new self($arg->getInputStream()))
+      return (new self($arg->getInputStream()))
         ->withMediaType(MimeType::getByFileName($arg->getFileName()))
         ->withContentLength($arg->getSize())
         ->withLastModified(new Date($arg->lastModified()))
       ;
     } else if ($arg instanceof \io\collections\IOElement) {
-      return create(new self($arg->getInputStream()))
+      return (new self($arg->getInputStream()))
         ->withMediaType(MimeType::getByFileName($arg->getURI()))
         ->withContentLength($arg->getSize())
         ->withLastModified($arg->lastModified())

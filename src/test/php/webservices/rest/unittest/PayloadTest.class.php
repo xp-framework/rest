@@ -18,13 +18,13 @@ class PayloadTest extends TestCase {
   #[@test]
   public function value() {
     $value= ['key' => 'value'];
-    $this->assertEquals($value, create(new Payload($value))->value);
+    $this->assertEquals($value, (new Payload($value))->value);
   }
 
   #[@test]
   public function properties() {
     $properties= ['key' => 'value'];
-    $this->assertEquals($properties, create(new Payload(null, $properties))->properties);
+    $this->assertEquals($properties, (new Payload(null, $properties))->properties);
   }
 
   #[@test]
