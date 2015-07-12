@@ -3,6 +3,10 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 6.2.1 / 2015-07-12
+
+* Added forward compatibility with XP 6.4.0 - @thekid
+
 ## 6.2.0 / 2015-06-13
 
 * Added forward compatibility with PHP7 - @thekid
