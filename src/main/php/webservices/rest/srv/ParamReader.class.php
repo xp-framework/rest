@@ -78,7 +78,13 @@ abstract class ParamReader extends \lang\Enum {
    * @param   scriptlet.Request request
    */
   public function read($spec, $target, $request) {
-    if (is_array($spec)) {
+    if (isset($spec['use'])) {
+      if (isset($spec['names'])) {
+        return array_merge($this->read($spec['names'], $target, $request), $spec['use']);
+      } else {
+        return array_merge([$this->read(isset($spec['name']) ? $spec['name'] : null, $target, $request)], $spec['use']);
+      }
+    } else if (is_array($spec)) {
       $return= [];
       foreach ($spec as $name) {
         $return[$name]= $this->get($name, $target, $request);

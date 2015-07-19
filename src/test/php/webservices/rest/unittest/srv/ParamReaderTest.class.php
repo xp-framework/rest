@@ -75,4 +75,28 @@ class ParamReaderTest extends \unittest\TestCase {
   public function body() {
     $this->assertEquals('test', ParamReader::$BODY->read('name', ['input' => 'application/json'], $this->newRequest([], '"test"', [])));
   }
+
+  #[@test]
+  public function use_with_empty() {
+    $this->assertEquals(
+      [null, 'Test'],
+      ParamReader::$PARAM->read(['use' => ['Test']], [], $this->newRequest([], '', []))
+    );
+  }
+
+  #[@test]
+  public function use_with_name() {
+    $this->assertEquals(
+      ['test', 'Test'],
+      ParamReader::$PARAM->read(['name' => 't', 'use' => ['Test']], [], $this->newRequest(['t' => 'test'], '', []))
+    );
+  }
+
+  #[@test]
+  public function use_with_names() {
+    $this->assertEquals(
+      ['t1' => 'a', 't2' => 'b', 'c'],
+      ParamReader::$PARAM->read(['names' => ['t1', 't2'], 'use' => ['c']], [], $this->newRequest(['t1' => 'a', 't2' => 'b'], '', []))
+    );
+  }
 }
