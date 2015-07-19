@@ -203,6 +203,10 @@ class RestMarshalling extends \lang\Object {
     } else if ($type->equals(XPClass::forName('util.Date'))) {
       return $type->newInstance($data);
     } else if ($type instanceof XPClass) {
+      if ($type->isInstance($data)) {
+        return $data;
+      }
+
       foreach ($this->marshallers->keys() as $t) {
         if ($t->isAssignableFrom($type)) return $this->marshallers[$t]->unmarshal($type, $data, $this);
       }

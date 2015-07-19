@@ -450,6 +450,12 @@ class RestMarshallingTest extends \unittest\TestCase {
   }
 
   #[@test]
+  public function unmarshal_already_instance_of() {
+    $issue= new IssueWithField(1, 'test1');
+    $this->assertEquals($issue, $this->fixture->unmarshal($issue->getClass(), $issue));
+  }
+
+  #[@test]
   public function unmarshal_no_constructor() {
     $class= ClassLoader::defineClass('RestConversionTest_NoConstructor', 'webservices.rest.unittest.ConstructorFixture', [], '{}');
     $this->assertEquals(4711, $this->fixture->unmarshal($class, ['id' => 4711])->id);
