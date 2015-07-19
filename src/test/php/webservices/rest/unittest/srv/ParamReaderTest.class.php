@@ -55,6 +55,17 @@ class ParamReaderTest extends \unittest\TestCase {
     $this->assertEquals('test', ParamReader::$PARAM->read('name', [], $this->newRequest(['name' => 'test'], '', [])));
   }
 
+  #[@test, @values([
+  #  [['color' => 'green', 'price' => '$12.99']],
+  #  [['price' => '$12.99', 'color' => 'green']]
+  #])]
+  public function params($input) {
+    $this->assertEquals(
+      ['color' => 'green', 'price' => '$12.99'],
+      ParamReader::$PARAM->read(['color', 'price'], [], $this->newRequest($input, '', []))
+    );
+  }
+
   #[@test]
   public function path() {
     $this->assertEquals('test', ParamReader::$PATH->read('name', ['segments' => ['name' => 'test']], $this->newRequest([], '', [])));
