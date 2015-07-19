@@ -56,6 +56,33 @@ class ParamReaderTest extends \unittest\TestCase {
   }
 
   #[@test]
+  public function param_via_name() {
+    $this->assertEquals('test', ParamReader::$PARAM->read(['name' => 't'], [], $this->newRequest(['t' => 'test'], '', [])));
+  }
+
+  #[@test, @values([
+  #  [['color' => 'green', 'price' => '$12.99']],
+  #  [['price' => '$12.99', 'color' => 'green']]
+  #])]
+  public function params($input) {
+    $this->assertEquals(
+      ['color' => 'green', 'price' => '$12.99'],
+      ParamReader::$PARAM->read(['color', 'price'], [], $this->newRequest($input, '', []))
+    );
+  }
+
+  #[@test, @values([
+  #  [['color' => 'green', 'price' => '$12.99']],
+  #  [['price' => '$12.99', 'color' => 'green']]
+  #])]
+  public function params_via_names($input) {
+    $this->assertEquals(
+      ['color' => 'green', 'price' => '$12.99'],
+      ParamReader::$PARAM->read(['names' => ['color', 'price']], [], $this->newRequest($input, '', []))
+    );
+  }
+
+  #[@test]
   public function path() {
     $this->assertEquals('test', ParamReader::$PATH->read('name', ['segments' => ['name' => 'test']], $this->newRequest([], '', [])));
   }
@@ -69,5 +96,29 @@ class ParamReaderTest extends \unittest\TestCase {
   public function request() {
     $request= $this->newRequest([], '"test"', []);
     $this->assertEquals($request, ParamReader::$REQUEST->read(null, [], $request));
+  }
+  
+  #[@test]
+  public function use_with_empty() {
+    $this->assertEquals(
+      [null, 'Test'],
+      ParamReader::$PARAM->read(['use' => ['Test']], [], $this->newRequest([], '', []))
+    );
+  }
+
+  #[@test]
+  public function use_with_name() {
+    $this->assertEquals(
+      ['test', 'Test'],
+      ParamReader::$PARAM->read(['name' => 't', 'use' => ['Test']], [], $this->newRequest(['t' => 'test'], '', []))
+    );
+  }
+
+  #[@test]
+  public function use_with_names() {
+    $this->assertEquals(
+      ['t1' => 'a', 't2' => 'b', 'c'],
+      ParamReader::$PARAM->read(['names' => ['t1', 't2'], 'use' => ['c']], [], $this->newRequest(['t1' => 'a', 't2' => 'b'], '', []))
+    );
   }
 }
