@@ -3,6 +3,7 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Merged xp-framework/rest#3: Client-side cookie accessors - @thekid
 * Merged xp-framework/rest#5: Request source - @thekid
 * Merged xp-framework/rest#6: Support valueOf() with multiple parameters
   (@thekid)
