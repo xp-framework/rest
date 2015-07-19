@@ -84,6 +84,14 @@ abstract class ParamReader extends \lang\Enum {
       } else {
         return array_merge([$this->read(isset($spec['name']) ? $spec['name'] : null, $target, $request)], $spec['use']);
       }
+    } else if (isset($spec['names'])) {
+      $return= [];
+      foreach ($spec['names'] as $name) {
+        $return[$name]= $this->get($name, $target, $request);
+      }
+      return $return;
+    } else if (isset($spec['name'])) {
+      return $this->get($spec['name'], $target, $request);
     } else if (is_array($spec)) {
       $return= [];
       foreach ($spec as $name) {
