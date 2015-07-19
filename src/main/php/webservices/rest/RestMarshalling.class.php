@@ -6,7 +6,7 @@ use lang\Primitive;
 use lang\reflect\Modifiers;
 
 /**
- * Marshalling takes care of converting the data to a simple output 
+ * Marshalling takes care of converting the value to a simple output 
  * format consisting solely of primitives, arrays and maps; and vice
  * versa.
  *
@@ -103,75 +103,66 @@ class RestMarshalling extends \lang\Object {
   }
 
   /**
-   * Convert data
+   * Convert value
    *
-   * @param   var data
+   * @param   var value
    * @return  var
    */
-  public function marshal($data) {
-    if ($data instanceof \util\Date) {
-      return $data->toString('c');    // ISO 8601, e.g. "2004-02-12T15:19:21+00:00"
-    } else if ($data instanceof \Traversable) {
-      return new Iteration($data, [$this, 'marshal']);
-    } else if ($data instanceof \lang\Generic) {
+  public function marshal($value) {
+    if ($value instanceof \util\Date) {
+      return $value->toString('c');    // ISO 8601, e.g. "2004-02-12T15:19:21+00:00"
+    } else if ($value instanceof \Traversable) {
+      return new Iteration($value, [$this, 'marshal']);
+    } else if ($value instanceof \lang\Generic) {
       foreach ($this->marshallers->keys() as $t) {      // Specific class marshalling
-        if ($t->isInstance($data)) return $this->marshallers[$t]->marshal($data, $this);
+        if ($t->isInstance($value)) return $this->marshallers[$t]->marshal($value, $this);
       }
 
-      $class= $data->getClass();
+      $class= $value->getClass();
       $r= [];
       foreach ($class->getFields() as $field) {
         $m= $field->getModifiers();
         if ($m & MODIFIER_STATIC) {
           continue;
         } else if ($field->getModifiers() & MODIFIER_PUBLIC) {
-          $r[$field->getName()]= $this->marshal($field->get($data));
+          $r[$field->getName()]= $this->marshal($field->get($value));
         } else {
           foreach ($this->variantsOf($field->getName()) as $name) {
             if ($class->hasMethod($m= 'get'.$name)) {
-              $r[$field->getName()]= $this->marshal($class->getMethod($m)->invoke($data));
+              $r[$field->getName()]= $this->marshal($class->getMethod($m)->invoke($value));
               continue 2;
             }
           }
         }
       }
       return $r;
-    } else if (is_array($data)) {
+    } else if (is_array($value)) {
       $r= [];
-      foreach ($data as $key => $val) {
+      foreach ($value as $key => $val) {
         $r[$key]= $this->marshal($val);
       }
       return $r;
     }
-    return $data;
+    return $value;
   }
 
   /**
-   * Returns the first element of a given traversable data structure
-   * or the data structure itself, or NULL if the structure has more
-   * than one element.
+   * Returns the given value structure if iterable, or an array
+   * containing the structure.
    *
    * @param  var $struct
-   * @param  var[]
+   * @param  var
    */
-  protected function keyOf($struct) {
+  protected function iterableOf($struct) {
     if (is_array($struct) || $struct instanceof \Traversable) {
-      $return= null;
-      foreach ($struct as $element) {
-        if (null === $return) {
-          $return= [$element];
-          continue;
-        }
-        return null;    // Found a second element, return NULL
-      }
-      return $return;   // Will be NULL if we have no elements
+      return $struct;
     }
     return [$struct];
   }
 
   /**
-   * Returns the first element of a given traversable data structure
-   * or the data structure itself
+   * Returns the first element of a given traversable value structure
+   * or the value structure itself
    *
    * @param  var $struct
    * @param  var
@@ -184,50 +175,62 @@ class RestMarshalling extends \lang\Object {
     }
     return $struct;
   }
+
+  /**
+   * Returns a parameter's type or NULL if the given parameter does not exist
+   *
+   * @param  lang.reflect.Parameter $param
+   * @return lang.Type
+   */
+  private function paramType($param) {
+    return $param ? ($param->getTypeRestriction() ?: $param->getType()) : null;
+  }
   
   /**
-   * Convert data based on type
+   * Convert value based on type
    *
    * @param   lang.Type type
-   * @param   [:var] data
+   * @param   [:var] value
    * @return  var
    */
-  public function unmarshal($type, $data) {
+  public function unmarshal($type, $value) {
     if (null === $type || $type->equals(Type::$VAR)) {  // No conversion
-      return $data;
-    } else if (null === $data) {                        // Valid for any type
+      return $value;
+    } else if (null === $value) {                        // Valid for any type
       return null;
+    } else if ($type instanceof Primitive) {
+      return $type->cast($this->valueOf($value));
     } else if ($type->equals(XPClass::forName('util.Date'))) {
-      return $type->newInstance($data);
+      return $type->newInstance($value);
     } else if ($type instanceof XPClass) {
-      foreach ($this->marshallers->keys() as $t) {
-        if ($t->isAssignableFrom($type)) return $this->marshallers[$t]->unmarshal($type, $data, $this);
+      if ($type->isInstance($value)) {
+        return $value;
       }
 
-      // Check if a public static one-arg valueOf() method exists
-      // E.g.: Assuming the target type has a valueOf(string $id) and the
-      // given payload data is either a map or an array with one element, or
-      // a primitive, then pass that as value. Examples: { "id" : "4711" }, 
-      // [ "4711" ] or "4711" - in all cases pass just "4711".
+      foreach ($this->marshallers->keys() as $t) {
+        if ($t->isAssignableFrom($type)) return $this->marshallers[$t]->unmarshal($type, $value, $this);
+      }
+
+      // Check if a public static valueOf() method exists
       if ($type->hasMethod('valueOf')) {
-        $m= $type->getMethod('valueOf');
-        if (Modifiers::isStatic($m->getModifiers()) && Modifiers::isPublic($m->getModifiers()) && 1 === $m->numParameters()) {
-          if (null !== ($arg= $this->keyOf($data))) {
-            return $m->invoke(null, [$this->unmarshal($m->getParameter(0)->getType(), $arg[0])]);
+        $valueOf= $type->getMethod('valueOf');
+        if (Modifiers::isStatic($valueOf->getModifiers()) && Modifiers::isPublic($valueOf->getModifiers())) {
+          if (1 === $valueOf->numParameters()) {
+            return $valueOf->invoke(null, [$this->unmarshal($this->paramType($valueOf->getParameter(0)), $value)]);
+          } else {
+            $param= 0;
+            $args= [];
+            foreach ($this->iterableOf($value) as $value) {
+              $args[]= $this->unmarshal($this->paramType($valueOf->getParameter($param++)), $value);
+            }
+            return $valueOf->invoke(null, $args);
           }
         }
       }
 
       // Generic approach
       $return= $type->newInstance();
-      if (null === $data) {
-        $iter= [];
-      } else if (is_array($data) || $data instanceof \Traversable) {
-        $iter= $data;
-      } else {
-        $iter= [$data];
-      }
-      foreach ($iter as $name => $value) {
+      foreach ($this->iterableOf($value) as $name => $value) {
         foreach ($this->variantsOf($name) as $variant) {
           if ($type->hasField($variant)) {
             $field= $type->getField($variant);
@@ -259,24 +262,22 @@ class RestMarshalling extends \lang\Object {
       return $return;
     } else if ($type instanceof \lang\ArrayType) {
       $return= [];
-      foreach ($data as $element) {
+      foreach ($this->iterableOf($value) as $element) {
         $return[]= $this->unmarshal($type->componentType(), $element);
       }
       return $return;
     } else if ($type instanceof \lang\MapType) {
       $return= [];
-      foreach ($data as $key => $element) {
+      foreach ($this->iterableOf($value) as $key => $element) {
         $return[$key]= $this->unmarshal($type->componentType(), $element);
       }
       return $return;
-    } else if ($type->equals(Primitive::$STRING)) {
-      return (string)$this->valueOf($data);
-    } else if ($type->equals(Primitive::$INT)) {
-      return (int)$this->valueOf($data);
-    } else if ($type->equals(Primitive::$DOUBLE)) {
-      return (double)$this->valueOf($data);
-    } else if ($type->equals(Primitive::$BOOL)) {
-      return (bool)$this->valueOf($data);
+    } else if ($type->equals(Type::$ARRAY)) {
+      $return= [];
+      foreach ($this->iterableOf($value) as $key => $element) {
+        $return[$key]= $element;
+      }
+      return $return;
     } else {
       throw new \lang\FormatException('Cannot convert to '.\xp::stringOf($type));
     }

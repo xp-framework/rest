@@ -450,57 +450,97 @@ class RestMarshallingTest extends \unittest\TestCase {
   }
 
   #[@test]
-  public function unmarshal_no_constructor() {
-    $class= ClassLoader::defineClass('RestConversionTest_NoConstructor', 'webservices.rest.unittest.ConstructorFixture', [], '{
-    }');
-    $c= $class->newInstance();
-    $c->id= 4711;
-    $this->assertEquals(
-      $c,
-      $this->fixture->unmarshal($class, ['id' => 4711])
-    );
+  public function unmarshal_already_instance_of() {
+    $issue= new IssueWithField(1, 'test1');
+    $this->assertEquals($issue, $this->fixture->unmarshal($issue->getClass(), $issue));
   }
 
   #[@test]
-  public function unmarshal_static_valueof_method() {
-    $class= ClassLoader::defineClass('RestConversionTest_StaticValueOf', 'webservices.rest.unittest.ConstructorFixture', [], '{
-      protected function __construct($id) { $this->id= (int)$id; }
+  public function unmarshal_no_constructor() {
+    $class= ClassLoader::defineClass('RestConversionTest_NoConstructor', 'webservices.rest.unittest.ConstructorFixture', [], '{}');
+    $this->assertEquals(4711, $this->fixture->unmarshal($class, ['id' => 4711])->id);
+  }
+
+  #[@test, @values([
+  #  [4711],
+  #  [[4711]],
+  #  [[4711, 0815]],
+  #  [['id' => 4711]],
+  #  [['id' => 4711, 'name' => 'Test']]
+  #])]
+  public function unmarshal_static_valueof_method($input) {
+    $class= ClassLoader::defineClass('RestConversionTest_StaticValueOf', 'lang.Object', [], '{
+      public $passed;
+      public static function valueOf($args) { $self= new self(); $self->passed= $args; return $self; }
+    }');
+    $this->assertEquals($input, $this->fixture->unmarshal($class, $input)->passed);
+  }
+
+  #[@test, @values([
+  #  [4711],
+  #  [[4711]],
+  #  [[4711, 0815]],
+  #  [['id' => 4711]],
+  #  [['id' => 4711, 'name' => 'Test']]
+  #])]
+  public function unmarshal_static_valueof_method_with_array_param($input) {
+    $class= ClassLoader::defineClass('RestConversionTest_StaticValueOfWithArrayParam', 'lang.Object', [], '{
+      public $passed;
+      public static function valueOf(array $args) { $self= new self(); $self->passed= $args; return $self; }
+    }');
+    $this->assertEquals((array)$input, $this->fixture->unmarshal($class, $input)->passed);
+  }
+
+  #[@test, @values([
+  #  [4711],
+  #  [[4711]],
+  #  [[4711, 0815]],
+  #  [['id' => 4711]],
+  #  [['id' => 4711, 'name' => 'Test']]
+  #])]
+  public function unmarshal_static_valueof_method_with_int_param($input) {
+    $class= ClassLoader::defineClass('RestConversionTest_StaticValueOfWithIntParam', 'webservices.rest.unittest.ConstructorFixture', [], '{
+      protected function __construct($id) { $this->id= $id; }
+      /** @param int $id */
       public static function valueOf($id) { return new self($id); }
     }');
-    $this->assertEquals(
-      $class->getMethod('valueOf')->invoke(null, [4711]),
-      $this->fixture->unmarshal($class, ['id' => 4711])
-    );
+    $this->assertEquals(4711, $this->fixture->unmarshal($class, $input)->id);
+  }
+
+  #[@test, @values([
+  #  [[4711, 'Test']],
+  #  [['id' => 4711, 'name' => 'Test']]
+  #])]
+  public function unmarshal_static_valueof_method_with_multiple_params($input) {
+    $class= ClassLoader::defineClass('RestConversionTest_StaticValueOfWithMultipleParams', 'lang.Object', [], '{
+      public $passed;
+      public static function valueOf($id, $name) { $self= new self(); $self->passed= [$id, $name]; return $self; }
+    }');
+    $this->assertEquals([4711, 'Test'], $this->fixture->unmarshal($class, $input)->passed);
   }
 
   #[@test]
   public function unmarshal_public_valueof_instance_method_not_invoked() {
     $class= ClassLoader::defineClass('RestConversionTest_PublicValueOf', 'webservices.rest.unittest.ConstructorFixture', [], '{
-      public function valueOf($id) { throw new IllegalStateException("Should not reach this point!"); }
+      public function valueOf($id) { throw new \lang\IllegalStateException("Should not reach this point!"); }
     }');
-    $c= $class->newInstance();
-    $c->id= 4711;
-    $this->assertEquals($c, $this->fixture->unmarshal($class, ['id' => 4711]));
+    $this->assertEquals(4711, $this->fixture->unmarshal($class, ['id' => 4711])->id);
   }
 
   #[@test]
   public function unmarshal_private_valueof_instance_method_not_invoked() {
     $class= ClassLoader::defineClass('RestConversionTest_PrivateValueOf', 'webservices.rest.unittest.ConstructorFixture', [], '{
-      private static function valueOf($id) { throw new IllegalStateException("Should not reach this point!"); }
+      private static function valueOf($id) { throw new \lang\IllegalStateException("Should not reach this point!"); }
     }');
-    $c= $class->newInstance();
-    $c->id= 4711;
-    $this->assertEquals($c, $this->fixture->unmarshal($class, ['id' => 4711]));
+    $this->assertEquals(4711, $this->fixture->unmarshal($class, ['id' => 4711])->id);
   }
 
   #[@test]
   public function unmarshal_protected_valueof_instance_method_not_invoked() {
     $class= ClassLoader::defineClass('RestConversionTest_ProtectedValueOf', 'webservices.rest.unittest.ConstructorFixture', [], '{
-      protected static function valueOf($id) { throw new IllegalStateException("Should not reach this point!"); }
+      protected static function valueOf($id) { throw new \lang\IllegalStateException("Should not reach this point!"); }
     }');
-    $c= $class->newInstance();
-    $c->id= 4711;
-    $this->assertEquals($c, $this->fixture->unmarshal($class, ['id' => 4711]));
+    $this->assertEquals(4711, $this->fixture->unmarshal($class, ['id' => 4711])->id);
   }
 
   #[@test]
@@ -516,25 +556,7 @@ class RestMarshallingTest extends \unittest\TestCase {
     $class= ClassLoader::defineClass('RestConversionTest_ConstructorVsSetter', 'webservices.rest.unittest.ConstructorFixture', [], '{
       public $name;
       public function __construct() { 
-        if (func_num_args() > 0) throw new IllegalStateException("Should not reach this point!");
-      }
-      public function withId($id) { $this->id= $id; return $this; }
-      public function withName($name) { $this->name= $name; return $this; }
-      public function equals($cmp) { return parent::equals($cmp) && $this->name === $cmp->name; }
-      public function toString() { return parent::toString()."(name=\'".$this->name."\')"; }
-    }');
-    $this->assertEquals(
-      $class->newInstance()->withId(4711)->withName('Test'),
-      $this->fixture->unmarshal($class, ['id' => 4711, 'name' => 'Test'])
-    );
-  }
-
-  #[@test]
-  public function unmarshal_valueof_not_used_with_complex_payload() {
-    $class= ClassLoader::defineClass('RestConversionTest_ValueOfVsSetter', 'webservices.rest.unittest.ConstructorFixture', [], '{
-      public $name;
-      public static function valueOf($id) { 
-        throw new IllegalStateException("Should not reach this point!");
+        if (func_num_args() > 0) throw new \lang\IllegalStateException("Should not reach this point!");
       }
       public function withId($id) { $this->id= $id; return $this; }
       public function withName($name) { $this->name= $name; return $this; }
