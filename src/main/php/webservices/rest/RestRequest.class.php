@@ -1,7 +1,7 @@
 <?php namespace webservices\rest;
 
 use peer\http\HttpConstants;
-
+use peer\Header;
 
 /**
  * A REST request
@@ -133,6 +133,29 @@ class RestRequest extends \lang\Object {
   }
 
   /**
+   * Adds a cookie
+   *
+   * @param   string $name cookie name
+   * @param   string $value default ''
+   * @return  void
+   */
+  public function addCookie($name, $value= '') {
+    $this->headers[]= new Header('Cookie', $name.'='.$value);
+  }
+
+  /**
+   * Adds a cookie
+   *
+   * @param   string $name cookie name
+   * @param   string $value default ''
+   * @return  self
+   */
+  public function withCookie($name, $value= '') {
+    $this->addCookie($name, $value);
+    return $this;
+  }
+
+  /**
    * Sets payload
    *
    * @param   var payload
@@ -258,10 +281,10 @@ class RestRequest extends \lang\Object {
    * @return  peer.Header
    */
   public function addHeader($arg, $value= null) {
-    if ($arg instanceof \peer\Header) {
+    if ($arg instanceof Header) {
       $h= $arg;
     } else {
-      $h= new \peer\Header($arg, $value);
+      $h= new Header($arg, $value);
     }
     $this->headers[]= $h;
     return $h;
@@ -366,8 +389,8 @@ class RestRequest extends \lang\Object {
   public function headerList() {
     return array_merge(
       $this->headers,
-      $this->contentType ? array(new \peer\Header('Content-Type', $this->contentType)) : array(),
-      $this->accept ? array(new \peer\Header('Accept', implode(', ', $this->accept))) : array()
+      $this->contentType ? array(new Header('Content-Type', $this->contentType)) : array(),
+      $this->accept ? array(new Header('Accept', implode(', ', $this->accept))) : array()
     );
   }
 

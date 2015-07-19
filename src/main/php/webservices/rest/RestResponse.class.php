@@ -73,9 +73,25 @@ class RestResponse extends \lang\Object {
    * @return  [:var]
    */
   public function headers() {
-    $r= array();
+    $r= [];
     foreach ($this->response->headers() as $key => $values) {
       $r[$key]= sizeof($values) > 1 ? $values : $values[0];
+    }
+    return $r;
+  }
+
+  /**
+   * Get headers
+   *
+   * @return  [:var]
+   */
+  public function cookies() {
+    if (null === ($header= $this->response->header('Set-Cookie'))) return [];
+
+    $r= [];
+    foreach ($header as $cookie) {
+      sscanf($cookie, "%[^=]=%[^\r]", $name, $content);
+      $r[$name]= $content;
     }
     return $r;
   }
@@ -89,8 +105,8 @@ class RestResponse extends \lang\Object {
   public function header($name) {
     if (null === ($values= $this->response->header($name))) return null;  // Not found
     return sizeof($values) > 1 ? $values : $values[0];
- }
-  
+  }
+
   /**
    * Copy data
    *

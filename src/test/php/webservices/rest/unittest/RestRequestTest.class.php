@@ -459,4 +459,23 @@ class RestRequestTest extends TestCase {
       (new RestRequest())->withHeader('Referer', 'http://localhost')->withAccept('text/xml')->toString()
     );
   }
+
+  #[@test]
+  public function addCookie() {
+    $fixture= new RestRequest();
+    $fixture->addCookie('name', 'value');
+    $this->assertEquals(
+      [new Header('Cookie', 'name=value')],
+      $fixture->headerList()
+    );
+  }
+
+  #[@test]
+  public function withCookies() {
+    $fixture= (new RestRequest())->withCookie('one', '1')->withCookie('two', '2');
+    $this->assertEquals(
+      [new Header('Cookie', 'one=1'), new Header('Cookie', 'two=2')],
+      $fixture->headerList()
+    );
+  }
 }
