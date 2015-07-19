@@ -5,6 +5,8 @@ use webservices\rest\RestDeserializer;
 
 /**
  * Reads request parameters
+ *
+ * @test  xp://webservices.rest.unittest.srv.ParamReaderTest
  */
 abstract class ParamReader extends \lang\Enum {
   protected static $sources= array();
