@@ -3,6 +3,9 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Merged xp-framework/rest#6: Support valueOf() with multiple parameters
+  (@thekid)
+
 ## 6.2.1 / 2015-07-12
 
 * Added forward compatibility with XP 6.4.0 - @thekid
