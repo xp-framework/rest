@@ -35,7 +35,7 @@ class ParamReaderTest extends \unittest\TestCase {
     return $r;
   }
 
-  #[@test, @values(['cookie', 'header', 'param', 'path', 'body'])]
+  #[@test, @values(['cookie', 'header', 'param', 'path', 'body', 'request'])]
   public function can_create($name) {
     ParamReader::forName($name);
   }
@@ -92,6 +92,12 @@ class ParamReaderTest extends \unittest\TestCase {
     $this->assertEquals('test', ParamReader::$BODY->read('name', ['input' => 'application/json'], $this->newRequest([], '"test"', [])));
   }
 
+  #[@test]
+  public function request() {
+    $request= $this->newRequest([], '"test"', []);
+    $this->assertEquals($request, ParamReader::$REQUEST->read(null, [], $request));
+  }
+  
   #[@test]
   public function use_with_empty() {
     $this->assertEquals(

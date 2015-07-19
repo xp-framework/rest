@@ -11,7 +11,7 @@ use lang\IllegalArgumentException;
  */
 abstract class ParamReader extends \lang\Enum {
   private static $sources= [];
-  public static $COOKIE, $HEADER, $PARAM, $PATH, $BODY;
+  public static $COOKIE, $HEADER, $PARAM, $PATH, $BODY, $REQUEST;
 
   static function __static() {
     self::$sources['cookie']= self::$COOKIE= newinstance(__CLASS__, [1, 'cookie'], '{
@@ -43,6 +43,12 @@ abstract class ParamReader extends \lang\Enum {
       static function __static() { }
       protected function get($name, $target, $request) {
         return \webservices\rest\RestFormat::forMediaType($target["input"])->read($request->getInputStream(), \lang\Type::$VAR); 
+      }
+    }');
+    self::$sources['request']= self::$REQUEST= newinstance(__CLASS__, [6, 'request'], '{
+      static function __static() { }
+      protected function get($name, $target, $request) {
+        return $request;
       }
     }');
   }
