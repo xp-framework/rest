@@ -2,6 +2,7 @@
 
 use webservices\rest\Payload;
 use webservices\rest\RestFormat;
+use webservices\rest\Links;
 
 /**
  * The Response class can be used to control the HTTP status code and headers
@@ -128,6 +129,37 @@ class Response extends Output {
     } else {
       $self->payload= new Payload($message);
       return $self;
+    }
+  }
+
+  /**
+   * Creates a new paginated response
+   *
+   * @param  webservices.rest.srv.Pagination $pagination
+   * @param  var $iterable
+   * @return self
+   */
+  public static function paginated($pagination, $iterable) {
+    if ($iterable instanceof \Traversable) {
+      $elements= [];
+      foreach ($iterable as $element) {
+        $elements[]= $element;
+      }
+    } else {
+      $elements= $iterable;
+    }
+
+    if (sizeof($elements) <= $pagination->limit()) {
+      $header= new Links(['prev' => $pagination->prev()]);
+    } else {
+      $header= new Links(['prev' => $pagination->prev(), 'next' => $pagination->next()]);
+      array_pop($elements);
+    }
+
+    if ($header->present()) {
+      return self::ok()->withHeader('Link', $header)->withPayload($elements);
+    } else {
+      return self::ok()->withPayload($elements);
     }
   }
 
