@@ -5,12 +5,10 @@ use webservices\rest\RestDeserializer;
 
 /**
  * Reads request parameters
- *
- * @test  xp://webservices.rest.unittest.srv.ParamReaderTest
  */
 abstract class ParamReader extends \lang\Enum {
   protected static $sources= array();
-  public static $COOKIE, $HEADER, $PARAM, $PATH, $BODY;
+  public static $COOKIE, $HEADER, $PARAM, $PATH, $BODY, $REQUEST;
 
   static function __static() {
     self::$sources['cookie']= self::$COOKIE= newinstance(__CLASS__, array(1, 'cookie'), '{
@@ -42,6 +40,12 @@ abstract class ParamReader extends \lang\Enum {
       static function __static() { }
       public function read($name, $target, $request) {
         return \webservices\rest\RestFormat::forMediaType($target["input"])->read($request->getInputStream(), \lang\Type::$VAR); 
+      }
+    }');
+    self::$sources['request']= self::$REQUEST= newinstance(__CLASS__, array(6, 'request'), '{
+      static function __static() { }
+      public function read($name, $target, $request) {
+        return $request;
       }
     }');
   }
