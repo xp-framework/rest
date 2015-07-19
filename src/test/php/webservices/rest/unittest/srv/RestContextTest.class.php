@@ -63,7 +63,7 @@ class RestContextTest extends TestCase {
   protected function newRequest($params= array(), $payload= null, $headers= array()) {
     $r= newinstance('scriptlet.HttpScriptletRequest', array($payload), '{
       public function __construct($payload) {
-        if (NULL !== $payload) {
+        if (null !== $payload) {
           $this->inputStream= new \io\streams\MemoryInputStream($payload);
         }
       }

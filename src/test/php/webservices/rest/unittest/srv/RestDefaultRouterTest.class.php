@@ -57,10 +57,6 @@ class RestDefaultRouterTest extends TestCase {
     return self::$package->loadClass($class)->getMethod($method);
   }
 
-  /**
-   * Test targetsFor()
-   * 
-   */
   #[@test]
   public function greet_default() {
     $this->assertEquals(
@@ -79,10 +75,6 @@ class RestDefaultRouterTest extends TestCase {
     );
   }
 
-  /**
-   * Test targetsFor()
-   * 
-   */
   #[@test]
   public function greet_custom() {
     $this->assertEquals(
@@ -98,10 +90,6 @@ class RestDefaultRouterTest extends TestCase {
     );
   }
 
-  /**
-   * Test targetsFor()
-   *
-   */
   #[@test]
   public function greet_post() {
     $this->assertEquals(
@@ -117,10 +105,6 @@ class RestDefaultRouterTest extends TestCase {
     );
   }
 
-  /**
-   * Test targetsFor()
-   *
-   */
   #[@test]
   public function hello_post() {
     $this->assertEquals(
@@ -146,10 +130,6 @@ class RestDefaultRouterTest extends TestCase {
     );
   }
 
-  /**
-   * Test targetsFor()
-   *
-   */
   #[@test]
   public function no_say_route() {
     $this->assertEquals(
@@ -158,10 +138,6 @@ class RestDefaultRouterTest extends TestCase {
     );
   }
 
-  /**
-   * Test targetsFor()
-   *
-   */
   #[@test]
   public function no_slash_route() {
     $this->assertEquals(
@@ -170,10 +146,6 @@ class RestDefaultRouterTest extends TestCase {
     );
   }
 
-  /**
-   * Test targetsFor()
-   *
-   */
   #[@test]
   public function implicit_path() {
     $this->assertEquals(

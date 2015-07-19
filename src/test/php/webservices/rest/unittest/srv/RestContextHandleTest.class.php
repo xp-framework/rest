@@ -84,7 +84,7 @@ class RestContextHandleTest extends \unittest\TestCase {
   public function null_return() {
     $handler= newinstance('lang.Object', array(), '{
       #[@webmethod(verb= "GET")]
-      public function fixture() { return NULL; }
+      public function fixture() { return null; }
     }');
     $this->assertEquals(
       Response::status(200)->withPayload(null),
