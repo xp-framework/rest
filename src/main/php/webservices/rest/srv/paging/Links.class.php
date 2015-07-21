@@ -1,4 +1,4 @@
-<?php namespace webservices\rest;
+<?php namespace webservices\rest\srv\paging;
 
 use peer\URL;
 

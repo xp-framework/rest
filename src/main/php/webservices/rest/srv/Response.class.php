@@ -135,31 +135,19 @@ class Response extends Output {
   /**
    * Creates a new paginated response
    *
-   * @param  webservices.rest.srv.Pagination $pagination
+   * @param  webservices.rest.srv.paging.Pagination $pagination
    * @param  var $iterable
    * @return self
    */
-  public static function paginated($pagination, $iterable) {
+  public static function paginated($pagination, $iterable, $status= 200) {
     if ($iterable instanceof \Traversable) {
       $elements= [];
       foreach ($iterable as $element) {
         $elements[]= $element;
       }
+      return $pagination->paginate(self::status($status), $elements);
     } else {
-      $elements= $iterable;
-    }
-
-    if (sizeof($elements) <= $pagination->limit()) {
-      $header= new Links(['prev' => $pagination->prev()]);
-    } else {
-      $header= new Links(['prev' => $pagination->prev(), 'next' => $pagination->next()]);
-      array_pop($elements);
-    }
-
-    if ($header->present()) {
-      return self::ok()->withHeader('Link', $header)->withPayload($elements);
-    } else {
-      return self::ok()->withPayload($elements);
+      return $pagination->paginate(self::status($status), $iterable);
     }
   }
 
