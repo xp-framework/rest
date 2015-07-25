@@ -69,7 +69,7 @@ class UrlParameters extends \lang\Object implements Behavior {
    */
   public function paginate($request, $response, $last) {
     $page= $this->page($request);
-    $header= new Links([
+    $header= new LinkHeader([
       'prev' => $page > 1 ? $this->urlWithPage($request, $page - 1) : null,
       'next' => $last ? null : $this->urlWithPage($request, $page + 1)
     ]);

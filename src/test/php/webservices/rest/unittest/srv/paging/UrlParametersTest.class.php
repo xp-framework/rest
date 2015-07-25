@@ -3,7 +3,7 @@
 use peer\URL;
 use webservices\rest\srv\Response;
 use webservices\rest\srv\paging\UrlParameters;
-use webservices\rest\srv\paging\Links;
+use webservices\rest\srv\paging\LinkHeader;
 use scriptlet\HttpScriptletRequest;
 
 class UrlParametersTest extends \unittest\TestCase {
@@ -72,7 +72,7 @@ class UrlParametersTest extends \unittest\TestCase {
   #[@test]
   public function next_header_on_first_page() {
     $this->assertEquals(
-      ['Link' => new Links(['next' => self::BASE_URL.'?page=2'])],
+      ['Link' => new LinkHeader(['next' => self::BASE_URL.'?page=2'])],
       $this->fixture->paginate($this->newRequest('?page=1'), Response::ok(), false)->headers
     );
   }
@@ -80,7 +80,7 @@ class UrlParametersTest extends \unittest\TestCase {
   #[@test]
   public function next_and_prev_header_on_second_page() {
     $this->assertEquals(
-      ['Link' => new Links(['prev' => self::BASE_URL.'?page=1', 'next' => self::BASE_URL.'?page=3'])],
+      ['Link' => new LinkHeader(['prev' => self::BASE_URL.'?page=1', 'next' => self::BASE_URL.'?page=3'])],
       $this->fixture->paginate($this->newRequest('?page=2'), Response::ok(), false)->headers
     );
   }
@@ -88,7 +88,7 @@ class UrlParametersTest extends \unittest\TestCase {
   #[@test]
   public function prev_header_on_last_page() {
     $this->assertEquals(
-      ['Link' => new Links(['prev' => self::BASE_URL.'?page=1'])],
+      ['Link' => new LinkHeader(['prev' => self::BASE_URL.'?page=1'])],
       $this->fixture->paginate($this->newRequest('?page=2'), Response::ok(), true)->headers
     );
   }

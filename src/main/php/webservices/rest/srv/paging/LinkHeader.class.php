@@ -3,7 +3,12 @@
 use peer\URL;
 use util\Objects;
 
-class Links extends \lang\Object {
+/**
+ * Wraps a "Link" header
+ *
+ * @see   http://tools.ietf.org/html/rfc5988#page-6
+ */
+class LinkHeader extends \lang\Object {
   private $links= [];
 
   /**
