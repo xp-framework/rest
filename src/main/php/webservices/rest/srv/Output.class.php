@@ -1,25 +1,32 @@
 <?php namespace webservices\rest\srv;
 
-
-
 use scriptlet\Cookie;
 use util\Objects;
 
-
 /**
  * Represents output
- *
  */
 abstract class Output extends \lang\Object {
   public $status;
-  public $headers= array();
-  public $cookies= array();
+  public $headers= [];
+  public $cookies= [];
+
+  /**
+   * Sets status and returns this instance
+   *
+   * @param   int $status
+   * @return  self
+   */
+  public function withStatus($status) {
+    $this->status= $status;
+    return $this;
+  }
 
   /**
    * Adds a header and returns this instance
    *
-   * @param   string name
-   * @param   string value
+   * @param   string $name
+   * @param   string $value
    * @return  self
    */
   public function withHeader($name, $value) {
@@ -30,7 +37,7 @@ abstract class Output extends \lang\Object {
   /**
    * Adds a cookie and returns this instance
    *
-   * @param   scriptlet.Cookie cookie
+   * @param   scriptlet.Cookie $cookie
    * @return  self
    */
   public function withCookie(Cookie $cookie) {
@@ -41,27 +48,27 @@ abstract class Output extends \lang\Object {
   /**
    * Write response headers
    *
-   * @param  scriptlet.Response response
-   * @param  peer.URL base
-   * @param  string format
+   * @param  scriptlet.Response $response
+   * @param  peer.URL $base
+   * @param  string $format
    */
   protected abstract function writeHead($response, $base, $format);
 
   /**
    * Write response body
    *
-   * @param  scriptlet.Response response
-   * @param  peer.URL base
-   * @param  string format
+   * @param  scriptlet.Response $response
+   * @param  peer.URL $base
+   * @param  string $format
    */
   protected abstract function writeBody($response, $base, $format);
 
   /**
    * Write this output to the scriptlet's response
    *
-   * @param  scriptlet.Response response
-   * @param  peer.URL base
-   * @param  string format
+   * @param  scriptlet.Response $response
+   * @param  peer.URL $base
+   * @param  string $format
    * @return bool handled
    */
   public function writeTo($response, $base, $format) {
@@ -89,7 +96,7 @@ abstract class Output extends \lang\Object {
   /**
    * Returns whether a given value is equal to this Response instance
    *
-   * @param  var cmp
+   * @param  var $cmp
    * @return bool
    */
   public function equals($cmp) {
