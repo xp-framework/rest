@@ -1,5 +1,14 @@
 <?php namespace webservices\rest\srv\paging;
 
+/**
+ * The URL parameters paging behavior uses two parameters from the request's
+ * query string to determine page and limit. When the parameter referrning to
+ * the current page is omitted from the URL this behavior regards this as the
+ * first page. The limit can be used to overwrite the default paging limit set
+ * via the `Paging` class.
+ *
+ * @test  xp://webservices.rest.unittest.srv.paging.UrlParametersTest
+ */
 class UrlParameters extends \lang\Object implements Behavior {
   private $page, $limit;
 

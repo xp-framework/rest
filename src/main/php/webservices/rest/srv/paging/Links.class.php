@@ -1,6 +1,7 @@
 <?php namespace webservices\rest\srv\paging;
 
 use peer\URL;
+use util\Objects;
 
 class Links extends \lang\Object {
   private $links= [];
@@ -30,5 +31,15 @@ class Links extends \lang\Object {
       $return.= ', <'.$link->getURL().'>; rel="'.$rel.'"';
     }
     return (string)substr($return, 2);
+  }
+
+  /**
+   * Returns whether another instance is equal to this
+   *
+   * @param  var $cmp
+   * @return bool
+   */
+  public function equals($cmp) {
+    return $cmp instanceof self && Objects::equal($this->links, $cmp->links);
   }
 }
