@@ -11,20 +11,31 @@ interface Behavior {
   public function paginates($request);
 
   /**
-   * Returns the current page
+   * Returns the starting offset set via the request
    *
    * @param  scriptlet.Request $request
-   * @return int The page or NULL if the parameter was omitted
+   * @param  int $size
+   * @return var The offset or NULL if the parameter was omitted
    */
-  public function page($request);
+  public function start($request, $size);
 
   /**
-   * Returns the current limit
+   * Returns the ending offset set via the request
    *
    * @param  scriptlet.Request $request
-   * @return int The page or NULL if the parameter was omitted
+   * @param  int $size
+   * @return var The offset or NULL if the parameter was omitted
    */
-  public function limit($request);
+  public function end($request, $size);
+
+  /**
+   * Returns a limit set via the request
+   *
+   * @param  scriptlet.Request $request
+   * @param  int $size
+   * @return int The limit or NULL if the parameter was omitted
+   */
+  public function limit($request, $size);
 
   /**
    * Paginate

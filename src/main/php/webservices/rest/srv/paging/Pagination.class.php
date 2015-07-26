@@ -26,42 +26,32 @@ class Pagination extends \lang\Object {
   }
 
   /**
-   * Returns the page size
+   * Returns the starting offset, or the supplied default of omitted
    *
-   * @return int
+   * @param  var $default
+   * @return var
    */
-  public function size() { return $this->size; }
-
-  /**
-   * Returns the page passed in the request's "Page" parameter, or 1 if omitted
-   *
-   * @return int
-   */
-  public function page() { return (int)($this->behavior->page($this->request) ?: 1); }
-
-  /**
-   * Returns the limit passed in the request's "Per Page" paramenter, or the default limit of omitted
-   *
-   * @return int
-   */
-  public function limit() { return (int)($this->behavior->limit($this->request) ?: $this->size); }
-
-  /**
-   * Returns the starting offset
-   *
-   * @return int
-   */
-  public function start() {
-    return ($this->page() - 1) * $this->limit();
+  public function start($default= null) {
+    return $this->behavior->start($this->request, $this->size) ?: $default;
   }
 
   /**
-   * Returns the ending offset
+   * Returns the ending offset, or the supplied default of omitted
+   *
+   * @param  var $default
+   * @return var
+   */
+  public function end($default= null) {
+    return $this->behavior->end($this->request, $this->size) ?: $default;
+  }
+
+  /**
+   * Returns the limit passed in the request's limit paramenter, or the default limit of omitted
    *
    * @return int
    */
-  public function end() {
-    return $this->page() * $this->limit();
+  public function limit() {
+    return $this->behavior->limit($this->request, $this->size);
   }
 
   /**
@@ -86,6 +76,12 @@ class Pagination extends \lang\Object {
    * @return string
    */
   public function toString() {
-    return $this->getClassName().'@(page= '.$this->page().', limit= '.$this->limit().')';
+    return sprintf(
+      '%s@([%s..%s], limit= %d)',
+      $this->getClassName(),
+      $this->start(''),
+      $this->end(''),
+      $this->limit()
+    );
   }
 }

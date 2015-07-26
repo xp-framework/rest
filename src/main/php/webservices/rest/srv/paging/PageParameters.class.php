@@ -44,20 +44,38 @@ class PageParameters extends \lang\Object implements Behavior {
   public function paginates($request) { return true; }
 
   /**
-   * Returns the current page
+   * Returns the starting offset set via the request, or NULL if none was given.
    *
    * @param  scriptlet.Request $request
-   * @return int The page or NULL if the parameter was omitted
+   * @param  int $size
+   * @return var
    */
-  public function page($request) { return $request->getParam($this->page, null); }
+  public function start($request, $size) {
+    $page= $request->getParam($this->page, null);
+    return null === $page ? null : ($page - 1) * $this->limit($request, $size);
+  }
+
+  /**
+   * Returns the ending offset set via the request
+   *
+   * @param  scriptlet.Request $request
+   * @param  int $size
+   * @return var The offset or NULL if the parameter was omitted
+   */
+  public function end($request, $size) {
+    return $this->start($request, $size) + $this->limit($request, $size);
+  }
 
   /**
    * Returns the current limit
    *
    * @param  scriptlet.Request $request
-   * @return int The page or NULL if the parameter was omitted
+   * @param  int $size
+   * @return int
    */
-  public function limit($request) { return $request->getParam($this->limit, null); }
+  public function limit($request, $size) {
+    return (int)$request->getParam($this->limit, $size);
+  }
 
   /**
    * Paginate
@@ -68,7 +86,7 @@ class PageParameters extends \lang\Object implements Behavior {
    * @return webservices.rest.srv.Response
    */
   public function paginate($request, $response, $last) {
-    $page= $this->page($request);
+    $page= $request->getParam($this->page, 1);
     $header= new LinkHeader([
       'prev' => $page > 1 ? $this->urlWithPage($request, $page - 1) : null,
       'next' => $last ? null : $this->urlWithPage($request, $page + 1)

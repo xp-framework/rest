@@ -30,19 +30,25 @@ class PaginationTest extends \unittest\TestCase {
     $this->newFixture();
   }
 
-  #[@test]
-  public function size() {
-    $this->assertEquals(self::SIZE, $this->newFixture()->size());
+  #[@test, @values([
+  #  ['', 0],
+  #  ['?page=1', 0],
+  #  ['?page=2', self::SIZE],
+  #  ['?page=1&per_page=10', 0],
+  #  ['?page=2&per_page=10', 10]
+  #])]
+  public function start($queryString, $offset) {
+    $this->assertEquals($offset, $this->newFixture($queryString)->start(0));
   }
 
-  #[@test]
-  public function page_defaults_to_1() {
-    $this->assertEquals(1, $this->newFixture()->page());
-  }
-
-  #[@test]
-  public function page_explicitely_given() {
-    $this->assertEquals(2, $this->newFixture('?page=2')->page());
+  #[@test, @values([
+  #  ['', self::SIZE],
+  #  ['?page=1', self::SIZE],
+  #  ['?page=1&per_page=10', 10],
+  #  ['?page=2&per_page=10', 20]
+  #])]
+  public function end($queryString, $offset) {
+    $this->assertEquals($offset, $this->newFixture($queryString)->end(0));
   }
 
   #[@test]
@@ -53,27 +59,6 @@ class PaginationTest extends \unittest\TestCase {
   #[@test]
   public function limit_explicitely_given() {
     $this->assertEquals(10, $this->newFixture('?per_page=10')->limit());
-  }
-
-  #[@test, @values([
-  #  ['', 0],
-  #  ['?page=1', 0],
-  #  ['?page=2', self::SIZE],
-  #  ['?page=1&per_page=10', 0],
-  #  ['?page=2&per_page=10', 10]
-  #])]
-  public function start($queryString, $offset) {
-    $this->assertEquals($offset, $this->newFixture($queryString)->start());
-  }
-
-  #[@test, @values([
-  #  ['', self::SIZE],
-  #  ['?per_page=10', 10],
-  #  ['?page=1&per_page=10', 10],
-  #  ['?page=2&per_page=10', 20]
-  #])]
-  public function end($queryString, $offset) {
-    $this->assertEquals($offset, $this->newFixture($queryString)->end());
   }
 
   #[@test]
@@ -101,7 +86,7 @@ class PaginationTest extends \unittest\TestCase {
   #[@test]
   public function string_representation() {
     $this->assertEquals(
-      'webservices.rest.srv.paging.Pagination@(page= 1, limit= 50)',
+      'webservices.rest.srv.paging.Pagination@([..50], limit= 50)',
       $this->newFixture()->toString()
     );
   }

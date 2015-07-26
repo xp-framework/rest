@@ -8,6 +8,7 @@ use scriptlet\HttpScriptletRequest;
 
 class PageParametersTest extends \unittest\TestCase {
   const BASE_URL = 'http://example.com/';
+  const SIZE = 20;
 
   private $fixture;
 
@@ -42,23 +43,33 @@ class PageParametersTest extends \unittest\TestCase {
   }
 
   #[@test]
-  public function page_for_empty_request() {
-    $this->assertNull($this->fixture->page($this->newRequest()));
+  public function start_for_empty_request() {
+    $this->assertNull($this->fixture->start($this->newRequest(), self::SIZE));
   }
 
   #[@test]
-  public function page_in_request() {
-    $this->assertEquals('1', $this->fixture->page($this->newRequest('?page=1')));
+  public function start_in_request() {
+    $this->assertEquals(0, $this->fixture->start($this->newRequest('?page=1'), self::SIZE));
+  }
+
+  #[@test]
+  public function end_for_empty_request() {
+    $this->assertEquals(self::SIZE, $this->fixture->end($this->newRequest(), self::SIZE));
+  }
+
+  #[@test]
+  public function end_via_limit_in_request() {
+    $this->assertEquals(10, $this->fixture->end($this->newRequest('?page=2&per_page=5'), self::SIZE));
   }
 
   #[@test]
   public function limit_for_empty_request() {
-    $this->assertNull($this->fixture->limit($this->newRequest()));
+    $this->assertEquals(self::SIZE, $this->fixture->limit($this->newRequest(), self::SIZE));
   }
 
   #[@test]
   public function limit_in_request() {
-    $this->assertEquals('5', $this->fixture->limit($this->newRequest('?per_page=5')));
+    $this->assertEquals(5, $this->fixture->limit($this->newRequest('?per_page=5'), self::SIZE));
   }
 
   #[@test]
