@@ -9,7 +9,7 @@
  *
  * @test  xp://webservices.rest.unittest.srv.paging.UrlParametersTest
  */
-class UrlParameters extends \lang\Object implements Behavior {
+class PageParameters extends \lang\Object implements Behavior {
   private $page, $limit;
 
   /**

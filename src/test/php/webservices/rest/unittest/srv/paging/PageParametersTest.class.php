@@ -2,11 +2,11 @@
 
 use peer\URL;
 use webservices\rest\srv\Response;
-use webservices\rest\srv\paging\UrlParameters;
+use webservices\rest\srv\paging\PageParameters;
 use webservices\rest\srv\paging\LinkHeader;
 use scriptlet\HttpScriptletRequest;
 
-class UrlParametersTest extends \unittest\TestCase {
+class PageParametersTest extends \unittest\TestCase {
   const BASE_URL = 'http://example.com/';
 
   private $fixture;
@@ -33,7 +33,7 @@ class UrlParametersTest extends \unittest\TestCase {
    * @return void
    */
   public function setUp() {
-    $this->fixture= new UrlParameters('page', 'per_page');
+    $this->fixture= new PageParameters('page', 'per_page');
   }
 
   #[@test]

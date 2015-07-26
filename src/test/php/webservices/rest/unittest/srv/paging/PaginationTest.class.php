@@ -3,7 +3,7 @@
 use peer\URL;
 use webservices\rest\srv\Response;
 use webservices\rest\srv\paging\Pagination;
-use webservices\rest\srv\paging\UrlParameters;
+use webservices\rest\srv\paging\PageParameters;
 use scriptlet\HttpScriptletRequest;
 
 class PaginationTest extends \unittest\TestCase {
@@ -22,7 +22,7 @@ class PaginationTest extends \unittest\TestCase {
     $r->setParams($params);
     $r->setURI(new URL('http://example.com/'.$queryString));
 
-    return new Pagination($r, new UrlParameters('page', 'per_page'), self::SIZE);
+    return new Pagination($r, new PageParameters('page', 'per_page'), self::SIZE);
   }
 
   #[@test]
