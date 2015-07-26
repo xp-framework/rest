@@ -2,7 +2,6 @@
 
 use webservices\rest\Payload;
 use webservices\rest\RestFormat;
-use webservices\rest\Links;
 
 /**
  * The Response class can be used to control the HTTP status code and headers
