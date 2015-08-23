@@ -2,6 +2,7 @@
 
 use webservices\rest\RestFormDeserializer;
 use lang\Type;
+use lang\FormatException;
 
 /**
  * TestCase
@@ -67,12 +68,12 @@ class RestFormDeserializerTest extends RestDeserializerTest {
     );
   }
 
-  #[@test, @expect('lang.FormatException')]
+  #[@test, @expect(FormatException::class)]
   public function unbalanced_opening_bracket_in_key() {
     $this->fixture->deserialize($this->input('name[=...'), Type::$VAR);
   }
 
-  #[@test, @expect('lang.FormatException')]
+  #[@test, @expect(FormatException::class)]
   public function unbalanced_closing_bracket_in_key() {
     $this->fixture->deserialize($this->input('name]=...'), Type::$VAR);
   }

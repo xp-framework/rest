@@ -3,7 +3,7 @@
 use unittest\TestCase;
 use webservices\rest\RestJsonDeserializer;
 use io\streams\MemoryInputStream;
-
+use lang\FormatException;
 
 /**
  * TestCase
@@ -16,6 +16,7 @@ abstract class RestDeserializerTest extends TestCase {
   /**
    * Sets up test case
    *
+   * @return void
    */
   public function setUp() {
     $this->fixture= $this->newFixture();
@@ -29,7 +30,7 @@ abstract class RestDeserializerTest extends TestCase {
   protected abstract function newFixture();
 
   /**
-   * CReates an input stream
+   * Creates an input stream
    *
    * @param   string bytes
    * @return  io.streams.MemoryInputStream
@@ -37,12 +38,8 @@ abstract class RestDeserializerTest extends TestCase {
   protected function input($bytes) {
     return new MemoryInputStream($bytes);
   }
-  
-  /**
-   * Test empty input
-   *
-   */
-  #[@test, @expect('lang.FormatException')]
+
+  #[@test, @expect(FormatException::class)]
   public function empty_content() {
     $this->fixture->deserialize($this->input(''), \lang\Type::$VAR);
   }

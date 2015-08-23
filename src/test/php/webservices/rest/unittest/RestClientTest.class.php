@@ -4,6 +4,10 @@ use unittest\TestCase;
 use webservices\rest\RestClient;
 use webservices\rest\CannotSerialize;
 use webservices\rest\CannotDeserialize;
+use peer\http\HttpConnection;
+use peer\URL;
+use lang\IllegalArgumentException;
+use lang\IllegalStateException;
 
 /**
  * TestCase
@@ -26,7 +30,7 @@ class RestClientTest extends TestCase {
   #[@test]
   public function stringBase() {
     $this->assertEquals(
-      new \peer\URL(self::BASE_URL),
+      new URL(self::BASE_URL),
       $this->newFixture(self::BASE_URL)->getBase()
     );
   }
@@ -39,8 +43,8 @@ class RestClientTest extends TestCase {
   #[@test]
   public function urlBase() {
     $this->assertEquals(
-      new \peer\URL(self::BASE_URL),
-      $this->newFixture(new \peer\URL(self::BASE_URL))->getBase()
+      new URL(self::BASE_URL),
+      $this->newFixture(new URL(self::BASE_URL))->getBase()
     );
   }
 
@@ -48,54 +52,54 @@ class RestClientTest extends TestCase {
   public function setBase() {
     $fixture= $this->newFixture();
     $fixture->setBase(self::BASE_URL);
-    $this->assertEquals(new \peer\URL(self::BASE_URL), $fixture->getBase());
+    $this->assertEquals(new URL(self::BASE_URL), $fixture->getBase());
   }
 
   #[@test]
   public function withBase() {
     $fixture= $this->newFixture();
     $this->assertEquals($fixture, $fixture->withBase(self::BASE_URL));
-    $this->assertEquals(new \peer\URL(self::BASE_URL), $fixture->getBase());
+    $this->assertEquals(new URL(self::BASE_URL), $fixture->getBase());
   }
 
   #[@test]
   public function setConnection() {
     $fixture= $this->newFixture();
-    $fixture->setConnection(new \peer\http\HttpConnection(self::BASE_URL));
-    $this->assertEquals(new \peer\URL(self::BASE_URL), $fixture->getBase());
+    $fixture->setConnection(new HttpConnection(self::BASE_URL));
+    $this->assertEquals(new URL(self::BASE_URL), $fixture->getBase());
   }
 
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test, @expect(IllegalArgumentException::class)]
   public function singleArgumentExecuteNull() {
     $this->newFixture()->execute(null);
   }
 
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test, @expect(IllegalArgumentException::class)]
   public function singleArgumentExecuteThis() {
     $this->newFixture()->execute($this);
   }
 
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test, @expect(IllegalArgumentException::class)]
   public function executeNullTypeNullRequest() {
     $this->newFixture()->execute(null, null);
   }
 
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test, @expect(IllegalArgumentException::class)]
   public function executeNullType() {
     $this->newFixture()->execute(null, new \webservices\rest\RestRequest());
   }
 
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test, @expect(IllegalArgumentException::class)]
   public function executeNullRequest() {
     $this->newFixture()->execute(\lang\Type::$VAR, null);
   }
 
-  #[@test, @expect('lang.IllegalArgumentException')]
+  #[@test, @expect(IllegalArgumentException::class)]
   public function executeThisRequest() {
     $this->newFixture()->execute(\lang\Type::$VAR, $this);
   }
 
-  #[@test, @expect(class= 'lang.IllegalStateException', withMessage= 'No connection set')]
+  #[@test, @expect(class= IllegalStateException::class, withMessage= 'No connection set')]
   public function executeWithoutBase() {
     $this->newFixture()->execute(\lang\Type::$VAR, new \webservices\rest\RestRequest());
   }
@@ -231,7 +235,7 @@ class RestClientTest extends TestCase {
     $this->assertEquals(31337, $fixture->getConnectTimeout());
   }
 
-  #[@test, @expect('lang.IllegalStateException')]
+  #[@test, @expect(IllegalStateException::class)]
   public function setTimeoutWithoutConnectionFails() {
     $this->newFixture()->setTimeout(31337);
   }

@@ -2,12 +2,16 @@
 
 use unittest\TestCase;
 use peer\http\HttpConstants;
+use peer\http\HttpResponse;
 use io\streams\MemoryInputStream;
 use webservices\rest\RestXmlDeserializer;
 use webservices\rest\RestJsonDeserializer;
 use webservices\rest\RestResponse;
 use webservices\rest\ResponseReader;
 use webservices\rest\RestMarshalling;
+use lang\ClassNotFoundException;
+use lang\Type;
+use lang\XPClass;
 
 /**
  * TestCase
@@ -37,7 +41,7 @@ class RestResponseTest extends TestCase {
    */
   protected function newFixture($content, $headers, $body) {
     return new RestResponse(
-      new \peer\http\HttpResponse(new MemoryInputStream(sprintf(
+      new HttpResponse(new MemoryInputStream(sprintf(
         "HTTP/1.1 200 OK\r\nContent-Type: %s\r\nContent-Length: %d%s\r\n\r\n%s",
         $content,
         strlen($body),
@@ -45,7 +49,7 @@ class RestResponseTest extends TestCase {
         $body
       ))),
       new ResponseReader(self::$deserializers[$content], new RestMarshalling()),
-      \lang\Type::forName('[:var]')
+      Type::forName('[:var]')
     );
   }
 
@@ -122,7 +126,7 @@ class RestResponseTest extends TestCase {
     $fixture= $this->newFixture(self::JSON, [], '{ "issue_id" : 1, "title" : "test" }');
     $this->assertEquals(
       new IssueWithField(1, 'test'), 
-      $fixture->data(\lang\XPClass::forName('webservices.rest.unittest.IssueWithField'))
+      $fixture->data(XPClass::forName('webservices.rest.unittest.IssueWithField'))
     );
   }
 
@@ -131,7 +135,7 @@ class RestResponseTest extends TestCase {
     $fixture= $this->newFixture(self::JSON, [], '{ "issue_id" : 1, "title" : "test" }');
     $this->assertEquals(
       new IssueWithUnderscoreField(1, 'test'), 
-      $fixture->data(\lang\XPClass::forName('webservices.rest.unittest.IssueWithUnderscoreField'))
+      $fixture->data(XPClass::forName('webservices.rest.unittest.IssueWithUnderscoreField'))
     );
   }
 
@@ -140,7 +144,7 @@ class RestResponseTest extends TestCase {
     $fixture= $this->newFixture(self::JSON, [], '{ "issue_id" : 1, "title" : "test" }');
     $this->assertEquals(
       new IssueWithSetter(1, 'test'), 
-      $fixture->data(\lang\XPClass::forName('webservices.rest.unittest.IssueWithSetter'))
+      $fixture->data(XPClass::forName('webservices.rest.unittest.IssueWithSetter'))
     );
   }
 
@@ -149,7 +153,7 @@ class RestResponseTest extends TestCase {
     $fixture= $this->newFixture(self::JSON, [], '{ "issue_id" : 1, "title" : "test" }');
     $this->assertEquals(
       new IssueWithUnderscoreSetter(1, 'test'), 
-      $fixture->data(\lang\XPClass::forName('webservices.rest.unittest.IssueWithUnderscoreSetter'))
+      $fixture->data(XPClass::forName('webservices.rest.unittest.IssueWithUnderscoreSetter'))
     );
   }
 
@@ -171,7 +175,7 @@ class RestResponseTest extends TestCase {
     );
   }
 
-  #[@test, @expect('lang.ClassNotFoundException')]
+  #[@test, @expect(ClassNotFoundException::class)]
   public function dataAsNonExistantType() {
     $fixture= $this->newFixture(self::JSON, [], '{ "issue_id" : 1, "title" : "test" }');
     $fixture->data('non.existant.Type');
@@ -180,7 +184,7 @@ class RestResponseTest extends TestCase {
   #[@test]
   public function typedArrayData() {
     $fixture= $this->newFixture(self::JSON, [], '[ { "issue_id" : 1, "title" : "Found a bug" }, { "issue_id" : 2, "title" : "Another" } ]');
-    $list= $fixture->data(\lang\Type::forName('webservices.rest.unittest.IssueWithField[]'));
+    $list= $fixture->data(Type::forName('webservices.rest.unittest.IssueWithField[]'));
     $this->assertEquals(new IssueWithField(1, 'Found a bug'), $list[0]);
     $this->assertEquals(new IssueWithField(2, 'Another'), $list[1]);
   }
@@ -188,7 +192,7 @@ class RestResponseTest extends TestCase {
   #[@test]
   public function nestedDataAsTypeWithSetter() {
     $fixture= $this->newFixture(self::JSON, [], '{ "issues" : [ { "issue_id" : 1, "title" : "Found a bug" }, { "issue_id" : 2, "title" : "Another" } ] }');
-    $list= $fixture->data(\lang\Type::forName('webservices.rest.unittest.IssuesWithSetter'));
+    $list= $fixture->data(Type::forName('webservices.rest.unittest.IssuesWithSetter'));
 
     $this->assertEquals(
       new IssuesWithSetter([
@@ -202,7 +206,7 @@ class RestResponseTest extends TestCase {
   #[@test]
   public function nestedDataAsTypeWithField() {
     $fixture= $this->newFixture(self::JSON, [], '{ "issues" : [ { "issue_id" : 1, "title" : "Found a bug" }, { "issue_id" : 2, "title" : "Another" } ] }');
-    $list= $fixture->data(\lang\Type::forName('webservices.rest.unittest.IssuesWithField'));
+    $list= $fixture->data(Type::forName('webservices.rest.unittest.IssuesWithField'));
 
     $this->assertEquals(
       new IssuesWithField([
@@ -239,7 +243,7 @@ class RestResponseTest extends TestCase {
         <issue><issue_id>2</issue_id><title>Another</title></issue>
       </issues>
     </object>');
-    $list= $fixture->data(\lang\Type::forName('webservices.rest.unittest.IssuesWithSetter'));
+    $list= $fixture->data(Type::forName('webservices.rest.unittest.IssuesWithSetter'));
 
     $this->assertEquals(
       new IssuesWithSetter([
@@ -258,7 +262,7 @@ class RestResponseTest extends TestCase {
         <issue><issue_id>2</issue_id><title>Another</title></issue>
       </issues>
     </object>');
-    $list= $fixture->data(\lang\Type::forName('webservices.rest.unittest.IssuesWithField'));
+    $list= $fixture->data(Type::forName('webservices.rest.unittest.IssuesWithField'));
 
     $this->assertEquals(
       new IssuesWithField([
