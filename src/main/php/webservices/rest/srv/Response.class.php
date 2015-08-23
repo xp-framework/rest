@@ -132,6 +132,25 @@ class Response extends Output {
   }
 
   /**
+   * Creates a new paginated response
+   *
+   * @param  webservices.rest.srv.paging.Pagination $pagination
+   * @param  var $iterable
+   * @return self
+   */
+  public static function paginated($pagination, $iterable, $status= 200) {
+    if ($iterable instanceof \Traversable) {
+      $elements= [];
+      foreach ($iterable as $element) {
+        $elements[]= $element;
+      }
+      return $pagination->paginate(self::status($status), $elements);
+    } else {
+      return $pagination->paginate(self::status($status), $iterable);
+    }
+  }
+
+  /**
    * Sets payload and returns this instance
    * 
    * @param   var data
