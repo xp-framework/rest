@@ -3,6 +3,8 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 6.3.0 / 2015-08-22
+
 * Merged xp-framework/rest#7: Feature: Pagination - @thekid
 * Merged xp-framework/rest#3: Client-side cookie accessors - @thekid
 * Merged xp-framework/rest#5: Request source - @thekid
