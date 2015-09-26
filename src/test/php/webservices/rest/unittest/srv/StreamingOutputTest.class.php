@@ -37,7 +37,7 @@ class StreamingOutputTest extends TestCase {
 
   #[@test]
   public function of_with_file() {
-    $f= newinstance('io.File', array(new MemoryInputStream('Test')), '{
+    $f= newinstance('io.File', [new MemoryInputStream('Test')], '{
       protected $stream;
       public function __construct($stream) { $this->stream= $stream; }
       public function getFileName() { return "test.txt"; }
@@ -57,7 +57,7 @@ class StreamingOutputTest extends TestCase {
 
   #[@test]
   public function of_with_io_element() {
-    $e= newinstance('io.collections.IOElement', array(new MemoryInputStream('Test')), '{
+    $e= newinstance('io.collections.IOElement', [new MemoryInputStream('Test')], '{
       protected $stream;
       public function __construct($stream) { $this->stream= $stream; }
       public function getName() { return "test.txt"; }

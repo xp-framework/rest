@@ -34,7 +34,7 @@ class CustomRestResponseTest extends TestCase {
 
   #[@test]
   public function ok() {
-    $this->assertEquals(array(), $this->newResponse(200, '{ }')->data());
+    $this->assertEquals([], $this->newResponse(200, '{ }')->data());
   }
 
   #[@test]

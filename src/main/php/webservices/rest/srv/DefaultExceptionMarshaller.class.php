@@ -19,7 +19,7 @@ class DefaultExceptionMarshaller extends \lang\Object implements TypeMarshaller 
    * @return var
    */
   public function marshal($t) {
-    return array('message' => $t->getMessage());
+    return ['message' => $t->getMessage()];
   }
 
   /**

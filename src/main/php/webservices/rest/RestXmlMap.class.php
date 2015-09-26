@@ -13,7 +13,7 @@ class RestXmlMap extends \lang\Object implements \IteratorAggregate, \ArrayAcces
   protected static $iterate= null;
 
   static function __static() {
-    self::$iterate= newinstance('Iterator', array(), '{
+    self::$iterate= newinstance('Iterator', [], '{
       private $i= 0, $c;
       private function value($n) {
         if (!$n->hasChildren()) return $n->getContent();

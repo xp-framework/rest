@@ -214,16 +214,16 @@ class ResponseTest extends \unittest\TestCase {
   #[@test]
   public function equals_same_array_payloads() {
     $this->assertEquals(
-      Response::status(200)->withPayload(array('4711', 4712, null)), 
-      Response::status(200)->withPayload(array('4711', 4712, null))
+      Response::status(200)->withPayload(['4711', 4712, null]), 
+      Response::status(200)->withPayload(['4711', 4712, null])
     );
   }
 
   #[@test]
   public function equals_different_array_payloads() {
     $this->assertNotEquals(
-      Response::status(200)->withPayload(array('4711', 4712, null)), 
-      Response::status(200)->withPayload(array('4711', 4713, null))
+      Response::status(200)->withPayload(['4711', 4712, null]), 
+      Response::status(200)->withPayload(['4711', 4713, null])
     );
   }
 

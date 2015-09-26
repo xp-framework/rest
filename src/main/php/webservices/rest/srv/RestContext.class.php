@@ -155,7 +155,7 @@ class RestContext extends \lang\Object implements \util\log\Traceable {
    * @return var[] args
    */
   protected function injectionArgs($routine) {
-    if ($routine->numParameters() < 1) return array();
+    if ($routine->numParameters() < 1) return [];
 
     $inject= $routine->getAnnotation('inject');
     $type= isset($inject['type']) ? $inject['type'] : $routine->getParameter(0)->getType()->getName();
@@ -215,7 +215,7 @@ class RestContext extends \lang\Object implements \util\log\Traceable {
   public function handle($instance, $method, $args) {
 
     // HACK: Ungeneric XML-related
-    $properties= array();
+    $properties= [];
     if ($method->hasAnnotation('xmlfactory', 'element')) {
       $properties['name']= $method->getAnnotation('xmlfactory', 'element');
     } else if (($class= $method->getDeclaringClass()) && $class->hasAnnotation('xmlfactory', 'element')) {

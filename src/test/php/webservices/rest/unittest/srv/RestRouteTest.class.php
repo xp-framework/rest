@@ -58,26 +58,26 @@ class RestRouteTest extends TestCase {
 
   #[@test]
   public function accepts() {
-    $r= new RestRoute('GET', '/resource', $this->handler, $this->target, array('text/json'), null);
-    $this->assertEquals(array('text/json'), $r->getAccepts());
+    $r= new RestRoute('GET', '/resource', $this->handler, $this->target, ['text/json'], null);
+    $this->assertEquals(['text/json'], $r->getAccepts());
   }
 
   #[@test]
   public function accepts_default() {
     $r= new RestRoute('GET', '/resource', $this->handler, $this->target, null, null);
-    $this->assertEquals(array('text/json'), $r->getAccepts((array)'text/json'));
+    $this->assertEquals(['text/json'], $r->getAccepts((array)'text/json'));
   }
 
   #[@test]
   public function produces() {
-    $r= new RestRoute('GET', '/resource', $this->handler, $this->target, null, array('text/json'));
-    $this->assertEquals(array('text/json'), $r->getProduces());
+    $r= new RestRoute('GET', '/resource', $this->handler, $this->target, null, ['text/json']);
+    $this->assertEquals(['text/json'], $r->getProduces());
   }
 
   #[@test]
   public function produces_default() {
     $r= new RestRoute('GET', '/resource', $this->handler, $this->target, null, null);
-    $this->assertEquals(array('text/json'), $r->getProduces((array)'text/json'));
+    $this->assertEquals(['text/json'], $r->getProduces((array)'text/json'));
   }
 
   #[@test]
@@ -125,7 +125,7 @@ class RestRouteTest extends TestCase {
    */
   #[@test]
   public function string_representation_with_produces() {
-    $r= new RestRoute('GET', '/resource/{id}/{sub}', $this->handler, $this->target, null, array('text/json'));
+    $r= new RestRoute('GET', '/resource/{id}/{sub}', $this->handler, $this->target, null, ['text/json']);
     $this->assertEquals(
       'webservices.rest.srv.RestRoute(GET /resource/{id}/{sub} -> var webservices.rest.unittest.srv.RestRouteTest::fixtureTarget() @ text/json)', 
       $r->toString()
@@ -138,7 +138,7 @@ class RestRouteTest extends TestCase {
    */
   #[@test]
   public function string_representation_with_accepts_and_produces() {
-    $r= new RestRoute('GET', '/resource/{id}/{sub}', $this->handler, $this->target, array('text/xml'), array('text/json'));
+    $r= new RestRoute('GET', '/resource/{id}/{sub}', $this->handler, $this->target, ['text/xml'], ['text/json']);
     $this->assertEquals(
       'webservices.rest.srv.RestRoute(GET /resource/{id}/{sub} @ text/xml -> var webservices.rest.unittest.srv.RestRouteTest::fixtureTarget() @ text/json)', 
       $r->toString()
@@ -182,7 +182,7 @@ class RestRouteTest extends TestCase {
   public function applies_to_matches_resource_and_subresource() {
     $r= new RestRoute('GET', '/binford/{id}/{name}', null, null, null, null);
     $this->assertEquals(
-      array(0 => '/binford/6100/chainsaw', 'id' => '6100', 1 => '6100', 'name' => 'chainsaw', 2 => 'chainsaw'),
+      [0 => '/binford/6100/chainsaw', 'id' => '6100', 1 => '6100', 'name' => 'chainsaw', 2 => 'chainsaw'],
       $r->appliesTo('/binford/6100/chainsaw')
     );
   }
@@ -195,7 +195,7 @@ class RestRouteTest extends TestCase {
   public function applies_to_matches_resource_and_subresource_with_star() {
     $r= new RestRoute('GET', '/binford/{id}/{name}', null, null, null, null);
     $this->assertEquals(
-      array(0 => '/binford/61/*', 'id' => '61', 1 => '61', 'name' => '*', 2 => '*'),
+      [0 => '/binford/61/*', 'id' => '61', 1 => '61', 'name' => '*', 2 => '*'],
       $r->appliesTo('/binford/61/*')
     );
   }
@@ -208,7 +208,7 @@ class RestRouteTest extends TestCase {
   public function applies_to_matches_resource_and_subresource_with_dot() {
     $r= new RestRoute('GET', '/binford/{id}/{name}', null, null, null, null);
     $this->assertEquals(
-      array(0 => '/binford/61/.', 'id' => '61', 1 => '61', 'name' => '.', 2 => '.'),
+      [0 => '/binford/61/.', 'id' => '61', 1 => '61', 'name' => '.', 2 => '.'],
       $r->appliesTo('/binford/61/.')
     );
   }
@@ -221,7 +221,7 @@ class RestRouteTest extends TestCase {
   public function applies_to_matches_resource_and_subresource_with_urlencoded() {
     $r= new RestRoute('GET', '/binford/{id}/{name}', null, null, null, null);
     $this->assertEquals(
-      array(0 => '/binford/61/%40', 'id' => '61', 1 => '61', 'name' => '%40', 2 => '%40'),
+      [0 => '/binford/61/%40', 'id' => '61', 1 => '61', 'name' => '%40', 2 => '%40'],
       $r->appliesTo('/binford/61/%40')
     );
   }
@@ -234,7 +234,7 @@ class RestRouteTest extends TestCase {
   public function applies_to_matches_resource_with_dash() {
     $r= new RestRoute('GET', '/binford/{id}-{name}', null, null, null, null);
     $this->assertEquals(
-      array(0 => '/binford/610-scissors', 'id' => '610', 1 => '610', 'name' => 'scissors', 2 => 'scissors'),
+      [0 => '/binford/610-scissors', 'id' => '610', 1 => '610', 'name' => 'scissors', 2 => 'scissors'],
       $r->appliesTo('/binford/610-scissors')
     );
   }
@@ -247,7 +247,7 @@ class RestRouteTest extends TestCase {
   public function applies_to_matches_resource_with_prefix() {
     $r= new RestRoute('GET', '/binford/power{name}', null, null, null, null);
     $this->assertEquals(
-      array(0 => '/binford/powercar', 'name' => 'car', 1 => 'car'),
+      [0 => '/binford/powercar', 'name' => 'car', 1 => 'car'],
       $r->appliesTo('/binford/powercar')
     );
   }
@@ -260,7 +260,7 @@ class RestRouteTest extends TestCase {
   public function applies_to_matches_resource_with_postfix() {
     $r= new RestRoute('GET', '/binford/{name}power', null, null, null, null);
     $this->assertEquals(
-      array(0 => '/binford/morepower', 'name' => 'more', 1 => 'more'),
+      [0 => '/binford/morepower', 'name' => 'more', 1 => 'more'],
       $r->appliesTo('/binford/morepower')
     );
   }

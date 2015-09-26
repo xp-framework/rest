@@ -12,10 +12,10 @@ class RestRequest extends \lang\Object {
   protected $resource= '/';
   protected $method= '';
   protected $contentType= null;
-  protected $parameters= array();
-  protected $segments= array();
-  protected $headers= array();
-  protected $accept= array();
+  protected $parameters= [];
+  protected $segments= [];
+  protected $headers= [];
+  protected $accept= [];
   protected $payload= null;
   protected $body= null;
 
@@ -372,7 +372,7 @@ class RestRequest extends \lang\Object {
    * @return  [:string]
    */
   public function getHeaders() {
-    $headers= array();
+    $headers= [];
     foreach ($this->headers as $header) {
       $headers[$header->getName()]= $header->getValue();
     }
@@ -389,8 +389,8 @@ class RestRequest extends \lang\Object {
   public function headerList() {
     return array_merge(
       $this->headers,
-      $this->contentType ? array(new Header('Content-Type', $this->contentType)) : array(),
-      $this->accept ? array(new Header('Accept', implode(', ', $this->accept))) : array()
+      $this->contentType ? [new Header('Content-Type', $this->contentType)] : [],
+      $this->accept ? [new Header('Accept', implode(', ', $this->accept))] : []
     );
   }
 

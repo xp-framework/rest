@@ -44,7 +44,7 @@ class PayloadTest extends TestCase {
 
   #[@test]
   public function array_of_object_payloads_are_equal() {
-    $this->assertEquals(new Payload(array($this)), new Payload(array($this)));
+    $this->assertEquals(new Payload([$this]), new Payload([$this]));
   }
 
   #[@test]
@@ -74,7 +74,7 @@ class PayloadTest extends TestCase {
 
   #[@test]
   public function different_map_payloads_are_not_equal() {
-    $this->assertNotEquals(new Payload(['key' => 'value']), new Payload(array('test' => 'yes')));
+    $this->assertNotEquals(new Payload(['key' => 'value']), new Payload(['test' => 'yes']));
   }
 
   #[@test]
@@ -89,7 +89,7 @@ class PayloadTest extends TestCase {
   public function different_properties_are_not_equal() {
     $this->assertNotEquals(
       new Payload(null, ['key' => 'value']),
-      new Payload(null, array('test' => 'yes'))
+      new Payload(null, ['test' => 'yes'])
     );
   }
 }

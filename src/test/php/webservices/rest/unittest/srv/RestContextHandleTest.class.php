@@ -26,13 +26,13 @@ class RestContextHandleTest extends \unittest\TestCase {
    * @param  var[] $args
    * @return webservices.rest.srv.Response
    */
-  protected function handle($instance, $args= array()) {
+  protected function handle($instance, $args= []) {
     return (new RestContext())->handle($instance, $instance->getClass()->getMethod('fixture'), $args);
   }
 
   #[@test]
   public function primitive_return() {
-    $handler= newinstance('lang.Object', array(), '{
+    $handler= newinstance('lang.Object', [], '{
       #[@webmethod(verb= "GET")]
       public function fixture() { return "Hello World"; }
     }');
@@ -44,7 +44,7 @@ class RestContextHandleTest extends \unittest\TestCase {
 
   #[@test]
   public function response_instance_return() {
-    $handler= newinstance('lang.Object', array(), '{
+    $handler= newinstance('lang.Object', [], '{
       #[@webmethod(verb= "GET")]
       public function fixture() { return \webservices\rest\srv\Response::created("/resource/4711"); }
     }');
@@ -56,7 +56,7 @@ class RestContextHandleTest extends \unittest\TestCase {
 
   #[@test]
   public function void_return() {
-    $handler= newinstance('lang.Object', array(), '{
+    $handler= newinstance('lang.Object', [], '{
       /** @return void **/
       #[@webmethod(verb= "GET")]
       public function fixture() { /* Intentionally empty */ }
@@ -69,7 +69,7 @@ class RestContextHandleTest extends \unittest\TestCase {
 
   #[@test]
   public function void_return_ignores_return_value() {
-    $handler= newinstance('lang.Object', array(), '{
+    $handler= newinstance('lang.Object', [], '{
       /** @return void **/
       #[@webmethod(verb= "GET")]
       public function fixture() { return "Something"; }
@@ -82,7 +82,7 @@ class RestContextHandleTest extends \unittest\TestCase {
 
   #[@test]
   public function null_return() {
-    $handler= newinstance('lang.Object', array(), '{
+    $handler= newinstance('lang.Object', [], '{
       #[@webmethod(verb= "GET")]
       public function fixture() { return null; }
     }');
@@ -94,7 +94,7 @@ class RestContextHandleTest extends \unittest\TestCase {
 
   #[@test]
   public function no_return() {
-    $handler= newinstance('lang.Object', array(), '{
+    $handler= newinstance('lang.Object', [], '{
       #[@webmethod(verb= "GET")]
       public function fixture() { return; }
     }');
@@ -106,7 +106,7 @@ class RestContextHandleTest extends \unittest\TestCase {
 
   #[@test, @action(new RuntimeVersion('<7.0.0-dev'))]
   public function handle_string_class_in_parameters_and_return() {
-    $handler= newinstance('lang.Object', array(), '{
+    $handler= newinstance('lang.Object', [], '{
       #[@webmethod(verb= "GET")]
       public function fixture(\lang\types\String $name) {
         if ($name->startsWith("www.")) {
@@ -117,8 +117,8 @@ class RestContextHandleTest extends \unittest\TestCase {
       }
     }');
     $this->assertEquals(
-      Response::status(200)->withPayload(new Payload(array('name' => 'example.com'))),
-      $this->handle($handler, array(new \lang\types\String('example.com')))
+      Response::status(200)->withPayload(new Payload(['name' => 'example.com'])),
+      $this->handle($handler, [new \lang\types\String('example.com')])
     );
   }
 

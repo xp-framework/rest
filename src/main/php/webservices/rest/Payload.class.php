@@ -17,7 +17,7 @@ class Payload extends \lang\Object {
    * @param   var value
    * @param   [:string] properties
    */
-  public function __construct($value= null, $properties= array()) {
+  public function __construct($value= null, $properties= []) {
     $this->value= $value;
     $this->properties= $properties;
   }
