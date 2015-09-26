@@ -3,6 +3,10 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 6.3.1 / 2015-09-26
+
+* Merged PR #8: Use short array syntax / ::class in annotations - @thekid
+
 ## 6.3.0 / 2015-08-22
 
 * Merged xp-framework/rest#7: Feature: Pagination - @thekid
