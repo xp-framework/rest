@@ -20,7 +20,7 @@ class RestFormDeserializer extends RestDeserializer {
    */
   public function deserialize($in) {
     $st= new StreamTokenizer($in, '&');
-    $map= array();
+    $map= [];
     while ($st->hasMoreTokens()) {
       $key= $value= null;
       if (2 !== sscanf($t= $st->nextToken(), "%[^=]=%[^\r]", $key, $value)) {
@@ -32,7 +32,7 @@ class RestFormDeserializer extends RestDeserializer {
       }
       if ($start= strpos($key, '[')) {    // Array notation
         $base= substr($key, 0, $start);
-        isset($map[$base]) || $map[$base]= array();
+        isset($map[$base]) || $map[$base]= [];
         $ptr= &$map[$base];
         $offset= 0;
         do {

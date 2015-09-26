@@ -23,7 +23,7 @@ class RestClientSendTest extends TestCase {
    */
   #[@beforeClass]
   public static function requestEchoingConnectionClass() {
-    self::$conn= ClassLoader::defineClass('RestClientSendTest_Connection', 'peer.http.HttpConnection', array(), '{
+    self::$conn= ClassLoader::defineClass('RestClientSendTest_Connection', 'peer.http.HttpConnection', [], '{
       public function __construct() {
         parent::__construct("http://test");
       }

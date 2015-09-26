@@ -82,7 +82,7 @@ class RestXmlSerializerTest extends TestCase {
   public function empty_array() {
     $this->assertXmlEquals(
       '<root></root>',
-      $this->serialize(array())
+      $this->serialize([])
     );
   }
 
@@ -90,7 +90,7 @@ class RestXmlSerializerTest extends TestCase {
   public function int_array() {
     $this->assertXmlEquals(
       '<root><root>1</root><root>2</root><root>3</root></root>',
-      $this->serialize(array(1, 2, 3))
+      $this->serialize([1, 2, 3])
     );
   }
 
@@ -98,7 +98,7 @@ class RestXmlSerializerTest extends TestCase {
   public function string_array() {
     $this->assertXmlEquals(
       '<root><root>a</root><root>b</root><root>c</root></root>',
-      $this->serialize(array('a', 'b', 'c'))
+      $this->serialize(['a', 'b', 'c'])
     );
   }
 
@@ -106,7 +106,7 @@ class RestXmlSerializerTest extends TestCase {
   public function string_map() {
     $this->assertXmlEquals(
       '<root><a>One</a><b>Two</b><c>Three</c></root>',
-      $this->serialize(array('a' => 'One', 'b' => 'Two', 'c' => 'Three'))
+      $this->serialize(['a' => 'One', 'b' => 'Two', 'c' => 'Three'])
     );
   }
 

@@ -23,8 +23,8 @@ class AbstractRestRouterTest extends TestCase {
    */
   public function setUp() {
     $this->fixture= new AbstractRestRouter();
-    $this->fixture->setInputFormats(array('*json'));
-    $this->fixture->setOutputFormats(array('text/json'));
+    $this->fixture->setInputFormats(['*json']);
+    $this->fixture->setOutputFormats(['text/json']);
     $this->handler= $this->getClass();
     $this->target= $this->handler->getMethod('target');
   }
@@ -44,7 +44,7 @@ class AbstractRestRouterTest extends TestCase {
    */
   #[@test]
   public function routes_initially_empty() {
-    $this->assertEquals(array(), $this->fixture->allRoutes());
+    $this->assertEquals([], $this->fixture->allRoutes());
   }
 
   /**
@@ -65,7 +65,7 @@ class AbstractRestRouterTest extends TestCase {
   public function add_a_route() {
     $route= new \webservices\rest\srv\RestRoute('GET', '/hello', $this->handler, $this->target, null, null);
     $this->fixture->addRoute($route);
-    $this->assertEquals(array($route), $this->fixture->allRoutes());
+    $this->assertEquals([$route], $this->fixture->allRoutes());
   }
 
   /**
@@ -78,7 +78,7 @@ class AbstractRestRouterTest extends TestCase {
     $route2= new \webservices\rest\srv\RestRoute('GET', '/world', $this->handler, $this->target, null, null);
     $this->fixture->addRoute($route1);
     $this->fixture->addRoute($route2);
-    $this->assertEquals(array($route1, $route2), $this->fixture->allRoutes());
+    $this->assertEquals([$route1, $route2], $this->fixture->allRoutes());
   }
 
   /**
@@ -91,7 +91,7 @@ class AbstractRestRouterTest extends TestCase {
     $route2= new \webservices\rest\srv\RestRoute('POST', '/resource', $this->handler, $this->target, null, null);
     $this->fixture->addRoute($route1);
     $this->fixture->addRoute($route2);
-    $this->assertEquals(array($route1, $route2), $this->fixture->allRoutes());
+    $this->assertEquals([$route1, $route2], $this->fixture->allRoutes());
   }
 
   /**
@@ -101,7 +101,7 @@ class AbstractRestRouterTest extends TestCase {
   #[@test]
   public function routes_for_empty_fixture() {
     $this->assertEquals(
-      array(), 
+      [], 
       $this->fixture->targetsFor('GET', '/resource', null, new \scriptlet\Preference('*/*'))
     );
   }
@@ -117,14 +117,14 @@ class AbstractRestRouterTest extends TestCase {
     $this->fixture->addRoute($route1);
     $this->fixture->addRoute($route2);
     $this->assertEquals(
-      array(array(
+      [[
         'handler'  => $this->handler,
         'target'   => $route1->getTarget(),
-        'params'   => array(),
-        'segments' => array(0 => '/resource/1', 'id' => '1', 1 => '1'),
+        'params'   => [],
+        'segments' => [0 => '/resource/1', 'id' => '1', 1 => '1'],
         'input'    => null,
         'output'   => 'text/json'
-      )), 
+      ]], 
       $this->fixture->targetsFor('GET', '/resource/1', null, new \scriptlet\Preference('*/*'))
     );
   }
@@ -140,14 +140,14 @@ class AbstractRestRouterTest extends TestCase {
     $this->fixture->addRoute($route1);
     $this->fixture->addRoute($route2);
     $this->assertEquals(
-      array(array(
+      [[
         'handler'  => $this->handler,
         'target'   => $this->target,
-        'params'   => array(),
-        'segments' => array(0 => '/resource'),
+        'params'   => [],
+        'segments' => [0 => '/resource'],
         'input'    => null,
         'output'   => 'text/json'
-      )), 
+      ]], 
       $this->fixture->targetsFor('POST', '/resource', null, new \scriptlet\Preference('*/*'))
     );
   }
@@ -159,28 +159,28 @@ class AbstractRestRouterTest extends TestCase {
   #[@test]
   public function route_with_custom_mimetype_preferred_according_to_accept() {
     $route1= new \webservices\rest\srv\RestRoute('GET', '/resource/{id}', $this->handler, null, null, null);
-    $route2= new \webservices\rest\srv\RestRoute('GET', '/resource/{id}', $this->handler, $this->target, null, array('application/vnd.example.v2+json'));
+    $route2= new \webservices\rest\srv\RestRoute('GET', '/resource/{id}', $this->handler, $this->target, null, ['application/vnd.example.v2+json']);
     $this->fixture->addRoute($route1); 
     $this->fixture->addRoute($route2);
     $this->assertEquals(
-      array(
-        array(
+      [
+        [
           'handler'  => $this->handler,
           'target'   => $this->target,
-          'params'   => array(),
-          'segments' => array(0 => '/resource/1', 'id' => '1', 1 => '1'),
+          'params'   => [],
+          'segments' => [0 => '/resource/1', 'id' => '1', 1 => '1'],
           'input'    => null,
           'output'   => 'application/vnd.example.v2+json'
-        ),
-        array(
+        ],
+        [
           'handler'  => $this->handler,
           'target'   => null,
-          'params'   => array(),
-          'segments' => array(0 => '/resource/1', 'id' => '1', 1 => '1'),
+          'params'   => [],
+          'segments' => [0 => '/resource/1', 'id' => '1', 1 => '1'],
           'input'    => null,
           'output'   => 'text/json'
-        )
-      ), 
+        ]
+      ], 
       $this->fixture->targetsFor('GET', '/resource/1', null, new \scriptlet\Preference('application/vnd.example.v2+json, text/json'))
     );
   }
@@ -192,28 +192,28 @@ class AbstractRestRouterTest extends TestCase {
   #[@test]
   public function route_with_custom_mimetype_preferred_according_to_type() {
     $route1= new \webservices\rest\srv\RestRoute('POST', '/resource', $this->handler, null, null, null);
-    $route2= new \webservices\rest\srv\RestRoute('POST', '/resource', $this->handler, $this->target, array('application/vnd.example.v2+json'), null);
+    $route2= new \webservices\rest\srv\RestRoute('POST', '/resource', $this->handler, $this->target, ['application/vnd.example.v2+json'], null);
     $this->fixture->addRoute($route1); 
     $this->fixture->addRoute($route2);
     $this->assertEquals(
-      array(
-        array(
+      [
+        [
           'handler'  => $this->handler,
           'target'   => $this->target,
-          'params'   => array(),
-          'segments' => array(0 => '/resource'),
+          'params'   => [],
+          'segments' => [0 => '/resource'],
           'input'    => 'application/vnd.example.v2+json',
           'output'   => 'text/json'
-        ),
-        array(
+        ],
+        [
           'handler'  => $this->handler,
           'target'   => null,
-          'params'   => array(),
-          'segments' => array(0 => '/resource'),
+          'params'   => [],
+          'segments' => [0 => '/resource'],
           'input'    => 'application/vnd.example.v2+json',
           'output'   => 'text/json'
-        )
-      ), 
+        ]
+      ], 
       $this->fixture->targetsFor('POST', '/resource', 'application/vnd.example.v2+json', new \scriptlet\Preference('*/*'))
     );
   }

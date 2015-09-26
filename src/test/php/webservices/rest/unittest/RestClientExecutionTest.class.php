@@ -20,7 +20,7 @@ class RestClientExecutionTest extends TestCase {
 
   #[@beforeClass]
   public static function dummyConnectionClass() {
-    self::$conn= ClassLoader::defineClass('RestClientExecutionTest_Connection', 'peer.http.HttpConnection', array(), '{
+    self::$conn= ClassLoader::defineClass('RestClientExecutionTest_Connection', 'peer.http.HttpConnection', [], '{
       protected $result= NULL;
       protected $exception= NULL;
 
@@ -55,7 +55,7 @@ class RestClientExecutionTest extends TestCase {
    * @param   [:string] headers default [:]
    * @return  webservices.rest.RestClient
    */
-  public function fixtureWith($status, $body= null, $headers= array()) {
+  public function fixtureWith($status, $body= null, $headers= []) {
     $fixture= new RestClient();
     $fixture->setConnection(self::$conn->newInstance($status, $body, $headers));
     return $fixture;
@@ -83,27 +83,27 @@ class RestClientExecutionTest extends TestCase {
   
   #[@test]
   public function jsonContent() {
-    $fixture= $this->fixtureWith(HttpConstants::STATUS_OK, '{ "title" : "Found a bug" }', array(
+    $fixture= $this->fixtureWith(HttpConstants::STATUS_OK, '{ "title" : "Found a bug" }', [
       'Content-Type' => 'application/json'
-    ));
+    ]);
     $response= $fixture->execute(new RestRequest());
-    $this->assertEquals(array('title' => 'Found a bug'), $response->data());
+    $this->assertEquals(['title' => 'Found a bug'], $response->data());
   }
 
   #[@test]
   public function xmlContent() {
-    $fixture= $this->fixtureWith(HttpConstants::STATUS_OK, '<issue><title>Found a bug</title></issue>', array(
+    $fixture= $this->fixtureWith(HttpConstants::STATUS_OK, '<issue><title>Found a bug</title></issue>', [
       'Content-Type' => 'text/xml'
-    ));
+    ]);
     $response= $fixture->execute(new RestRequest());
-    $this->assertEquals(array('title' => 'Found a bug'), $response->data(Type::forName('[:var]')));
+    $this->assertEquals(['title' => 'Found a bug'], $response->data(Type::forName('[:var]')));
   }
   
   #[@test]
   public function customContent() {
-    $fixture= $this->fixtureWith(HttpConstants::STATUS_NO_CONTENT, '', array(
+    $fixture= $this->fixtureWith(HttpConstants::STATUS_NO_CONTENT, '', [
       'Content-Type' => 'application/json'
-    ));
+    ]);
     $class= Type::forName('webservices.rest.unittest.CustomRestResponse');
     $response= $fixture->execute($class, new RestRequest());
     $this->assertInstanceOf($class, $response);
@@ -112,10 +112,10 @@ class RestClientExecutionTest extends TestCase {
 
   #[@test]
   public function deprecatedExecuteOverloading() {
-    $fixture= $this->fixtureWith(HttpConstants::STATUS_OK, '{ "title" : "Found a bug" }', array(
+    $fixture= $this->fixtureWith(HttpConstants::STATUS_OK, '{ "title" : "Found a bug" }', [
       'Content-Type' => 'application/json'
-    ));
+    ]);
     $response= $fixture->execute('[:var]', new RestRequest());
-    $this->assertEquals(array('title' => 'Found a bug'), $response->data());
+    $this->assertEquals(['title' => 'Found a bug'], $response->data());
   }
 }

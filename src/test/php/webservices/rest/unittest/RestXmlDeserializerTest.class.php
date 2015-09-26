@@ -30,7 +30,7 @@ class RestXmlDeserializerTest extends RestDeserializerTest {
   #[@test]
   public function one_keyvalue_pair() {
     $this->assertEquals(
-      array('name' => 'Timm'), 
+      ['name' => 'Timm'], 
       $this->flatten($this->fixture->deserialize($this->input('<root><name>Timm</name></root>')))
     );
   }
@@ -38,7 +38,7 @@ class RestXmlDeserializerTest extends RestDeserializerTest {
   #[@test]
   public function two_keyvalue_pairs() {
     $this->assertEquals(
-      array('name' => 'Timm', 'id' => '1549'), 
+      ['name' => 'Timm', 'id' => '1549'], 
       $this->flatten($this->fixture->deserialize($this->input('<root><name>Timm</name><id>1549</id></root>')))
     );
   }

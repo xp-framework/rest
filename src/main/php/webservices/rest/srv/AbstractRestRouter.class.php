@@ -10,9 +10,9 @@ use scriptlet\Preference;
  */
 class AbstractRestRouter extends \lang\Object {
   protected $cat= null;
-  protected $routes= array();
-  protected $input= array();
-  protected $output= array();
+  protected $routes= [];
+  protected $input= [];
+  protected $output= [];
 
   /**
    * Configure router. Template method - overwrite and implement in subclasses!
@@ -67,7 +67,7 @@ class AbstractRestRouter extends \lang\Object {
    */
   public function addRoute(RestRoute $route) {
     $verb= $route->getVerb();
-    if (!isset($this->routes[$verb])) $this->routes[$verb]= array();
+    if (!isset($this->routes[$verb])) $this->routes[$verb]= [];
     $this->routes[$verb][]= $route;
     return $route;
   }
@@ -78,7 +78,7 @@ class AbstractRestRouter extends \lang\Object {
    * @return  webservices.rest.srv.RestRoute[]
    */
   public function allRoutes() {
-    $r= array();
+    $r= [];
     foreach ($this->routes as $verb => $routes) {
       $r= array_merge($r, $routes);
     }
@@ -95,18 +95,18 @@ class AbstractRestRouter extends \lang\Object {
    * @return  var[]
    */
   public function targetsFor($verb, $path, $type, Preference $accept) {
-    if (!isset($this->routes[$verb])) return array();   // Short-circuit
+    if (!isset($this->routes[$verb])) return [];   // Short-circuit
 
     // Figure out matching routes
     $path= rtrim($path, '/');
-    $matching= $order= array();
+    $matching= $order= [];
     foreach ($this->routes[$verb] as $route) {
       if (!($segments= $route->appliesTo($path))) continue;
 
       // Check input type if specified by client
       if (null !== $type) {
         $pref= new Preference($route->getAccepts($this->input));
-        if (null === ($input= $pref->match(array($type)))) continue;
+        if (null === ($input= $pref->match([$type]))) continue;
         $q= $pref->qualityOf($input, 6);
       } else {
         $input= null;
@@ -117,20 +117,20 @@ class AbstractRestRouter extends \lang\Object {
       if (null === ($output= $accept->match($route->getProduces($this->output)))) continue;
 
       // Found possible candidate
-      $matching[]= array(
+      $matching[]= [
         'handler'  => $route->getHandler(),
         'target'   => $route->getTarget(), 
         'params'   => $route->getParams(),
         'segments' => $segments,
         'input'    => $input,
         'output'   => $output
-      );
+      ];
       $order[sizeof($matching)- 1]= $q + $accept->qualityOf($output, 6);
     }
 
     // Sort by quality
     arsort($order, SORT_NUMERIC);
-    $return= array();
+    $return= [];
     foreach ($order as $offset => $q) {
       $return[]= $matching[$offset];
     }
