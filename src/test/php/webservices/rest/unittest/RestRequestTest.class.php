@@ -19,22 +19,11 @@ class RestRequestTest extends TestCase {
 
   /** @return php.Iterator */
   private function headers($definitions) {
-    if (class_exists(Header::class)) {
-      $params= [];
-      foreach ($definitions as $name => $value) {
-        $params[]= new Header($name, $value);
-      }
-      yield $params;
+    $params= [];
+    foreach ($definitions as $name => $value) {
+      $params[]= new Header($name, $value);
     }
-
-    // BC with older XP Framework versions
-    if (class_exists(\peer\Header::class)) {
-      $params= [];
-      foreach ($definitions as $name => $value) {
-        $params[]= new \peer\Header($name, $value);
-      }
-      yield $params;
-    }
+    yield $params;
   }
   
   #[@test]
