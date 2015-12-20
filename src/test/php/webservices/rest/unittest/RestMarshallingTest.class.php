@@ -1,5 +1,7 @@
 <?php namespace webservices\rest\unittest;
 
+use webservices\rest\TypeMarshaller;
+use lang\Object;
 use lang\Type;
 use lang\Primitive;
 use lang\ArrayType;
@@ -47,7 +49,7 @@ class RestMarshallingTest extends \unittest\TestCase {
         return $cmp instanceof self && \util\Objects::equal($cmp->values, $this->values);
       }
     }');
-    self::$walletMarshaller= newinstance('webservices.rest.TypeMarshaller', [], [
+    self::$walletMarshaller= newinstance(TypeMarshaller::class, [], [
       'marshal' => function($wallet, $marshalling= null) {
         return $marshalling->marshal($wallet->values);
       },
@@ -59,7 +61,7 @@ class RestMarshallingTest extends \unittest\TestCase {
 
   #[@beforeClass]
   public static function defineMoneyMarshaller() {
-    self::$moneyMarshaller= newinstance('webservices.rest.TypeMarshaller', [], [
+    self::$moneyMarshaller= newinstance(TypeMarshaller::class, [], [
       'marshal' => function($money, $marshalling= null) {
         return sprintf('%.2f %s', $money->amount()->doubleValue(), $money->currency()->name());
       },
@@ -182,7 +184,7 @@ class RestMarshallingTest extends \unittest\TestCase {
 
   #[@test]
   public function marshal_static_member_excluded() {
-    $o= newinstance('lang.Object', [], '{
+    $o= newinstance(Object::class, [], '{
       public $name= "Test";
       public static $instance;
     }');

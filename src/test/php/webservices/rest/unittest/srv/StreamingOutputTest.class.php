@@ -1,5 +1,7 @@
 <?php namespace webservices\rest\unittest\srv;
 
+use io\File;
+use io\collections\IOElement;
 use unittest\TestCase;
 use webservices\rest\srv\StreamingOutput;
 use io\streams\MemoryInputStream;
@@ -37,7 +39,7 @@ class StreamingOutputTest extends TestCase {
 
   #[@test]
   public function of_with_file() {
-    $f= newinstance('io.File', [new MemoryInputStream('Test')], '{
+    $f= newinstance(File::class, [new MemoryInputStream('Test')], '{
       protected $stream;
       public function __construct($stream) { $this->stream= $stream; }
       public function getFileName() { return "test.txt"; }
@@ -57,7 +59,7 @@ class StreamingOutputTest extends TestCase {
 
   #[@test]
   public function of_with_io_element() {
-    $e= newinstance('io.collections.IOElement', [new MemoryInputStream('Test')], '{
+    $e= newinstance(IOElement::class, [new MemoryInputStream('Test')], '{
       protected $stream;
       public function __construct($stream) { $this->stream= $stream; }
       public function getName() { return "test.txt"; }

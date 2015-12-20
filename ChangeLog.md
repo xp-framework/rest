@@ -3,6 +3,13 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 6.4.0 / 2015-12-20
+
+* **Heads up: Dropped PHP 5.4 support**. *Note: As the main source is not
+  touched, unofficial PHP 5.4 support is still available though not tested
+  with Travis-CI*.
+  (@thekid)
+
 ## 6.3.1 / 2015-09-26
 
 * Merged PR #8: Use short array syntax / ::class in annotations - @thekid

@@ -8,7 +8,7 @@ use webservices\rest\RestXmlSerializer;
 use webservices\rest\Payload;
 use peer\http\HttpConstants;
 use peer\http\RequestData;
-use peer\Header;
+use peer\http\Header;
 
 /**
  * TestCase
@@ -16,6 +16,26 @@ use peer\Header;
  * @see   xp://webservices.rest.RestRequest
  */
 class RestRequestTest extends TestCase {
+
+  /** @return php.Iterator */
+  private function headers($definitions) {
+    if (class_exists(Header::class)) {
+      $params= [];
+      foreach ($definitions as $name => $value) {
+        $params[]= new Header($name, $value);
+      }
+      yield $params;
+    }
+
+    // BC with older XP Framework versions
+    if (class_exists(\peer\Header::class)) {
+      $params= [];
+      foreach ($definitions as $name => $value) {
+        $params[]= new \peer\Header($name, $value);
+      }
+      yield $params;
+    }
+  }
   
   #[@test]
   public function getResource() {
@@ -306,10 +326,10 @@ class RestRequestTest extends TestCase {
     );
   }
 
-  #[@test]
-  public function oneHeaderObject() {
+  #[@test, @values(source= 'headers', args= [['Accept' => 'text/xml']])]
+  public function oneHeaderObject($header) {
     $fixture= new RestRequest();
-    $fixture->addHeader(new Header('Accept', 'text/xml'));
+    $fixture->addHeader($header);
     $this->assertEquals(
       ['Accept' => 'text/xml'],
       $fixture->getHeaders()
@@ -327,11 +347,11 @@ class RestRequestTest extends TestCase {
     );
   }
 
-  #[@test]
-  public function twoHeaderObjects() {
+  #[@test, @values(source= 'headers', args= [['Accept' => 'text/xml', 'Referer' => 'http://localhost']])]
+  public function twoHeaderObjects($accept, $referer) {
     $fixture= new RestRequest('/issues');
-    $fixture->addHeader(new Header('Accept', 'text/xml'));
-    $fixture->addHeader(new Header('Referer', 'http://localhost'));
+    $fixture->addHeader($accept);
+    $fixture->addHeader($referer);
     $this->assertEquals(
       ['Accept' => 'text/xml', 'Referer' => 'http://localhost'],
       $fixture->getHeaders()
@@ -347,27 +367,26 @@ class RestRequestTest extends TestCase {
     );
   }
 
-  #[@test]
-  public function headerListWithOneHeader() {
+  #[@test, @values(source= 'headers', args= [['Accept' => 'text/xml']])]
+  public function headerListWithOneHeader($header) {
     $fixture= new RestRequest('/issues');
-    $h= $fixture->addHeader(new Header('Accept', 'text/xml'));
+    $fixture->addHeader($header);
     $this->assertEquals(
-      [$h],
+      [$header],
       $fixture->headerList()
     );
   }
 
-  #[@test]
-  public function addHeaderReturnsAddedHeaderObject() {
-    $h= new Header('Accept', 'text/xml');
+  #[@test, @values(source= 'headers', args= [['Accept' => 'text/xml']])]
+  public function addHeaderReturnsAddedHeaderObject($header) {
     $fixture= new RestRequest('/issues');
-    $this->assertEquals($h, $fixture->addHeader($h));
+    $this->assertEquals($header, $fixture->addHeader($header));
   }
 
-  #[@test]
-  public function addHeaderReturnsAddedHeader() {
+  #[@test, @values(source= 'headers', args= [['Accept' => 'text/xml']])]
+  public function addHeaderReturnsAddedHeader($header) {
     $fixture= new RestRequest('/issues');
-    $this->assertEquals(new Header('Accept', 'text/xml'), $fixture->addHeader('Accept', 'text/xml'));
+    $this->assertEquals($header, $fixture->addHeader('Accept', 'text/xml'));
   }
 
   #[@test]

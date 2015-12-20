@@ -1,7 +1,7 @@
 <?php namespace webservices\rest;
 
 use peer\http\HttpConstants;
-use peer\Header;
+use peer\http\Header;
 
 /**
  * A REST request
@@ -361,7 +361,7 @@ class RestRequest extends \lang\Object {
     } else if ('Accept' === $name) {
       return $this->accept;
     } else foreach ($this->headers as $header) {
-      if ($name === $header->getName()) return $header->getValue();
+      if ($name === $header->name()) return $header->value();
     }
     raise('lang.ElementNotFoundException', 'No such header "'.$name.'"');
   }
@@ -374,7 +374,7 @@ class RestRequest extends \lang\Object {
   public function getHeaders() {
     $headers= [];
     foreach ($this->headers as $header) {
-      $headers[$header->getName()]= $header->getValue();
+      $headers[$header->name()]= $header->value();
     }
     $this->contentType && $headers['Content-Type']= $this->contentType;
     $this->accept && $headers['Accept']= implode(', ', $this->accept);
@@ -426,7 +426,7 @@ class RestRequest extends \lang\Object {
   public function toString() {
     $headers= "\n";
     foreach ($this->headers as $header) {
-      $headers.= '  '.$header->getName().': '.\xp::stringOf($header->getValue())."\n";
+      $headers.= '  '.$header->name().': '.\xp::stringOf($header->value())."\n";
     }
     if ($this->accept) {
       $headers.='  Accept: '.implode(', ', $this->accept)."\n";

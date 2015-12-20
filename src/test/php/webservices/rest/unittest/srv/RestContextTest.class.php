@@ -1,5 +1,8 @@
 <?php namespace webservices\rest\unittest\srv;
 
+use webservices\rest\TypeMarshaller;
+use lang\Object;
+use webservices\rest\srv\ExceptionMapper;
 use unittest\TestCase;
 use scriptlet\HttpScriptletRequest;
 use scriptlet\HttpScriptletResponse;
@@ -61,7 +64,7 @@ class RestContextTest extends TestCase {
    * @return scriptlet.Request
    */
   protected function newRequest($params= [], $payload= null, $headers= []) {
-    $r= newinstance('scriptlet.HttpScriptletRequest', [$payload], '{
+    $r= newinstance(HttpScriptletRequest::class, [$payload], '{
       public function __construct($payload) {
         if (null !== $payload) {
           $this->inputStream= new \io\streams\MemoryInputStream($payload);
@@ -116,7 +119,7 @@ class RestContextTest extends TestCase {
 
   #[@test]
   public function marshal_this_with_typemarshaller() {
-    $this->fixture->addMarshaller('unittest.TestCase', newinstance('webservices.rest.TypeMarshaller', [], '{
+    $this->fixture->addMarshaller('unittest.TestCase', newinstance(TypeMarshaller::class, [], '{
       public function marshal($t) {
         return $t->getName();
       }
@@ -132,7 +135,7 @@ class RestContextTest extends TestCase {
 
   #[@test]
   public function unmarshal_this_with_typemarshaller() {
-    $this->fixture->addMarshaller('unittest.TestCase', newinstance('webservices.rest.TypeMarshaller', [], '{
+    $this->fixture->addMarshaller('unittest.TestCase', newinstance(TypeMarshaller::class, [], '{
       public function marshal($t) {
         // Not needed
       }
@@ -148,7 +151,7 @@ class RestContextTest extends TestCase {
 
   #[@test]
   public function handle_xmlfactory_annotated_method() {
-    $handler= newinstance('lang.Object', [], '{
+    $handler= newinstance('#[@webservice, @xmlfactory(element= "greeting")] lang.Object', [], '{
       #[@webmethod, @xmlfactory(element = "book")]
       public function getBook() {
         return array("isbn" => "978-3-16-148410-0", "author" => "Test");
@@ -180,7 +183,7 @@ class RestContextTest extends TestCase {
   #[@test]
   public function handle_exception_with_mapper() {
     $t= new \lang\Throwable('Test');
-    $this->fixture->addExceptionMapping('lang.Throwable', newinstance('webservices.rest.srv.ExceptionMapper', [], '{
+    $this->fixture->addExceptionMapping('lang.Throwable', newinstance(ExceptionMapper::class, [], '{
       public function asResponse($t, RestContext $ctx) {
         return Response::error(500)->withPayload(array("message" => $t->getMessage()));
       }
@@ -429,7 +432,7 @@ class RestContextTest extends TestCase {
 
   #[@test]
   public function marshal_exceptions() {
-    $this->fixture->addMarshaller('unittest.AssertionFailedError', newinstance('webservices.rest.TypeMarshaller', [], '{
+    $this->fixture->addMarshaller('unittest.AssertionFailedError', newinstance(TypeMarshaller::class, [], '{
       public function marshal($t) {
         return "assert:".$t->message;
       }
@@ -486,7 +489,7 @@ class RestContextTest extends TestCase {
 
   #[@test]
   public function add_exception_mapping_returns_added_mapping() {
-    $mapping= newinstance('webservices.rest.srv.ExceptionMapper', [], '{
+    $mapping= newinstance(ExceptionMapper::class, [], '{
       public function asResponse($t, RestContext $ctx) {
         return Response::error(500)->withPayload(array("message" => $t->getMessage()));
       }
@@ -496,7 +499,7 @@ class RestContextTest extends TestCase {
 
   #[@test]
   public function get_exception_mapping() {
-    $mapping= newinstance('webservices.rest.srv.ExceptionMapper', [], '{
+    $mapping= newinstance(ExceptionMapper::class, [], '{
       public function asResponse($t, RestContext $ctx) {
         return Response::error(500)->withPayload(array("message" => $t->getMessage()));
       }
@@ -512,7 +515,7 @@ class RestContextTest extends TestCase {
 
   #[@test]
   public function add_marshaller_returns_added_marshaller() {
-    $marshaller= newinstance('webservices.rest.TypeMarshaller', [], '{
+    $marshaller= newinstance(TypeMarshaller::class, [], '{
       public function marshal($t) {
         return $t->getName();
       }
@@ -525,7 +528,7 @@ class RestContextTest extends TestCase {
 
   #[@test]
   public function get_marshaller() {
-    $marshaller= newinstance('webservices.rest.TypeMarshaller', [], '{
+    $marshaller= newinstance(TypeMarshaller::class, [], '{
       public function marshal($t) {
         return $t->getName();
       }

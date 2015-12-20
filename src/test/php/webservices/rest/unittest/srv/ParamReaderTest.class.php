@@ -1,5 +1,6 @@
 <?php namespace webservices\rest\unittest\srv;
 
+use scriptlet\HttpScriptletRequest;
 use webservices\rest\srv\ParamReader;
 use scriptlet\Cookie;
 
@@ -14,7 +15,7 @@ class ParamReaderTest extends \unittest\TestCase {
    * @return scriptlet.Request
    */
   private function newRequest($params= [], $payload= null, $headers= []) {
-    $r= newinstance('scriptlet.HttpScriptletRequest', [$payload], '{
+    $r= newinstance(HttpScriptletRequest::class, [$payload], '{
       public function __construct($payload) {
         if (null !== $payload) {
           $this->inputStream= new \io\streams\MemoryInputStream($payload);
