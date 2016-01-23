@@ -78,7 +78,7 @@ class Pagination extends \lang\Object {
   public function toString() {
     return sprintf(
       '%s@([%s..%s], limit= %d)',
-      $this->getClassName(),
+      nameof($this),
       $this->start(''),
       $this->end(''),
       $this->limit()

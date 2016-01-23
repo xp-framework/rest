@@ -432,6 +432,6 @@ class RestRequest extends \lang\Object {
       $headers.='  Accept: '.implode(', ', $this->accept)."\n";
     }
 
-    return $this->getClassName().'('.$this->method.' '.$this->resource.')@['.$headers.']';
+    return nameof($this).'('.$this->method.' '.$this->resource.')@['.$headers.']';
   }
 }

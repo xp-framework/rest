@@ -137,7 +137,7 @@ class RestRoute extends \lang\Object {
     }
     return sprintf(
       '%s(%s %s%s -> %s %s::%s(%s)%s)',
-      $this->getClassName(),
+      nameof($this),
       $this->verb,
       $this->path,
       null === $this->accepts ? '' : ' @ '.implode(', ', $this->accepts),

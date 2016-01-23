@@ -436,7 +436,7 @@ class RestMarshallingTest extends \unittest\TestCase {
     $issue1= new IssueWithField(1, 'test1');
     $issue2= new IssueWithField(2, 'test2');
     $this->assertEquals([$issue1, $issue2], $this->fixture->unmarshal(
-      new ArrayType($issue1->getClassName()),
+      new ArrayType(nameof($issue1)),
       [['issue_id' => 1, 'title' => 'test1'], ['issue_id' => 2, 'title' => 'test2']]
     ));
   }
@@ -446,7 +446,7 @@ class RestMarshallingTest extends \unittest\TestCase {
     $issue1= new IssueWithField(1, 'test1');
     $issue2= new IssueWithField(2, 'test2');
     $this->assertEquals(['one' => $issue1, 'two' => $issue2], $this->fixture->unmarshal(
-      MapType::forName('[:'.$issue1->getClassName().']'), 
+      MapType::forName('[:'.nameof($issue1).']'), 
       ['one' => ['issue_id' => 1, 'title' => 'test1'], 'two' => ['issue_id' => 2, 'title' => 'test2']]
     ));
   }

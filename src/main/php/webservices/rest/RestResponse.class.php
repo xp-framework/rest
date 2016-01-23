@@ -178,6 +178,6 @@ class RestResponse extends \lang\Object {
    * @return string
    */
   public function toString() {
-    return $this->getClassName().'<'.$this->response->message().'>@(->'.$this->response->toString().')';
+    return nameof($this).'<'.$this->response->message().'>@(->'.$this->response->toString().')';
   }
 }

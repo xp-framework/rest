@@ -143,6 +143,6 @@ class AbstractRestRouter extends \lang\Object {
    * @return  string
    */
   public function toString() {
-    return $this->getClassName().'@'.\xp::stringOf($this->routes);
+    return nameof($this).'@'.\xp::stringOf($this->routes);
   }
 }

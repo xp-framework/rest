@@ -100,7 +100,7 @@ use webservices\rest\srv\StreamingOutput;
    */
   #[@webmethod(verb= 'GET', path= '/class/greet')]
   public function greet_class() {
-    return 'Hello '.$this->getClassName();
+    return 'Hello '.nameof($this);
   }
 
   /**

@@ -46,6 +46,6 @@ class IssuesWithSetter extends \lang\Object {
    * @return  string
    */
   public function toString() {
-    return $this->getClassName().'@'.\xp::stringOf($this->issues);
+    return nameof($this).'@'.\xp::stringOf($this->issues);
   }
 }

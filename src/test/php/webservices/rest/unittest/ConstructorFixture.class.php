@@ -25,6 +25,6 @@ abstract class ConstructorFixture extends \lang\Object {
    * @return  string
    */
   public function toString() {
-    return $this->getClassName().'@'.$this->id;
+    return nameof($this).'@'.$this->id;
   }
 }

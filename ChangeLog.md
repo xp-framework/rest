@@ -3,6 +3,12 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 6.4.1 / 2016-01-24
+
+* Fix code to use `nameof()` instead of the deprecated `getClassName()`
+  method from lang.Generic. See xp-framework/core#120
+  (@thekid)
+
 ## 6.4.0 / 2015-12-20
 
 * **Heads up: Dropped PHP 5.4 support**. *Note: As the main source is not
