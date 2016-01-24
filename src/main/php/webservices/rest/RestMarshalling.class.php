@@ -113,12 +113,12 @@ class RestMarshalling extends \lang\Object {
       return $value->toString('c');    // ISO 8601, e.g. "2004-02-12T15:19:21+00:00"
     } else if ($value instanceof \Traversable) {
       return new Iteration($value, [$this, 'marshal']);
-    } else if ($value instanceof \lang\Generic) {
+    } else if (is_object($value)) {
       foreach ($this->marshallers->keys() as $t) {      // Specific class marshalling
         if ($t->isInstance($value)) return $this->marshallers[$t]->marshal($value, $this);
       }
 
-      $class= $value->getClass();
+      $class= typeof($value);
       $r= [];
       foreach ($class->getFields() as $field) {
         $m= $field->getModifiers();

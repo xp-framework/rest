@@ -112,10 +112,20 @@ class RestXmlSerializerTest extends TestCase {
 
   #[@test]
   public function date() {
-    $this->assertXmlEquals(
-      '<root><value>2012-12-31 18:00:00+0100</value><__id></__id></root>',
-      $this->serialize(new Date('2012-12-31 18:00:00', new TimeZone('Europe/Berlin')))
-    );
+    $date= new Date('2012-12-31 18:00:00', new TimeZone('Europe/Berlin'));
+
+    // XP6: util.Date extends Object, XP7: implements Value
+    if ($date instanceof \lang\Object) {
+      $this->assertXmlEquals(
+        '<root><value>2012-12-31 18:00:00+0100</value><__id></__id></root>',
+        $this->serialize($date)
+      );
+    } else {
+      $this->assertXmlEquals(
+        '<root><value>2012-12-31 18:00:00+0100</value></root>',
+        $this->serialize($date)
+      );
+    }
   }
 
   #[@test, @values([

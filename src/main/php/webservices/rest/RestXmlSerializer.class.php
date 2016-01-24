@@ -21,7 +21,7 @@ class RestXmlSerializer extends RestSerializer {
   }
 
   protected function node($name, $in) {
-    if ($in instanceof \lang\Generic) {
+    if (is_object($in)) {
       return Node::fromObject($in, $name);
     } else if (is_array($in)) {
       return Node::fromArray($in, $name);
