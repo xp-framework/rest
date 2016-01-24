@@ -2,7 +2,7 @@
 
 use util\MimeType;
 use util\Date;
-
+use util\Objects;
 
 /**
  * Represents a stream to be output
@@ -153,7 +153,7 @@ class StreamingOutput extends Output {
       parent::equals($cmp) &&
       $this->mediaType === $cmp->mediaType &&
       $this->contentLength === $cmp->contentLength &&
-      (null === $this->inputStream ? null === $cmp->inputStream : $this->inputStream->equals($cmp->inputStream))
+      Objects::equal($this->inputStream, $cmp->inputStream)
     );
   }
 }
