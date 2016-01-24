@@ -64,7 +64,7 @@ class RestMarshallingTest extends \unittest\TestCase {
     self::$moneyMarshaller= newinstance(TypeMarshaller::class, [], [
       'marshal' => function($money, $marshalling= null) {
         $amount= $money->amount();
-        return sprintf('%.2f %s', is_object($amount) ? $amount->doubleVal() : $amount, $money->currency()->name());
+        return sprintf('%.2f %s', is_object($amount) ? $amount->doubleValue() : $amount, $money->currency()->name());
       },
       'unmarshal' => function(\lang\Type $t, $input, $marshalling= null) {
         sscanf($input, '%f %s', $amount, $currency);
