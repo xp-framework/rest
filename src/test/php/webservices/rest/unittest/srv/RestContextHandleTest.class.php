@@ -105,24 +105,6 @@ class RestContextHandleTest extends \unittest\TestCase {
     );
   }
 
-  #[@test, @action(new RuntimeVersion('<7.0.0-dev'))]
-  public function handle_string_class_in_parameters_and_return() {
-    $handler= newinstance(Object::class, [], '{
-      #[@webmethod(verb= "GET")]
-      public function fixture(\lang\types\String $name) {
-        if ($name->startsWith("www.")) {
-          return array("name" => $name->substring(4));
-        } else {
-          return array("name" => $name);
-        }
-      }
-    }');
-    $this->assertEquals(
-      Response::status(200)->withPayload(new Payload(['name' => 'example.com'])),
-      $this->handle($handler, [new \lang\types\String('example.com')])
-    );
-  }
-
   #[@test, @values([
   #  [400, IllegalArgumentException::class],
   #  [403, IllegalAccessException::class],
