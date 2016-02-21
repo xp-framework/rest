@@ -4,8 +4,6 @@ use unittest\TestCase;
 use webservices\rest\RestJsonSerializer;
 use util\Date;
 use util\TimeZone;
-use lang\types\ArrayList;
-use lang\types\ArrayMap;
 use io\streams\MemoryOutputStream;
 
 /**
@@ -82,7 +80,7 @@ class RestJsonSerializerTest extends TestCase {
 
   #[@test, @values([
   #  [new \ArrayIterator([1, 2, 3])],
-  #  [new ArrayList(1, 2, 3)]
+  #  [new \ArrayObject([1, 2, 3])]
   #])]
   public function traversable_array($in) {
     $this->assertEquals(
@@ -93,7 +91,7 @@ class RestJsonSerializerTest extends TestCase {
 
   #[@test, @values([
   #  [new \ArrayIterator(['color' => 'green', 'price' => '$12.99'])],
-  #  [new ArrayMap(['color' => 'green', 'price' => '$12.99'])]
+  #  [new \ArrayObject(['color' => 'green', 'price' => '$12.99'])]
   #])]
   public function traversable_map($in) {
     $this->assertEquals(
@@ -104,8 +102,7 @@ class RestJsonSerializerTest extends TestCase {
 
   #[@test, @values([
   #  [new \ArrayIterator([])],
-  #  [new ArrayList()],
-  #  [new ArrayMap([])]
+  #  [new \ArrayObject([])]
   #])]
   public function empty_traversable($in) {
     $this->assertEquals(

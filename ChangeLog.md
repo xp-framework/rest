@@ -3,6 +3,8 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Deprecated support for wrapper types - @thekid
+
 ## 6.4.2 / 2016-01-24
 
 * Fix code to handle baseless objects correctly. See xp-framework/rfc#297

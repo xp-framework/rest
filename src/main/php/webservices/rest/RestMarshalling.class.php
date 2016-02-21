@@ -4,6 +4,7 @@ use lang\XPClass;
 use lang\Type;
 use lang\Primitive;
 use lang\reflect\Modifiers;
+use lang\ClassLoader;
 
 /**
  * Marshalling takes care of converting the value to a simple output 
@@ -21,7 +22,8 @@ class RestMarshalling extends \lang\Object {
   public function __construct() {
     $this->marshallers= create('new util.collections.HashTable<lang.Type, webservices.rest.TypeMarshaller>');
 
-    if (PHP_VERSION < '7.0.0') {
+    // Deprecated!
+    if (ClassLoader::getDefault()->providesPackage('lang.types')) {
       $strings= newinstance('webservices.rest.TypeMarshaller', [], [
         'marshal'   => function($t) { return $t->toString(); },
         'unmarshal' => function(Type $target, $in) { return $target->newInstance($in); }
