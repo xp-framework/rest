@@ -6,18 +6,18 @@
   "description" : "REST Client and Server APIs for the XP Framework",
   "keywords": ["module", "xp"],
   "require" : {
-    "xp-framework/core": "^6.5",
-    "xp-framework/webservices": "^6.1",
-    "xp-framework/http": "^6.2",
-    "xp-framework/xml": "^6.0",
-    "xp-framework/scriptlet": "^6.0",
-    "xp-framework/logging": "^6.5",
-    "xp-framework/collections": "^6.5",
-    "xp-framework/networking": "^6.6",
+    "xp-framework/core": "^7.0 | ^6.5",
+    "xp-framework/webservices": "^7.0 | ^6.1",
+    "xp-framework/http": "^7.0 | ^6.2",
+    "xp-framework/xml": "^7.0 | ^6.0",
+    "xp-framework/scriptlet": "^7.0 | ^6.0",
+    "xp-framework/logging": "^7.0 | ^6.5",
+    "xp-framework/collections": "^7.0 | ^6.5",
+    "xp-framework/networking": "^7.0 | ^6.6",
     "php" : ">=5.5.0"
   },
   "require-dev" : {
-    "xp-framework/unittest": "^6.5"
+    "xp-framework/unittest": "^7.0 | ^6.5"
   },
   "autoload" : {
     "files" : ["src/main/php/autoload.php"]

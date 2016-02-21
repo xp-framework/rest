@@ -3,6 +3,9 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.0.0 / 2016-02-21
+
+* Added version compatibility with XP 7 - @thekid
 * Deprecated support for wrapper types - @thekid
 
 ## 6.4.2 / 2016-01-24
