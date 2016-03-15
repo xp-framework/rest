@@ -186,6 +186,7 @@ class Response extends Output {
    * @param  string format
    */
   protected function writeBody($response, $base, $format) {
+    $response->flush();
     if (null !== $this->payload) {
       RestFormat::forMediaType($format)->write($response->getOutputStream(), $this->payload);
     }
