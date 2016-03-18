@@ -13,8 +13,6 @@ php:
 before_script:
   - wget 'https://github.com/xp-framework/xp-runners/releases/download/v6.3.0/setup' -O - | php
   - composer install --prefer-dist
-  - echo "[runtime]" > xp.ini
-  - echo "date.timezone=Europe/Berlin" >> xp.ini
 
 script:
-  - ./unittest src/test/php
+  - USE_XP=vendor/xp-framework/core ./unittest src/test/php
