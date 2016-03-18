@@ -3,6 +3,10 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.0.1 / 2016-03-18
+
+* Fixed double flush() invocation in StreamingOutput - @haimich, @kiesel
+
 ## 7.0.0 / 2016-02-21
 
 * **Adopted semantic versioning. See xp-framework/rfc#300** - @thekid 
