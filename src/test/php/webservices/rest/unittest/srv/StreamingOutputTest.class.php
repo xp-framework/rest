@@ -5,7 +5,7 @@ use io\collections\IOElement;
 use unittest\TestCase;
 use webservices\rest\srv\StreamingOutput;
 use io\streams\MemoryInputStream;
-
+use scriptlet\HttpScriptletResponse;
 /**
  * Test response class
  *
@@ -92,4 +92,13 @@ class StreamingOutputTest extends TestCase {
   public function status_code_can_be_changed() {
     $this->assertEquals(304, (new StreamingOutput())->withStatus(304)->status);
   }
+
+  #[@test]
+  public function flush_only_invoked_once() {
+    $output= new StreamingOutput(new MemoryInputStream('Test'));
+
+    $response= new HttpScriptletResponse();
+    $output->writeTo($response, new \peer\URL(), 'application/json');
+  }
+
 }

@@ -88,7 +88,6 @@ abstract class Output extends \lang\Object {
       $response->setCookie($cookie);
     }
 
-    $response->flush();
     $this->writeBody($response, $base, $format);
     return true;
   }
