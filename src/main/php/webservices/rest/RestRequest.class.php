@@ -278,7 +278,7 @@ class RestRequest extends \lang\Object {
    *
    * @param   var arg
    * @param   string value
-   * @return  peer.Header
+   * @return  peer.http.Header
    */
   public function addHeader($arg, $value= null) {
     if ($arg instanceof Header) {
@@ -384,7 +384,7 @@ class RestRequest extends \lang\Object {
   /**
    * Returns all headers
    *
-   * @return  peer.Header[]
+   * @return  peer.http.Header[]
    */
   public function headerList() {
     return array_merge(

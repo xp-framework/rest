@@ -1,7 +1,6 @@
 <?php namespace webservices\rest;
 
 use util\log\Traceable;
-use peer\Header;
 use peer\http\HttpConnection;
 use peer\http\HttpRequest;
 use lang\IllegalStateException;
