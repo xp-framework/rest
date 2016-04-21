@@ -46,8 +46,9 @@ The REST API supports automatic result deserialization by passing a type to the 
 ```php
 use com\example\api\types\Person;
 
-$resource= $response->data(Person::class);
+$person= $response->data(Person::class);
 $strings= $response->data('string[]');
+$codes= $response->data('[:int]');
 ```
 
 ### Authentication
