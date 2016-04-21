@@ -163,7 +163,7 @@ class RestRequest extends \lang\Object {
    */
   public function setPayload($payload, $format) {
     $this->payload= $payload;
-    if ($format instanceof RestFormat) {
+    if ($format instanceof \webservices\rest\RestFormat) {
       $this->contentType= $format->serializer()->contentType();
     } else if ($format instanceof RestSerializer) {
       $this->contentType= $format->contentType();
@@ -281,7 +281,7 @@ class RestRequest extends \lang\Object {
    * @return  peer.Header
    */
   public function addHeader($arg, $value= null) {
-    if ($arg instanceof Header) {
+    if ($arg instanceof \peer\Header) {
       $h= $arg;
     } else {
       $h= new Header($arg, $value);
