@@ -3,6 +3,12 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.0.2 / 2016-04-21
+
+* Fixed BC break and accept instances of the deprecated `peer.Header`
+  class in RestRequest. See PR #10
+  (@thekid)
+
 ## 7.0.1 / 2016-03-18
 
 * Fixed double flush() invocation in StreamingOutput - @haimich, @kiesel

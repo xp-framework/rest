@@ -281,7 +281,7 @@ class RestRequest extends \lang\Object {
    * @return  peer.http.Header
    */
   public function addHeader($arg, $value= null) {
-    if ($arg instanceof Header) {
+    if ($arg instanceof Header || $arg instanceof \peer\Header) {
       $h= $arg;
     } else {
       $h= new Header($arg, $value);
