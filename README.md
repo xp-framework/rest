@@ -41,10 +41,12 @@ $value= $response->data();                 // Deserialize to map
 
 ### Deserialization
 
-The REST API supports automatic result deserialization by passing a `lang.Type` instance to the `data()` method.
+The REST API supports automatic result deserialization by passing a type to the `data()` method.
 
 ```php
-$resource= $response->data('com.example.api.types.Person');
+use com\example\api\types\Person;
+
+$resource= $response->data(Person::class);
 ```
 
 ### Authentication
