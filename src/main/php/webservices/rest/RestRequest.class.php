@@ -2,6 +2,7 @@
 
 use peer\http\HttpConstants;
 use peer\http\Header;
+use lang\ElementNotFoundException;
 
 /**
  * A REST request
@@ -311,7 +312,7 @@ class RestRequest extends \lang\Object {
    */
   public function getParameter($name) {
     if (!isset($this->parameters[$name])) {
-      raise('lang.ElementNotFoundException', 'No such parameter "'.$name.'"');
+      throw new ElementNotFoundException('No such parameter "'.$name.'"');
     }
     return $this->parameters[$name];
   }
@@ -334,7 +335,7 @@ class RestRequest extends \lang\Object {
    */
   public function getSegment($name) {
     if (!isset($this->segments[$name])) {
-      raise('lang.ElementNotFoundException', 'No such segment "'.$name.'"');
+      throw new ElementNotFoundException('No such segment "'.$name.'"');
     }
     return $this->segments[$name];
   }
@@ -363,7 +364,7 @@ class RestRequest extends \lang\Object {
     } else foreach ($this->headers as $header) {
       if ($name === $header->name()) return $header->value();
     }
-    raise('lang.ElementNotFoundException', 'No such header "'.$name.'"');
+    throw new ElementNotFoundException('No such header "'.$name.'"');
   }
 
   /**
