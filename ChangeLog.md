@@ -3,6 +3,10 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.0.3 / 2016-04-25
+
+* Merged PR #11: Replace raise() with throw - @kiesel
+
 ## 7.0.2 / 2016-04-21
 
 * Fixed BC break and accept instances of the deprecated `peer.Header`
