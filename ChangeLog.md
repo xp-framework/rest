@@ -3,6 +3,13 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.1.0 / 2016-05-01
+
+* Merged PR #12: Add RestResponse::error(). This new method complements
+  the `data()` method in preventing programming mistakes by making error
+  handling explicit
+  (@thekid, Olaf Seng)
+
 ## 7.0.3 / 2016-04-25
 
 * Merged PR #11: Replace raise() with throw - @kiesel
