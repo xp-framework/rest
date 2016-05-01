@@ -453,6 +453,16 @@ class RestMarshallingTest extends \unittest\TestCase {
   }
 
   #[@test]
+  public function unmarshal_issues() {
+    $issue1= new IssueWithField(1, 'test1');
+    $issue2= new IssueWithField(2, 'test2');
+    $this->assertEquals(new Issues($issue1, $issue2), $this->fixture->unmarshal(
+      XPClass::forName('webservices.rest.unittest.Issues'),
+      [['issue_id' => 1, 'title' => 'test1'], ['issue_id' => 2, 'title' => 'test2']]
+    ));
+  }
+
+  #[@test]
   public function unmarshal_already_instance_of() {
     $issue= new IssueWithField(1, 'test1');
     $this->assertEquals($issue, $this->fixture->unmarshal($issue->getClass(), $issue));
