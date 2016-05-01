@@ -144,20 +144,6 @@ class RestResponse extends \lang\Object {
   }
 
   /**
-   * Handle error code. Throws an exception in this default implementation
-   * if the numeric value is less than 400. Overwrite in subclasses to 
-   * change this behaviour.
-   *
-   * @param   int code
-   * @throws  webservices.rest.RestException
-   */
-  protected function handleError($code) {
-    if ($code < 400) {
-      throw new RestException('Expected an error but have '.$code.' '.$this->response->message());
-    }
-  }
-
-  /**
    * Handle payload deserialization. Uses the deserializer passed to the
    * constructor to deserialize the input stream and coerces it to the 
    * passed target type. Overwrite in subclasses to change this behaviour.
@@ -202,7 +188,9 @@ class RestResponse extends \lang\Object {
    * @throws  webservices.rest.RestException if the status code is > 399
    */
   public function error($type= null) {
-    $this->handleError($this->response->statusCode());
+    if (!$this->isError()) {
+      throw new RestException('Expected an error but have '.$this->response->statusCode().' '.$this->response->message());
+    }
  
     if (null === $type) {
       $target= \lang\Type::$VAR;
