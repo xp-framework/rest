@@ -106,6 +106,17 @@ class RestResponseTest extends TestCase {
     );
   }
 
+  #[@test, @values([
+  #  ['200 OK', false],
+  #  ['300 Multiple Choices', false],
+  #  ['399 (undefined)', false],
+  #  ['400 Bad Request', true],
+  #  ['500 Internal Server Error', true]
+  #])]
+  public function isError($status, $result) {
+    $this->assertEquals($result, $this->newFixture(self::JSON, [], '[]', $status)->isError());
+  }
+
   #[@test]
   public function data() {
     $this->assertEquals(

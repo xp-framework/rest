@@ -49,6 +49,15 @@ class RestResponse extends \lang\Object {
   }
 
   /**
+   * Get whether this response is an error (>= 400)
+   *
+   * @return  bool
+   */
+  public function isError() {
+    return $this->response->statusCode() >= 400;
+  }
+
+  /**
    * Get data
    *
    * @return  string
