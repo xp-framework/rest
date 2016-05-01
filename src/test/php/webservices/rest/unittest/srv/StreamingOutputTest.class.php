@@ -98,7 +98,11 @@ class StreamingOutputTest extends TestCase {
     $output= new StreamingOutput(new MemoryInputStream('Test'));
 
     $response= new HttpScriptletResponse();
+    ob_start();
     $output->writeTo($response, new \peer\URL(), 'application/json');
-  }
+    $result= ob_get_contents();
+    ob_end_clean();
 
+    $this->assertEquals('Test', $result);
+  }
 }
