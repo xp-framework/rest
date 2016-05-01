@@ -171,7 +171,7 @@ class RestResponse extends \lang\Object {
     $this->handleStatus($this->response->statusCode());
  
     if (null === $type) {
-      $target= \lang\Type::$VAR;
+      $target= $this->type ?: \lang\Type::$VAR;  // BC
     } else if ($type instanceof \lang\Type) {
       $target= $type;
     } else {
@@ -196,7 +196,7 @@ class RestResponse extends \lang\Object {
     $this->handleError($this->response->statusCode());
  
     if (null === $type) {
-      $target= $this->type ?: \lang\Type::$VAR;  // BC
+      $target= \lang\Type::$VAR;
     } else if ($type instanceof \lang\Type) {
       $target= $type;
     } else {
