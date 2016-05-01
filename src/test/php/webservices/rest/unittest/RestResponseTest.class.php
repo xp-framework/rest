@@ -9,6 +9,7 @@ use webservices\rest\RestJsonDeserializer;
 use webservices\rest\RestResponse;
 use webservices\rest\ResponseReader;
 use webservices\rest\RestMarshalling;
+use webservices\rest\RestException;
 use lang\ClassNotFoundException;
 use lang\Type;
 use lang\XPClass;
@@ -37,12 +38,14 @@ class RestResponseTest extends TestCase {
    * @param   string $content
    * @param   string $headers
    * @param   string $body
+   * @param   string $status Status code and message
    * @return  webservices.rest.RestResponse
    */
-  protected function newFixture($content, $headers, $body) {
+  protected function newFixture($content, $headers, $body, $status= '200 OK') {
     return new RestResponse(
       new HttpResponse(new MemoryInputStream(sprintf(
-        "HTTP/1.1 200 OK\r\nContent-Type: %s\r\nContent-Length: %d%s\r\n\r\n%s",
+        "HTTP/1.1 %s\r\nContent-Type: %s\r\nContent-Length: %d%s\r\n\r\n%s",
+        $status,
         $content,
         strlen($body),
         $headers ? "\r\n".implode("\r\n", $headers) : '',
@@ -101,6 +104,43 @@ class RestResponseTest extends TestCase {
       ['one' => '1', 'two' => '2; httpOnly'],
       $this->newFixture(self::JSON, $headers, '')->cookies()
     );
+  }
+
+  #[@test, @values([
+  #  ['200 OK', false],
+  #  ['300 Multiple Choices', false],
+  #  ['399 (undefined)', false],
+  #  ['400 Bad Request', true],
+  #  ['500 Internal Server Error', true]
+  #])]
+  public function isError($status, $result) {
+    $this->assertEquals($result, $this->newFixture(self::JSON, [], '[]', $status)->isError());
+  }
+
+  #[@test]
+  public function data() {
+    $this->assertEquals(
+      [],
+      $this->newFixture(self::JSON, [], '[]', '200 OK')->data()
+    );
+  }
+
+  #[@test, @expect(class= RestException::class, withMessage= 'Expected success but have 404 Not Found')]
+  public function data_raises_exception_with_error_status() {
+    $this->newFixture(self::JSON, [], '{"message" : "No user ~test"}', '404 Not Found')->data();
+  }
+
+  #[@test]
+  public function error() {
+    $this->assertEquals(
+      ['message' => 'No user ~test'],
+      $this->newFixture(self::JSON, [], '{"message" : "No user ~test"}', '404 Not Found')->error()
+    );
+  }
+
+  #[@test, @expect(class= RestException::class, withMessage= 'Expected an error but have 200 OK')]
+  public function error_raises_exception_with_success_status() {
+    $this->newFixture(self::JSON, [], '[]', '200 OK')->error();
   }
 
   #[@test]

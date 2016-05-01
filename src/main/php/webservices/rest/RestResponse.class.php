@@ -4,7 +4,6 @@ use io\streams\Streams;
 use io\streams\MemoryInputStream;
 use peer\http\HttpResponse;
 
-
 /**
  * A REST response
  *
@@ -47,6 +46,15 @@ class RestResponse extends \lang\Object {
 
   public function message() {
     return $this->response->message();
+  }
+
+  /**
+   * Get whether this response is an error (>= 400)
+   *
+   * @return  bool
+   */
+  public function isError() {
+    return $this->response->statusCode() >= 400;
   }
 
   /**
@@ -131,7 +139,7 @@ class RestResponse extends \lang\Object {
    */
   protected function handleStatus($code) {
     if ($code > 399) {
-      throw new RestException($code.': '.$this->response->message());
+      throw new RestException('Expected success but have '.$code.' '.$this->response->message());
     }
   }
 
@@ -159,6 +167,33 @@ class RestResponse extends \lang\Object {
  
     if (null === $type) {
       $target= $this->type ?: \lang\Type::$VAR;  // BC
+    } else if ($type instanceof \lang\Type) {
+      $target= $type;
+    } else {
+      $target= \lang\Type::forName($type);
+    }
+
+    if (null === $this->reader) {
+      throw new \lang\IllegalArgumentException('Unknown content type "'.$this->headers['Content-Type'][0].'"');
+    }
+
+    return $this->handlePayloadOf($target);
+  }
+
+  /**
+   * Get error
+   *
+   * @param   var type target type of deserialization, either a lang.Type or a string
+   * @return  var
+   * @throws  webservices.rest.RestException if the status code is > 399
+   */
+  public function error($type= null) {
+    if (!$this->isError()) {
+      throw new RestException('Expected an error but have '.$this->response->statusCode().' '.$this->response->message());
+    }
+ 
+    if (null === $type) {
+      $target= \lang\Type::$VAR;
     } else if ($type instanceof \lang\Type) {
       $target= $type;
     } else {
