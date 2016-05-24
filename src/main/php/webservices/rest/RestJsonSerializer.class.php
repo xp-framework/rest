@@ -1,6 +1,7 @@
 <?php namespace webservices\rest;
 
-use webservices\json\JsonFactory;
+use text\json\StreamOutput;
+use text\json\Format as WireFormat;
 
 /**
  * A JSON serializer
@@ -9,13 +10,13 @@ use webservices\json\JsonFactory;
  * @test  xp://net.xp_framework.unittest.webservices.rest.RestJsonSerializerTest
  */
 class RestJsonSerializer extends RestSerializer {
-  protected $json;
+  private $format;
 
   /**
    * Constructor. Initializes decoder member
    */
   public function __construct() {
-    $this->json= JsonFactory::create();
+    $this->format= WireFormat::dense();
   }
 
   /**
@@ -36,30 +37,32 @@ class RestJsonSerializer extends RestSerializer {
    */
   public function serialize($payload, $out) {
     $val= $payload instanceof Payload ? $payload->value : $payload;
+    $json= new StreamOutput($out, $this->format);
     if ($val instanceof \Traversable) {
       $i= 0;
       $map= null;
       foreach ($val as $key => $element) {
         if (0 === $i++) {
           $map= 0 !== $key;
-          $out->write($map ? '{ ' : '[ ');
+          $json->appendToken($map ? '{' : '[');
         } else {
-          $out->write(' , ');
+          $json->appendToken(',');
         }
 
         if ($map) {
-          $this->json->encodeTo($key, $out);
-          $out->write(' : ');
+          $json->write($key);
+          $json->appendToken(':');
         }
-        $this->json->encodeTo($element, $out);
+        $json->write($element);
       }
       if (null === $map) {
-        $out->write('[ ]');
+        $json->appendToken('[]');
       } else {
-        $out->write($map ? ' }' : ' ]');
+        $out->write($map ? '}' : ']');
       }
     } else {
-      $this->json->encodeTo($val, $out);
+      $json->write($val);
     }
+    $json->close();
   }
 }

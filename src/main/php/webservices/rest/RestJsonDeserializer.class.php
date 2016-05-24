@@ -1,7 +1,6 @@
 <?php namespace webservices\rest;
 
-use webservices\json\JsonFactory;
-
+use text\json\StreamInput;
 
 /**
  * A JSON deserializer
@@ -10,14 +9,6 @@ use webservices\json\JsonFactory;
  * @test  xp://net.xp_framework.unittest.webservices.rest.RestJsonDeserializerTest
  */
 class RestJsonDeserializer extends RestDeserializer {
-  protected $json;
-
-  /**
-   * Constructor. Initializes decoder member
-   */
-  public function __construct() {
-    $this->json= JsonFactory::create();
-  }
 
   /**
    * Deserialize
@@ -27,10 +18,6 @@ class RestJsonDeserializer extends RestDeserializer {
    * @throws  lang.FormatException
    */
   public function deserialize($in) {
-    try {
-      return $this->json->decodeFrom($in);
-    } catch (\webservices\json\JsonException $e) {
-      throw new \lang\FormatException('Malformed JSON', $e);
-    }
+    return (new StreamInput($in))->read();
   }
 }

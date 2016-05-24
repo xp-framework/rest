@@ -61,9 +61,13 @@ class RestScriptletTest extends TestCase {
     $res= new HttpScriptletResponse();
     $fixture->doProcess($req, $res);
 
+    $res->sendContent();
+    $sent= ob_get_contents();
+    ob_end_clean();
+
     $this->assertEquals(404, $res->statusCode);
     $this->assertEquals('Content-Type: application/json', $res->headers[0]);
-    $this->assertEquals('{ "message" : "Could not route request to http:\/\/localhost\/" }', $res->getContent());
+    $this->assertEquals('{"message":"Could not route request to http://localhost/"}', $sent);
   }
 
   #[@test, @values([

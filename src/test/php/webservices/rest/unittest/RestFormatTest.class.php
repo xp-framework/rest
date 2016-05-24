@@ -19,12 +19,12 @@ class RestFormatTest extends TestCase {
   public function json_serialize() {
     $res= new MemoryOutputStream();
     RestFormat::$JSON->write($res, new Payload(['name' => 'Timm']));
-    $this->assertEquals('{ "name" : "Timm" }', $res->getBytes());
+    $this->assertEquals('{"name":"Timm"}', $res->getBytes());
   }
 
   #[@test]
   public function json_deserialize() {
-    $req= new MemoryInputStream('{ "name" : "Timm" }');
+    $req= new MemoryInputStream('{"name":"Timm"}');
     $v= RestFormat::$JSON->read($req, MapType::forName('[:string]'));
     $this->assertEquals(['name' => 'Timm'], $v); 
   }
