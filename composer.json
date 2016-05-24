@@ -13,7 +13,7 @@
     "xp-framework/logging": "^7.0 | ^6.5",
     "xp-framework/collections": "^7.0 | ^6.5",
     "xp-framework/networking": "^7.0 | ^6.6",
-    "xp-forge/json": "^2.1",
+    "xp-forge/json": "^2.0",
     "php" : ">=5.5.0"
   },
   "require-dev" : {
