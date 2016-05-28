@@ -13,10 +13,12 @@ class RestJsonSerializer extends RestSerializer {
   private $format;
 
   /**
-   * Constructor. Initializes decoder member
+   * Constructor.
+   *
+   * @param  text.json.Format $format Optional wire format, defaults to *dense* format
    */
-  public function __construct() {
-    $this->format= WireFormat::dense();
+  public function __construct(WireFormat $format= null) {
+    $this->format= $format ?: WireFormat::dense();
   }
 
   /**
