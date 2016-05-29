@@ -24,7 +24,7 @@ class RestJsonSerializer extends RestSerializer {
   /**
    * Return the Content-Type header's value
    *
-   * @return  string
+   * @return string
    */
   public function contentType() {
     return 'application/json; charset=utf-8';
@@ -33,38 +33,14 @@ class RestJsonSerializer extends RestSerializer {
   /**
    * Serialize
    *
-   * @param   var $payload
-   * @param   io.streams.OutputStream $out
-   * @return  void
+   * @param  var $payload
+   * @param  io.streams.OutputStream $out
+   * @return void
    */
   public function serialize($payload, $out) {
-    $val= $payload instanceof Payload ? $payload->value : $payload;
-    $json= new StreamOutput($out, $this->format);
-    if ($val instanceof \Traversable) {
-      $i= 0;
-      $map= null;
-      foreach ($val as $key => $element) {
-        if (0 === $i++) {
-          $map= 0 !== $key;
-          $json->appendToken($map ? '{' : '[');
-        } else {
-          $json->appendToken(',');
-        }
-
-        if ($map) {
-          $json->write($key);
-          $json->appendToken(':');
-        }
-        $json->write($element);
-      }
-      if (null === $map) {
-        $json->appendToken('[]');
-      } else {
-        $out->write($map ? '}' : ']');
-      }
-    } else {
-      $json->write($val);
-    }
-    $json->close();
+    (new StreamOutput($out, $this->format))->write($payload instanceof Payload
+      ? $payload->value
+      : $payload
+    );
   }
 }

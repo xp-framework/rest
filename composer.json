@@ -14,7 +14,7 @@
     "xp-framework/collections": "^7.0 | ^6.5",
     "xp-framework/networking": "^7.0 | ^6.6",
     "xp-framework/tokenize": "^7.0 | ^6.5",
-    "xp-forge/json": "^2.0",
+    "xp-forge/json": "^2.1",
     "php" : ">=5.5.0"
   },
   "require-dev" : {
