@@ -61,6 +61,7 @@ class RestScriptletTest extends TestCase {
     $res= new HttpScriptletResponse();
     $fixture->doProcess($req, $res);
 
+    ob_start();
     $res->sendContent();
     $sent= ob_get_contents();
     ob_end_clean();
