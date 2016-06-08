@@ -7,13 +7,14 @@
   "keywords": ["module", "xp"],
   "require" : {
     "xp-framework/core": "^7.0 | ^6.5",
-    "xp-framework/webservices": "^7.0 | ^6.3",
     "xp-framework/http": "^7.0 | ^6.2",
     "xp-framework/xml": "^7.0 | ^6.0",
-    "xp-framework/scriptlet": "^8.0 | ^6.2",
+    "xp-framework/scriptlet": "^8.0.1",
     "xp-framework/logging": "^7.0 | ^6.5",
     "xp-framework/collections": "^7.0 | ^6.5",
     "xp-framework/networking": "^7.0 | ^6.6",
+    "xp-framework/tokenize": "^7.0 | ^6.5",
+    "xp-forge/json": "^2.1",
     "php" : ">=5.5.0"
   },
   "require-dev" : {

@@ -409,7 +409,7 @@ class RestContextTest extends TestCase {
       'output'   => 'text/json'
     ];
     $this->assertProcess(
-      400, ['Content-Type: text/json'], '{ "message" : "Parameter \"name\" required, but not found in path(\'name\')" }',
+      400, ['Content-Type: text/json'], '{"message":"Parameter \"name\" required, but not found in path(\'name\')"}',
       $route, $this->newRequest()
     );
   }
@@ -557,7 +557,7 @@ class RestContextTest extends TestCase {
     ];
 
     $this->assertProcess(
-      500, ['Content-Type: text/json'], '{ "message" : "Cannot instantiate" }',
+      500, ['Content-Type: text/json'], '{"message":"Cannot instantiate"}',
       $route, $this->newRequest()
     );
   }
@@ -574,7 +574,7 @@ class RestContextTest extends TestCase {
     ];
 
     $this->assertProcess(
-      500, ['Content-Type: text/json'], '{ "message" : "Cannot instantiate" }',
+      500, ['Content-Type: text/json'], '{"message":"Cannot instantiate"}',
       $route, $this->newRequest()
     );
   }
@@ -591,7 +591,7 @@ class RestContextTest extends TestCase {
     ];
 
     $this->assertProcess(
-      500, ['Content-Type: text/json'], '{ "message" : "Invocation failed" }',
+      500, ['Content-Type: text/json'], '{"message":"Invocation failed"}',
       $route, $this->newRequest()
     );
   }
@@ -608,7 +608,7 @@ class RestContextTest extends TestCase {
     ];
 
     $this->assertProcess(
-      409, ['Content-Type: text/json'], '{ "message" : "Invocation failed" }',
+      409, ['Content-Type: text/json'], '{"message":"Invocation failed"}',
       $route, $this->newRequest()
     );
   }

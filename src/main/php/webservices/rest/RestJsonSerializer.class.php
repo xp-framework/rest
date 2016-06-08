@@ -1,6 +1,7 @@
 <?php namespace webservices\rest;
 
-use webservices\json\JsonFactory;
+use text\json\StreamOutput;
+use text\json\Format as WireFormat;
 
 /**
  * A JSON serializer
@@ -9,19 +10,21 @@ use webservices\json\JsonFactory;
  * @test  xp://net.xp_framework.unittest.webservices.rest.RestJsonSerializerTest
  */
 class RestJsonSerializer extends RestSerializer {
-  protected $json;
+  private $format;
 
   /**
-   * Constructor. Initializes decoder member
+   * Constructor.
+   *
+   * @param  text.json.Format $format Optional wire format, defaults to *dense* format
    */
-  public function __construct() {
-    $this->json= JsonFactory::create();
+  public function __construct(WireFormat $format= null) {
+    $this->format= $format ?: WireFormat::dense();
   }
 
   /**
    * Return the Content-Type header's value
    *
-   * @return  string
+   * @return string
    */
   public function contentType() {
     return 'application/json; charset=utf-8';
@@ -30,36 +33,14 @@ class RestJsonSerializer extends RestSerializer {
   /**
    * Serialize
    *
-   * @param   var $payload
-   * @param   io.streams.OutputStream $out
-   * @return  void
+   * @param  var $payload
+   * @param  io.streams.OutputStream $out
+   * @return void
    */
   public function serialize($payload, $out) {
-    $val= $payload instanceof Payload ? $payload->value : $payload;
-    if ($val instanceof \Traversable) {
-      $i= 0;
-      $map= null;
-      foreach ($val as $key => $element) {
-        if (0 === $i++) {
-          $map= 0 !== $key;
-          $out->write($map ? '{ ' : '[ ');
-        } else {
-          $out->write(' , ');
-        }
-
-        if ($map) {
-          $this->json->encodeTo($key, $out);
-          $out->write(' : ');
-        }
-        $this->json->encodeTo($element, $out);
-      }
-      if (null === $map) {
-        $out->write('[ ]');
-      } else {
-        $out->write($map ? ' }' : ' ]');
-      }
-    } else {
-      $this->json->encodeTo($val, $out);
-    }
+    (new StreamOutput($out, $this->format))->write($payload instanceof Payload
+      ? $payload->value
+      : $payload
+    );
   }
 }
