@@ -3,6 +3,11 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.2.0 / 2016-06-08
+
+* Merged PR #13: Use xp-forge/json
+  (@thekid, @kiesel, @lluchs)
+
 ## 7.1.0 / 2016-05-01
 
 * Merged PR #12: Add RestResponse::error(). This new method complements
