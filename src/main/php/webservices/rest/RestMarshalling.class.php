@@ -23,7 +23,7 @@ class RestMarshalling extends \lang\Object {
     $this->marshallers= create('new util.collections.HashTable<lang.Type, webservices.rest.TypeMarshaller>');
 
     // Deprecated!
-    if (ClassLoader::getDefault()->providesPackage('lang.types')) {
+    if (PHP_VERSION < 7 && ClassLoader::getDefault()->providesPackage('lang.types')) {
       $strings= newinstance('webservices.rest.TypeMarshaller', [], [
         'marshal'   => function($t) { return $t->toString(); },
         'unmarshal' => function(Type $target, $in) { return $target->newInstance($in); }

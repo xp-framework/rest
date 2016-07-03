@@ -3,6 +3,11 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.2.1 / 2016-07-03
+
+* Fixed problems when using XP6 releases together with PHP 7
+  (@thekid)
+
 ## 7.2.0 / 2016-06-08
 
 * Merged PR #13: Use xp-forge/json
