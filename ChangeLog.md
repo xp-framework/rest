@@ -3,6 +3,12 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.3.1 / 2016-08-28
+
+* Added compatibility with newest xp-framework/http and xp-framework/xml
+  releases (both 8.0.0)
+  (@thekid)
+
 ## 7.3.0 / 2016-08-28
 
 * Added forward compatibility with XP 8.0.0: Use File::in() instead of
