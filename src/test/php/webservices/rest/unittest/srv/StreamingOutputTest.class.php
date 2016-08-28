@@ -41,14 +41,13 @@ class StreamingOutputTest extends TestCase {
   public function of_with_file() {
     $f= newinstance(File::class, [new MemoryInputStream('Test')], '{
       protected $stream;
-      public function __construct($stream) { $this->stream= $stream; }
-      public function getFileName() { return "test.txt"; }
+      public function __construct($stream) { $this->stream= $stream; $this->setURI("test.txt"); }
       public function getSize() { return 6100; }
-      public function getInputStream() { return $this->stream; }
+      public function in() { return $this->stream; }
       public function lastModified() { return 1364291580; }
     }');
     $this->assertEquals(
-      (new StreamingOutput($f->getInputStream()))
+      (new StreamingOutput($f->in()))
         ->withMediaType('text/plain')
         ->withContentLength(6100)
         ->withLastModified(new \util\Date('2013-03-26 10:53:00'))
