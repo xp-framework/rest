@@ -3,6 +3,10 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 7.3.2 / 2016-08-29
+
+* Made compatible with xp-framework/network v8.0.0 - @thekid
+
 ## 7.3.1 / 2016-08-28
 
 * Added compatibility with newest xp-framework/http and xp-framework/xml
