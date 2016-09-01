@@ -3,6 +3,10 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.0.0 / 2016-09-01
+
+* Merged PR #14: Remove deprecated execute() overloading - @thekid
+
 ## 7.3.2 / 2016-08-29
 
 * Made compatible with xp-framework/network v8.0.0 - @thekid
