@@ -239,9 +239,7 @@ class RestClient extends \lang\Object implements Traceable {
   public function execute(RestRequest $request) {
     $url= $request->targetUrl($this->base);
     $key= $url->getHost();
-    if (isset($this->connections[$key])) {
-      $this->connections[$key];
-    } else {
+    if (!isset($this->connections[$key])) {
       $this->connections[$key]= $this->connectionTo->__invoke($url);
     }
 
