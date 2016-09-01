@@ -414,6 +414,12 @@ class RestRequest extends \lang\Object {
       $resource= $url->getPath();
     } else if (null === $base) {
       throw new IllegalStateException('No base set');
+    } else if (0 === strncmp('//',  $this->resource, 2)) {
+      $url= new URL($base->getScheme().':'.$this->resource);
+      $resource= $url->getPath();
+    } else if ('/' === $this->resource{0}) {
+      $resource= $this->resource;
+      $url= clone $base;
     } else {
       $resource= rtrim($base->getPath('/'), '/').'/'.ltrim($this->resource, '/');
       $url= clone $base;
