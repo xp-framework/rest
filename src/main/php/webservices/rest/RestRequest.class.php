@@ -1,8 +1,10 @@
 <?php namespace webservices\rest;
 
+use peer\URL;
 use peer\http\HttpConstants;
 use peer\http\Header;
 use lang\ElementNotFoundException;
+use lang\IllegalStateException;
 
 /**
  * A REST request
@@ -395,18 +397,42 @@ class RestRequest extends \lang\Object {
     );
   }
 
-  /** @return php.Traversable */
-  public function placeHolders() {
-    $l= strlen($this->resource);
+  /**
+   * Resolves target URL
+   *
+   * @param  peer.URL $base
+   * @return peer.URL
+   * @throws lang.IllegalStateException if no base URL set and relative URL used in this request
+   */
+  public function targetUrl(URL $base= null) {
+    if (strpos($this->resource, '://')) {
+      $url= new URL($this->resource);
+      if ($base && ($url->getHost() === $base->getHost())) {
+        $url->setUser($base->getUser());
+        $url->setPassword($base->getPassword());
+      }
+      $resource= $url->getPath();
+    } else if (null === $base) {
+      throw new IllegalStateException('No base set');
+    } else {
+      $resource= rtrim($base->getPath('/'), '/').'/'.ltrim($this->resource, '/');
+      $url= clone $base;
+    }
+
+    $l= strlen($resource);
+    $target= '';
     $offset= 0;
     do {
-      $b= strcspn($this->resource, '{', $offset);
+      $b= strcspn($resource, '{', $offset);
+      $target.= substr($resource, $offset, $b);
       $offset+= $b;
       if ($offset >= $l) break;
-      $e= strcspn($this->resource, '}', $offset);
-      yield substr($this->resource, $offset+ 1, $e- 1);
+      $e= strcspn($resource, '}', $offset);
+      $target.= urlencode($this->getSegment(substr($resource, $offset+ 1, $e- 1)));
       $offset+= $e+ 1;
     } while ($offset < $l);
+
+    return $url->setPath($target);
   }
 
   /**

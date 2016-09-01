@@ -21,8 +21,8 @@ class RestClientExecutionTest extends TestCase {
   #[@beforeClass]
   public static function dummyConnectionClass() {
     self::$conn= ClassLoader::defineClass('RestClientExecutionTest_Connection', 'peer.http.HttpConnection', [], '{
-      protected $result= NULL;
-      protected $exception= NULL;
+      protected $result= null;
+      protected $exception= null;
 
       public function __construct($status, $body, $headers) {
         parent::__construct("http://test");
@@ -56,8 +56,10 @@ class RestClientExecutionTest extends TestCase {
    * @return  webservices.rest.RestClient
    */
   public function fixtureWith($status, $body= null, $headers= []) {
-    $fixture= new RestClient();
-    $fixture->setConnection(self::$conn->newInstance($status, $body, $headers));
+    $fixture= new RestClient('http://test');
+    $fixture->usingConnections(function($url) use($status, $body, $headers) {
+      return self::$conn->newInstance($status, $body, $headers);
+    });
     return $fixture;
   }
 

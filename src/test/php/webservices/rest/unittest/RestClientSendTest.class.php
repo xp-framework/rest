@@ -24,7 +24,7 @@ class RestClientSendTest extends TestCase {
   #[@beforeClass]
   public static function requestEchoingConnectionClass() {
     self::$conn= ClassLoader::defineClass('RestClientSendTest_Connection', 'peer.http.HttpConnection', [], '{
-      public function __construct() {
+      public function __construct($url) {
         parent::__construct("http://test");
       }
       
@@ -43,8 +43,7 @@ class RestClientSendTest extends TestCase {
    * Creates fixture.
    */
   public function setUp() {
-    $this->fixture= new RestClient();
-    $this->fixture->setConnection(self::$conn->newInstance());
+    $this->fixture= (new RestClient('http://user:pass@test'))->usingConnections([self::$conn, 'newInstance']);
   }
 
   #[@test]
@@ -134,6 +133,17 @@ class RestClientSendTest extends TestCase {
       "Host: test\r\n".
       "\r\n",
       $this->fixture->get('/users', ['page' => 1])->content()
+    );
+  }
+
+  #[@test]
+  public function get_with_full_url() {
+    $this->assertEquals(
+      "GET /users?page=1 HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "\r\n",
+      $this->fixture->get('http://test/users', ['page' => 1])->content()
     );
   }
 

@@ -22,18 +22,22 @@ Here's an overview of the typical usage for working with the REST API.
 
 ```php
 use webservices\rest\RestClient;
+use com\example\User;
 
 $client= new RestClient('http://api.example.com/');
 
 // Create 
 $response= $client->post('/users', ['name' => 'Test'], 'application/json');
-if (201 === $response->status()) {
-  $url= $response->header('Location');
+if (201 !== $response->status()) {
+  throw new IllegalStateException('Could not create user!');
 }
+$url= $response->header('Location');
 
-// Read as map or unmarshal to object
-$map= $client->get('/users/self')->data();
-$object= $client->get('/users/self')->data(User::class);
+// Update, returns data as map. Will throw an exception for return codes >= 400
+$user= $client->put($url, ['name' => 'Tested'], 'application/json')->data();
+
+// Unmarshal to object by passing a type
+$user= $client->get('/users/self')->data(User::class);
 
 // Pass parameters
 $list= $client->get('/users', ['page' => 1])->data();
