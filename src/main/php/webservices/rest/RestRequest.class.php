@@ -453,30 +453,6 @@ class RestRequest extends \lang\Object {
   }
 
   /**
-   * Gets query
-   *
-   * @param   string base
-   * @return  string query
-   */
-  public function getTarget($base= '/') {
-    $resource= rtrim($base, '/').'/'.ltrim($this->resource, '/');
-    $l= strlen($resource);
-    $target= '';
-    $offset= 0;
-    do {
-      $b= strcspn($resource, '{', $offset);
-      $target.= substr($resource, $offset, $b);
-      $offset+= $b;
-      if ($offset >= $l) break;
-      $e= strcspn($resource, '}', $offset);
-      $target.= urlencode($this->getSegment(substr($resource, $offset+ 1, $e- 1)));
-      $offset+= $e+ 1;
-    } while ($offset < $l);
-    return $target;
-  }
-
-
-  /**
    * Creates a string representation
    *
    * @return string

@@ -133,50 +133,6 @@ class RestClientSendTest extends TestCase {
   }
 
   #[@test]
-  public function get_with_full_url() {
-    $this->assertEquals(
-      "GET /users?page=1 HTTP/1.1\r\n".
-      "Connection: close\r\n".
-      "Host: test\r\n".
-      "\r\n",
-      $this->fixture->get('http://test/users', ['page' => 1])->content()
-    );
-  }
-
-  #[@test]
-  public function get_with_slashslash_url() {
-    $this->assertEquals(
-      "GET /users?page=1 HTTP/1.1\r\n".
-      "Connection: close\r\n".
-      "Host: example\r\n".
-      "\r\n",
-      $this->fixture->get('//example/users', ['page' => 1])->content()
-    );
-  }
-
-  #[@test]
-  public function get_with_relative_url() {
-    $this->assertEquals(
-      "GET /api/user HTTP/1.1\r\n".
-      "Connection: close\r\n".
-      "Host: test\r\n".
-      "\r\n",
-      $this->fixture->get('user')->content()
-    );
-  }
-
-  #[@test]
-  public function get_with_dotdot_url() {
-    $this->assertEquals(
-      "GET /api/../user HTTP/1.1\r\n".
-      "Connection: close\r\n".
-      "Host: test\r\n".
-      "\r\n",
-      $this->fixture->get('../user')->content()
-    );
-  }
-
-  #[@test]
   public function post() {
     $this->assertEquals(
       "POST /user HTTP/1.1\r\n".
