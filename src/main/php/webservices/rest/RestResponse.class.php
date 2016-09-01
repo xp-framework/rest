@@ -20,12 +20,10 @@ class RestResponse extends \lang\Object {
    *
    * @param   peer.http.HttpResponse response
    * @param   webservices.rest.ResponseReader reader
-   * @param   var type (Deprecated)
    */
-  public function __construct(HttpResponse $response, ResponseReader $reader= null, $type= null) {
+  public function __construct(HttpResponse $response, ResponseReader $reader= null) {
     $this->response= $response;
     $this->reader= $reader;
-    $this->type= $type;
     $this->input= $response->getInputStream();
   }
 
@@ -166,7 +164,7 @@ class RestResponse extends \lang\Object {
     $this->handleStatus($this->response->statusCode());
  
     if (null === $type) {
-      $target= $this->type ?: \lang\Type::$VAR;  // BC
+      $target= \lang\Type::$VAR;
     } else if ($type instanceof \lang\Type) {
       $target= $type;
     } else {

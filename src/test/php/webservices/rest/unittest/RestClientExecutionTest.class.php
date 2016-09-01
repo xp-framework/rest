@@ -98,24 +98,4 @@ class RestClientExecutionTest extends TestCase {
     $response= $fixture->execute(new RestRequest());
     $this->assertEquals(['title' => 'Found a bug'], $response->data(Type::forName('[:var]')));
   }
-  
-  #[@test]
-  public function customContent() {
-    $fixture= $this->fixtureWith(HttpConstants::STATUS_NO_CONTENT, '', [
-      'Content-Type' => 'application/json'
-    ]);
-    $class= Type::forName('webservices.rest.unittest.CustomRestResponse');
-    $response= $fixture->execute($class, new RestRequest());
-    $this->assertInstanceOf($class, $response);
-    $this->assertNull($response->data());
-  }
-
-  #[@test]
-  public function deprecatedExecuteOverloading() {
-    $fixture= $this->fixtureWith(HttpConstants::STATUS_OK, '{ "title" : "Found a bug" }', [
-      'Content-Type' => 'application/json'
-    ]);
-    $response= $fixture->execute('[:var]', new RestRequest());
-    $this->assertEquals(['title' => 'Found a bug'], $response->data());
-  }
 }
