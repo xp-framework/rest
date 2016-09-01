@@ -27,7 +27,7 @@ use com\example\User;
 $client= new RestClient('http://api.example.com/');
 
 // Create 
-$response= $client->post('/users', ['name' => 'Test'], 'application/json');
+$response= $client->post('users', ['name' => 'Test'], 'application/json');
 if (201 !== $response->status()) {
   throw new IllegalStateException('Could not create user!');
 }
@@ -37,13 +37,13 @@ $url= $response->header('Location');
 $user= $client->put($url, ['name' => 'Tested'], 'application/json')->data();
 
 // Unmarshal to object by passing a type
-$user= $client->get('/users/self')->data(User::class);
+$user= $client->get('users/self')->data(User::class);
 
 // Pass parameters
-$list= $client->get('/users', ['page' => 1])->data();
+$list= $client->get('users', ['page' => 1])->data();
 
 // Pass segments
-$client->delete(['/user/{id}', 'id' => 6100]);
+$client->delete(['user/{id}', 'id' => 6100]);
 ```
 
 If you need to customize the request beyong the typical uses, use the `execute()` method.
@@ -51,12 +51,11 @@ If you need to customize the request beyong the typical uses, use the `execute()
 ```php
 use webservices\rest\RestClient;
 use webservices\rest\RestRequest;
-use peer\http\HttpConstants;
 
 $client= new RestClient('http://api.example.com/');
 
-$request= (new RestRequest('/resource/{id}'))
- ->withMethod(HttpConstants::GET)
+$request= (new RestRequest('resource/{id}'))
+ ->withMethod('GET')
  ->withSegment('id', 5000)
  ->withParameter('details', 'true')
  ->withHeader('X-Binford', '6100 (more power)'
