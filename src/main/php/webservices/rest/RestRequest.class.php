@@ -398,6 +398,21 @@ class RestRequest extends \lang\Object {
   }
 
   /**
+   * Copy authentication if on same host 
+   *
+   * @param  peer.URL $base
+   * @param  peer.URL $url
+   * @return peer.URL The given URL
+   */
+  private function authorize($base, $url) {
+    if ($base && ($url->getHost() === $base->getHost())) {
+      $url->setUser($base->getUser());
+      $url->setPassword($base->getPassword());
+    }
+    return $url;
+  }
+
+  /**
    * Resolves target URL
    *
    * @param  peer.URL $base
@@ -406,16 +421,12 @@ class RestRequest extends \lang\Object {
    */
   public function targetUrl(URL $base= null) {
     if (strpos($this->resource, '://')) {
-      $url= new URL($this->resource);
-      if ($base && ($url->getHost() === $base->getHost())) {
-        $url->setUser($base->getUser());
-        $url->setPassword($base->getPassword());
-      }
+      $url= $this->authorize($base, new URL($this->resource));
       $resource= $url->getPath();
     } else if (null === $base) {
       throw new IllegalStateException('No base set');
     } else if (0 === strncmp('//',  $this->resource, 2)) {
-      $url= new URL($base->getScheme().':'.$this->resource);
+      $url= $this->authorize($base, new URL($base->getScheme().':'.$this->resource));
       $resource= $url->getPath();
     } else if ('/' === $this->resource{0}) {
       $resource= $this->resource;
