@@ -8,6 +8,8 @@ use peer\http\HttpConnection;
 use peer\URL;
 use lang\IllegalArgumentException;
 use lang\IllegalStateException;
+use lang\Error;
+use unittest\actions\RuntimeVersion;
 
 /**
  * TestCase
@@ -69,39 +71,19 @@ class RestClientTest extends TestCase {
     $this->assertEquals(new URL(self::BASE_URL), $fixture->getBase());
   }
 
-  #[@test, @expect(IllegalArgumentException::class)]
-  public function singleArgumentExecuteNull() {
+  #[@test, @action(new RuntimeVersion('>=7.0.0')), @expect(Error::class)]
+  public function illegal_argument7() {
     $this->newFixture()->execute(null);
   }
 
-  #[@test, @expect(IllegalArgumentException::class)]
-  public function singleArgumentExecuteThis() {
-    $this->newFixture()->execute($this);
-  }
-
-  #[@test, @expect(IllegalArgumentException::class)]
-  public function executeNullTypeNullRequest() {
-    $this->newFixture()->execute(null, null);
-  }
-
-  #[@test, @expect(IllegalArgumentException::class)]
-  public function executeNullType() {
-    $this->newFixture()->execute(null, new \webservices\rest\RestRequest());
-  }
-
-  #[@test, @expect(IllegalArgumentException::class)]
-  public function executeNullRequest() {
-    $this->newFixture()->execute(\lang\Type::$VAR, null);
-  }
-
-  #[@test, @expect(IllegalArgumentException::class)]
-  public function executeThisRequest() {
-    $this->newFixture()->execute(\lang\Type::$VAR, $this);
+  #[@test, @action(new RuntimeVersion('<7.0.0')), @expect(IllegalArgumentException::class)]
+  public function illegal_argument() {
+    $this->newFixture()->execute(null);
   }
 
   #[@test, @expect(class= IllegalStateException::class, withMessage= 'No connection set')]
   public function executeWithoutBase() {
-    $this->newFixture()->execute(\lang\Type::$VAR, new \webservices\rest\RestRequest());
+    $this->newFixture()->execute(new \webservices\rest\RestRequest());
   }
 
   #[@test]
