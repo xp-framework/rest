@@ -241,6 +241,8 @@ class RestClient extends \lang\Object implements Traceable {
     $key= $url->getHost();
     if (!isset($this->connections[$key])) {
       $this->connections[$key]= $this->connectionTo->__invoke($url);
+      $this->connections[$key]->setConnectTimeout($this->connectTimeout);
+      $this->connections[$key]->setTimeout($this->readTimeout);
     }
 
     $send= $this->connections[$key]->create(new HttpRequest());
