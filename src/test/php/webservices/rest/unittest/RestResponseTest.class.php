@@ -51,8 +51,7 @@ class RestResponseTest extends TestCase {
         $headers ? "\r\n".implode("\r\n", $headers) : '',
         $body
       ))),
-      new ResponseReader(self::$deserializers[$content], new RestMarshalling()),
-      Type::forName('[:var]')
+      new ResponseReader(self::$deserializers[$content], new RestMarshalling())
     );
   }
 
@@ -262,7 +261,7 @@ class RestResponseTest extends TestCase {
     $fixture= $this->newFixture(self::XML, [], '<issue><issue_id>1</issue_id><title/></issue>');
     $this->assertEquals(
       ['issue_id' => '1', 'title' => ''], 
-      $fixture->data()
+      $fixture->data('[:var]')
     );
   }
 
@@ -271,7 +270,7 @@ class RestResponseTest extends TestCase {
     $fixture= $this->newFixture(self::XML, [], '<book><author><id>1549</id><name>Timm</name></author></book>');
     $this->assertEquals(
       ['author' => ['id' => '1549', 'name' => 'Timm']],
-      $fixture->data()
+      $fixture->data('[:var]')
     );
   }
 
