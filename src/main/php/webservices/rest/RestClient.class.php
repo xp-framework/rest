@@ -3,6 +3,7 @@
 use util\log\Traceable;
 use peer\http\HttpConnection;
 use peer\http\HttpRequest;
+use peer\http\HttpConstants;
 use lang\IllegalStateException;
 use lang\IllegalArgumentException;
 use lang\XPClass;
@@ -182,6 +183,83 @@ class RestClient extends \lang\Object implements Traceable {
     } else {
       return RestFormat::forMediaType($mediaType)->serializer();
     }
+  }
+
+  /**
+   * Creates a new request object
+   *
+   * @param  string|array $resource
+   * @param  string $method
+   * @return webservices.rest.RestRequest
+   */
+  private function newRequest($resource, $method) {
+    if (is_array($resource)) {
+      $request= new RestRequest(array_shift($resource), $method);
+      foreach ($resource as $segment => $name) {
+        $request->addSegment($segment, $name);
+      }
+    } else {
+      $request= new RestRequest($resource, $method);
+    }
+    return $request;
+  }
+
+  /**
+   * Executes a GET request against a given resource
+   *
+   * @param  string|array $resource
+   * @param  [:string] $params
+   * @return webservices.rest.RestResponse
+   */
+  public function get($resource, $params= []) {
+    $request= $this->newRequest($resource, HttpConstants::GET);
+    foreach ($params as $name => $param) {
+      $request->addParameter($name, $param);
+    }
+    return $this->execute($request);
+  }
+
+  /**
+   * Executes a POST request against a given resource
+   *
+   * @param  string|array $resource
+   * @param  var $payload Payload to be serialized
+   * @param  string $type The content-type
+   * @return webservices.rest.RestResponse
+   */
+  public function post($resource, $payload, $type) {
+    $request= $this->newRequest($resource, HttpConstants::POST);
+    $request->setPayload($payload, $type);
+    return $this->execute($request);
+  }
+
+  /**
+   * Executes a PUT request against a given resource
+   *
+   * @param  string|array $resource
+   * @param  var $payload Payload to be serialized
+   * @param  string $type The content-type
+   * @return webservices.rest.RestResponse
+   */
+  public function put($resource, $payload, $type) {
+    $request= $this->newRequest($resource, HttpConstants::PUT);
+    $request->setPayload($payload, $type);
+    return $this->execute($request);
+  }
+
+  /**
+   * Executes a DELETE request against a given resource
+   *
+   * @param  string|array $resource
+   * @param  [:string] $params
+   * @return webservices.rest.RestResponse
+   */
+  public function delete($resource, $params= []) {
+    $request= $this->newRequest($resource, HttpConstants::DELETE);
+    foreach ($params as $name => $param) {
+      $request->addParameter($name, $param);
+    }
+    return $this->execute($request);
   }
 
   /**

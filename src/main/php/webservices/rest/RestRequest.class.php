@@ -395,6 +395,20 @@ class RestRequest extends \lang\Object {
     );
   }
 
+  /** @return php.Traversable */
+  public function placeHolders() {
+    $l= strlen($this->resource);
+    $offset= 0;
+    do {
+      $b= strcspn($this->resource, '{', $offset);
+      $offset+= $b;
+      if ($offset >= $l) break;
+      $e= strcspn($this->resource, '}', $offset);
+      yield substr($this->resource, $offset+ 1, $e- 1);
+      $offset+= $e+ 1;
+    } while ($offset < $l);
+  }
+
   /**
    * Gets query
    *

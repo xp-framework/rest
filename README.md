@@ -22,6 +22,30 @@ Here's an overview of the typical usage for working with the REST API.
 
 ```php
 use webservices\rest\RestClient;
+
+$client= new RestClient('http://api.example.com/');
+
+// Create 
+$response= $client->post('/users', ['name' => 'Test'], 'application/json');
+if (201 === $response->status()) {
+  $url= $response->header('Location');
+}
+
+// Read as map or unmarshal to object
+$map= $client->get('/users/self')->data();
+$object= $client->get('/users/self')->data(User::class);
+
+// Pass parameters
+$list= $client->get('/users', ['page' => 1])->data();
+
+// Pass segments
+$client->delete(['/user/{id}', 'id' => 6100]);
+```
+
+If you need to customize the request beyong the typical uses, use the `execute()` method.
+
+```php
+use webservices\rest\RestClient;
 use webservices\rest\RestRequest;
 use peer\http\HttpConstants;
 
