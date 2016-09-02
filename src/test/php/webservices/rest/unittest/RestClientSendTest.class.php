@@ -111,6 +111,43 @@ class RestClientSendTest extends TestCase {
   }
 
   #[@test]
+  public function get_with_accept() {
+    $this->assertEquals(
+      "GET / HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Accept: */*\r\n".
+      "\r\n",
+      $this->fixture->get('/', [], '*/*')->content()
+    );
+  }
+
+  #[@test]
+  public function get_with_multiple_accept_headers() {
+    $this->assertEquals(
+      "GET / HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Accept: application/json, text/xml;q=0.5\r\n".
+      "\r\n",
+      $this->fixture->get('/', [], ['application/json', 'text/xml;q=0.5'])->content()
+    );
+  }
+
+
+  #[@test]
+  public function get_uses_accept() {
+    $this->assertEquals(
+      "GET / HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Accept: */*\r\n".
+      "\r\n",
+      $this->fixture->accepting('*/*')->get('/')->content()
+    );
+  }
+
+  #[@test]
   public function get_with_segment() {
     $this->assertEquals(
       "GET /user/6100 HTTP/1.1\r\n".
@@ -161,6 +198,20 @@ class RestClientSendTest extends TestCase {
   }
 
   #[@test]
+  public function post_uses_default_format() {
+    $this->assertEquals(
+      "POST /user HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Content-Type: application/json; charset=utf-8\r\n".
+      "Content-Length: 15\r\n".
+      "\r\n".
+      "{\"name\":\"Test\"}",
+      $this->fixture->using(RestFormat::$JSON)->post('/user', ['name' => 'Test'])->content()
+    );
+  }
+
+  #[@test]
   public function put() {
     $this->assertEquals(
       "PUT /user/self HTTP/1.1\r\n".
@@ -185,6 +236,20 @@ class RestClientSendTest extends TestCase {
       "\r\n".
       "{\"name\":\"Test\"}",
       $this->fixture->put(['/user/{id}', 'id' => 0], ['name' => 'Test'], 'application/json')->content()
+    );
+  }
+
+  #[@test]
+  public function put_uses_default_format() {
+    $this->assertEquals(
+      "PUT /user HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Content-Type: application/json; charset=utf-8\r\n".
+      "Content-Length: 15\r\n".
+      "\r\n".
+      "{\"name\":\"Test\"}",
+      $this->fixture->using(RestFormat::$JSON)->put('/user', ['name' => 'Test'])->content()
     );
   }
 

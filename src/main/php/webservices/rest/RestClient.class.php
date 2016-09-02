@@ -20,6 +20,8 @@ class RestClient extends \lang\Object implements Traceable {
   private $connectionTo;
   private $base= null;
   private $cat= null;
+  private $accept= [];
+  private $format= null;
   private $serializers= [];
   private $deserializers= [];
   private $marshalling= null;
@@ -36,6 +38,37 @@ class RestClient extends \lang\Object implements Traceable {
     $this->connectionTo= function($url) { return new HttpConnection($url); };
     $this->marshalling= new RestMarshalling();
     if (null !== $base) $this->setBase($base);
+  }
+
+  /**
+   * Sets default format to use for sending data
+   *
+   * @param  string|webservices.rest.RestFormat $format a mimetype or a format
+   * @param  string $q
+   * @return self
+   */
+  public function accepting($format, $q= null) {
+    if ($format instanceof RestFormat) {
+      $this->accept[]= $format->deserializer()->contentType().($q ? ';q= '.$q : '');
+    } else {
+      $this->accept[]= $format.($q ? ';q= '.$q : '');
+    }
+    return $this;
+  }
+
+  /**
+   * Sets default format to use for sending data
+   *
+   * @param  string|webservices.rest.RestFormat $format a mimetype or a format
+   * @return self
+   */
+  public function using($format) {
+    if ($format instanceof RestFormat) {
+      $this->format= $format->serializer()->contentType();
+    } else {
+      $this->format= $format;
+    }
+    return $this;
   }
 
   /**
@@ -177,12 +210,16 @@ class RestClient extends \lang\Object implements Traceable {
    *
    * @param  string|array $resource
    * @param  [:string] $params
+   * @param  string[] $accept The accept-types
    * @return webservices.rest.RestResponse
    */
-  public function get($resource, $params= []) {
+  public function get($resource, $params= [], $accept= []) {
     $request= $this->newRequest($resource, HttpConstants::GET);
     foreach ($params as $name => $param) {
       $request->addParameter($name, $param);
+    }
+    foreach ((array)$accept ?: $this->accept as $range) {
+      $request->addAccept($range);
     }
     return $this->execute($request);
   }
@@ -195,9 +232,9 @@ class RestClient extends \lang\Object implements Traceable {
    * @param  string $type The content-type
    * @return webservices.rest.RestResponse
    */
-  public function post($resource, $payload, $type) {
+  public function post($resource, $payload, $type= null) {
     $request= $this->newRequest($resource, HttpConstants::POST);
-    $request->setPayload($payload, $type);
+    $request->setPayload($payload, $type ?: $this->format);
     return $this->execute($request);
   }
 
@@ -209,9 +246,9 @@ class RestClient extends \lang\Object implements Traceable {
    * @param  string $type The content-type
    * @return webservices.rest.RestResponse
    */
-  public function put($resource, $payload, $type) {
+  public function put($resource, $payload, $type= null) {
     $request= $this->newRequest($resource, HttpConstants::PUT);
-    $request->setPayload($payload, $type);
+    $request->setPayload($payload, $type ?: $this->format);
     return $this->execute($request);
   }
 
