@@ -28,16 +28,16 @@ class RestClientSendTest extends TestCase {
 
   #[@beforeClass]
   public static function requestEchoingConnectionClass() {
-    self::$conn= ClassLoader::defineClass('RestClientSendTest_Connection', HttpConnection::class, [], [
-      'send' => function(HttpRequest $request) {
+    self::$conn= ClassLoader::defineClass('RestClientSendTest_Connection', HttpConnection::class, [], '{
+      public function send(\peer\http\HttpRequest $request) {
         $str= $request->getRequestString();
-        return new HttpResponse(new MemoryInputStream(sprintf(
+        return new \peer\http\HttpResponse(new \io\streams\MemoryInputStream(sprintf(
           "HTTP/1.0 200 OK\r\nContent-Type: text/plain\r\nContent-Length: %d\r\n\r\n%s",
           strlen($str),
           $str
         )));
       }
-    ]);
+    }');
   }
 
   #[@test]
