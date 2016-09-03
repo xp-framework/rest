@@ -6,6 +6,9 @@ use webservices\rest\RestRequest;
 use webservices\rest\RestFormat;
 use io\streams\MemoryInputStream;
 use peer\http\HttpConstants;
+use peer\http\HttpConnection;
+use peer\http\HttpRequest;
+use peer\http\HttpResponse;
 use peer\http\RequestData;
 use lang\ClassLoader;
 
@@ -15,19 +18,17 @@ use lang\ClassLoader;
  * @see   xp://webservices.rest.RestClient
  */
 class RestClientSendTest extends TestCase {
-  protected static $conn= null;   
-  protected $fixture= null;
+  private static $conn;
+  private $fixture;
 
-  /**
-   * Creates connection class which echoes the request
-   */
+  /** @return void */
+  public function setUp() {
+    $this->fixture= (new RestClient('http://test/api'))->usingConnections([self::$conn, 'newInstance']);
+  }
+
   #[@beforeClass]
   public static function requestEchoingConnectionClass() {
-    self::$conn= ClassLoader::defineClass('RestClientSendTest_Connection', 'peer.http.HttpConnection', [], '{
-      public function __construct() {
-        parent::__construct("http://test");
-      }
-      
+    self::$conn= ClassLoader::defineClass('RestClientSendTest_Connection', HttpConnection::class, [], '{
       public function send(\peer\http\HttpRequest $request) {
         $str= $request->getRequestString();
         return new \peer\http\HttpResponse(new \io\streams\MemoryInputStream(sprintf(
@@ -39,22 +40,14 @@ class RestClientSendTest extends TestCase {
     }');
   }
 
-  /**
-   * Creates fixture.
-   */
-  public function setUp() {
-    $this->fixture= new RestClient();
-    $this->fixture->setConnection(self::$conn->newInstance());
-  }
-
   #[@test]
   public function with_body() {
     $this->assertEquals(
       "POST / HTTP/1.1\r\n".
       "Connection: close\r\n".
       "Host: test\r\n".
-      "Content-Length: 5\r\n".
       "Content-Type: application/x-www-form-urlencoded\r\n".
+      "Content-Length: 5\r\n".
       "\r\n".
       "Hello",
       $this->fixture->execute((new RestRequest('/', HttpConstants::POST))->withBody(new RequestData('Hello')))->content()
@@ -101,6 +94,255 @@ class RestClientSendTest extends TestCase {
       "\r\n".
       "key=value",
       $this->fixture->execute((new RestRequest('/', HttpConstants::POST))->withPayload(['key' => 'value'], RestFormat::$FORM))->content()
+    );
+  }
+
+  #[@test]
+  public function default_accept() {
+    $fixture= $this->fixture->accepting('application/json');
+    $this->assertEquals(
+      "GET / HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Accept: application/json\r\n".
+      "\r\n",
+      $fixture->execute(new RestRequest('/', HttpConstants::GET))->content()
+    );
+  }
+
+  #[@test]
+  public function get() {
+    $this->assertEquals(
+      "GET / HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "\r\n",
+      $this->fixture->get('/')->content()
+    );
+  }
+
+  #[@test]
+  public function get_with_accept() {
+    $this->assertEquals(
+      "GET / HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Accept: */*\r\n".
+      "\r\n",
+      $this->fixture->get('/', [], '*/*')->content()
+    );
+  }
+
+  #[@test]
+  public function get_with_multiple_accept_headers() {
+    $this->assertEquals(
+      "GET / HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Accept: application/json, text/xml;q=0.5\r\n".
+      "\r\n",
+      $this->fixture->get('/', [], ['application/json', 'text/xml;q=0.5'])->content()
+    );
+  }
+
+
+  #[@test]
+  public function get_uses_accept() {
+    $this->assertEquals(
+      "GET / HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Accept: */*\r\n".
+      "\r\n",
+      $this->fixture->accepting('*/*')->get('/')->content()
+    );
+  }
+
+  #[@test]
+  public function get_with_segment() {
+    $this->assertEquals(
+      "GET /user/6100 HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "\r\n",
+      $this->fixture->get(['/user/{id}', 'id' => 6100])->content()
+    );
+  }
+
+  #[@test]
+  public function get_with_parameter() {
+    $this->assertEquals(
+      "GET /users?page=1 HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "\r\n",
+      $this->fixture->get('/users', ['page' => 1])->content()
+    );
+  }
+
+  #[@test]
+  public function with_header() {
+    $this->assertEquals(
+      "GET / HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "User-Agent: Test\r\n".
+      "\r\n",
+      $this->fixture->with('User-Agent', 'Test')->get('/')->content()
+    );
+  }
+
+  #[@test]
+  public function post() {
+    $this->assertEquals(
+      "POST /user HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Content-Type: application/json\r\n".
+      "Content-Length: 15\r\n".
+      "\r\n".
+      "{\"name\":\"Test\"}",
+      $this->fixture->post('/user', ['name' => 'Test'], 'application/json')->content()
+    );
+  }
+
+  #[@test]
+  public function post_with_segment() {
+    $this->assertEquals(
+      "POST /user/6100/emails HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Content-Type: application/json\r\n".
+      "Content-Length: 30\r\n".
+      "\r\n".
+      "{\"address\":\"test@example.com\"}",
+      $this->fixture->post(['/user/{id}/emails', 'id' => 6100], ['address' => 'test@example.com'], 'application/json')->content()
+    );
+  }
+
+  #[@test]
+  public function post_uses_default_format() {
+    $this->assertEquals(
+      "POST /user HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Content-Type: application/json; charset=utf-8\r\n".
+      "Content-Length: 15\r\n".
+      "\r\n".
+      "{\"name\":\"Test\"}",
+      $this->fixture->using(RestFormat::$JSON)->post('/user', ['name' => 'Test'])->content()
+    );
+  }
+
+  #[@test]
+  public function put() {
+    $this->assertEquals(
+      "PUT /user/self HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Content-Type: application/json\r\n".
+      "Content-Length: 15\r\n".
+      "\r\n".
+      "{\"name\":\"Test\"}",
+      $this->fixture->put('/user/self', ['name' => 'Test'], 'application/json')->content()
+    );
+  }
+
+  #[@test]
+  public function put_with_segment() {
+    $this->assertEquals(
+      "PUT /user/0 HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Content-Type: application/json\r\n".
+      "Content-Length: 15\r\n".
+      "\r\n".
+      "{\"name\":\"Test\"}",
+      $this->fixture->put(['/user/{id}', 'id' => 0], ['name' => 'Test'], 'application/json')->content()
+    );
+  }
+
+  #[@test]
+  public function put_uses_default_format() {
+    $this->assertEquals(
+      "PUT /user HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Content-Type: application/json; charset=utf-8\r\n".
+      "Content-Length: 15\r\n".
+      "\r\n".
+      "{\"name\":\"Test\"}",
+      $this->fixture->using(RestFormat::$JSON)->put('/user', ['name' => 'Test'])->content()
+    );
+  }
+
+  #[@test]
+  public function delete() {
+    $this->assertEquals(
+      "DELETE /user/1 HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "\r\n",
+      $this->fixture->delete('/user/1')->content()
+    );
+  }
+
+  #[@test]
+  public function delete_with_segment() {
+    $this->assertEquals(
+      "DELETE /user/1 HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "\r\n",
+      $this->fixture->delete(['/user/{id}', 'id' => 1])->content()
+    );
+  }
+
+  #[@test]
+  public function delete_with_parameter() {
+    $this->assertEquals(
+      "DELETE /user?name=test HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "\r\n",
+      $this->fixture->delete('/user', ['name' => 'test'])->content()
+    );
+  }
+
+  #[@test]
+  public function patch() {
+    $this->assertEquals(
+      "PATCH /user HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Content-Type: application/json\r\n".
+      "Content-Length: 15\r\n".
+      "\r\n".
+      "{\"name\":\"Test\"}",
+      $this->fixture->patch('/user', ['name' => 'Test'], 'application/json')->content()
+    );
+  }
+
+  #[@test]
+  public function head() {
+    $this->assertEquals(
+      "HEAD /user/1 HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "\r\n",
+      $this->fixture->head('/user/1')->content()
+    );
+  }
+
+  #[@test]
+  public function head_with_accept() {
+    $this->assertEquals(
+      "HEAD / HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Accept: */*\r\n".
+      "\r\n",
+      $this->fixture->head('/', [], '*/*')->content()
     );
   }
 }

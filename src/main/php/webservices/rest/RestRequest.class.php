@@ -1,8 +1,10 @@
 <?php namespace webservices\rest;
 
+use peer\URL;
 use peer\http\HttpConstants;
 use peer\http\Header;
 use lang\ElementNotFoundException;
+use lang\IllegalStateException;
 
 /**
  * A REST request
@@ -131,6 +133,15 @@ class RestRequest extends \lang\Object {
   public function withAccept($type, $q= null) {
     $this->addAccept($type, $q);
     return $this;
+  }
+
+  /**
+   * Gets accepted mime types
+   *
+   * @return  string[]
+   */
+  public function getAccept() {
+    return $this->accept;
   }
 
   /**
@@ -383,26 +394,53 @@ class RestRequest extends \lang\Object {
   }
 
   /**
-   * Returns all headers
+   * Returns headers except Content-Type and Accept
    *
    * @return  peer.http.Header[]
    */
   public function headerList() {
-    return array_merge(
-      $this->headers,
-      $this->contentType ? [new Header('Content-Type', $this->contentType)] : [],
-      $this->accept ? [new Header('Accept', implode(', ', $this->accept))] : []
-    );
+    return $this->headers;
   }
 
   /**
-   * Gets query
+   * Copy authentication if on same host 
    *
-   * @param   string base
-   * @return  string query
+   * @param  peer.URL $base
+   * @param  peer.URL $url
+   * @return peer.URL The given URL
    */
-  public function getTarget($base= '/') {
-    $resource= rtrim($base, '/').'/'.ltrim($this->resource, '/');
+  private function authorize($base, $url) {
+    if ($base && ($url->getHost() === $base->getHost())) {
+      $url->setUser($base->getUser());
+      $url->setPassword($base->getPassword());
+    }
+    return $url;
+  }
+
+  /**
+   * Resolves target URL
+   *
+   * @param  peer.URL $base
+   * @return peer.URL
+   * @throws lang.IllegalStateException if no base URL set and relative URL used in this request
+   */
+  public function targetUrl(URL $base= null) {
+    if (strpos($this->resource, '://')) {
+      $url= $this->authorize($base, new URL($this->resource));
+      $resource= $url->getPath();
+    } else if (null === $base) {
+      throw new IllegalStateException('No base set');
+    } else if (0 === strncmp('//',  $this->resource, 2)) {
+      $url= $this->authorize($base, new URL($base->getScheme().':'.$this->resource));
+      $resource= $url->getPath();
+    } else if ('/' === $this->resource{0}) {
+      $resource= $this->resource;
+      $url= clone $base;
+    } else {
+      $resource= rtrim($base->getPath('/'), '/').'/'.ltrim($this->resource, '/');
+      $url= clone $base;
+    }
+
     $l= strlen($resource);
     $target= '';
     $offset= 0;
@@ -415,9 +453,9 @@ class RestRequest extends \lang\Object {
       $target.= urlencode($this->getSegment(substr($resource, $offset+ 1, $e- 1)));
       $offset+= $e+ 1;
     } while ($offset < $l);
-    return $target;
-  }
 
+    return $url->setPath($target);
+  }
 
   /**
    * Creates a string representation

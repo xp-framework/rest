@@ -3,9 +3,11 @@
 use util\log\Traceable;
 use peer\http\HttpConnection;
 use peer\http\HttpRequest;
+use peer\http\HttpConstants;
 use lang\IllegalStateException;
 use lang\IllegalArgumentException;
 use lang\XPClass;
+use peer\URL;
 
 /**
  * REST client
@@ -15,11 +17,18 @@ use lang\XPClass;
  * @test xp://net.xp_framework.unittest.webservices.rest.RestClientExecutionTest
  */
 class RestClient extends \lang\Object implements Traceable {
-  protected $connection= null;
-  protected $cat= null;
-  protected $serializers= [];
-  protected $deserializers= [];
-  protected $marshalling= null;
+  private $connectionTo;
+  private $base= null;
+  private $cat= null;
+  private $accept= [];
+  private $headers= [];
+  private $contentType= null;
+  private $serializers= [];
+  private $deserializers= [];
+  private $marshalling= null;
+  private $connectTimeout= 2.0;
+  private $readTimeout= 60.0;
+  private $connections= [];
 
   /**
    * Creates a new Restconnection instance
@@ -27,8 +36,73 @@ class RestClient extends \lang\Object implements Traceable {
    * @param  peer.URL|string $base default NULL
    */
   public function __construct($base= null) {
-    if (null !== $base) $this->setBase($base);
+    $this->connectionTo= function($url) { return new HttpConnection($url); };
     $this->marshalling= new RestMarshalling();
+    if (null !== $base) $this->setBase($base);
+  }
+
+  /**
+   * Sets default format to use for sending data
+   *
+   * @param  string|webservices.rest.RestFormat $format a mimetype or a format
+   * @param  string $q
+   * @return self
+   */
+  public function accepting($format, $q= null) {
+    if ($format instanceof RestFormat) {
+      $this->accept[]= $format->deserializer()->contentType().($q ? ';q= '.$q : '');
+    } else {
+      $this->accept[]= $format.($q ? ';q= '.$q : '');
+    }
+    return $this;
+  }
+
+  /**
+   * Sets default format to use for sending data
+   *
+   * @param  string|webservices.rest.RestFormat $format a mimetype or a format
+   * @return self
+   */
+  public function using($format) {
+    if ($format instanceof RestFormat) {
+      $this->contentType= $format->serializer()->contentType();
+    } else {
+      $this->contentType= $format;
+    }
+    return $this;
+  }
+
+  /**
+   * Adds a header to be sent with every request
+   *
+   * @param  string $header
+   * @param  var $value
+   * @return self
+   */
+  public function with($header, $value= null) {
+    $this->headers[$header]= $value;
+    return $this;
+  }
+
+  /**
+   * Sets function to create connections with
+   *
+   * @param  function(peer.URL): peer.http.HttpConnection $creation
+   * @return self
+   */
+  public function usingConnections($creation) {
+    $this->connectionTo= cast($creation, 'function(var): var');
+    return $this;
+  }
+
+  /**
+   * Sets connection
+   *
+   * @deprecated Use usingConnections() instead
+   * @param  peer.URL|string $base either a peer.URL or a string
+   */
+  public function setConnection($conn) {
+    $this->base= $conn->getUrl();
   }
 
   /**
@@ -46,7 +120,7 @@ class RestClient extends \lang\Object implements Traceable {
    * @param  peer.URL|string $base either a peer.URL or a string
    */
   public function setBase($base) {
-    $this->setConnection(new HttpConnection($base));
+    $this->base= $base instanceof URL ? $base : new URL($base);
   }
 
   /**
@@ -60,79 +134,20 @@ class RestClient extends \lang\Object implements Traceable {
     return $this;
   }
 
-  /**
-   * Get base
-   *
-   * @return  peer.URL
-   */
-  public function getBase() {
-    return $this->connection ? $this->connection->getURL() : null;
-  }
+  /** @return peer.URL */
+  public function getBase() { return $this->base; }
 
-  /**
-   * Sets HTTP connection
-   *
-   * @param  peer.http.HttpConnection $connection
-   */
-  public function setConnection(HttpConnection $connection) {
-    $this->connection= $connection;
-  }
+  /** @param float $timeout */
+  public function setConnectTimeout($timeout) { $this->connectTimeout= $timeout; }
 
-  /**
-   * Set connect timeout
-   *
-   * @param  float $timeout
-   * @throws lang.IllegalStateException if no connection is set
-   */
-  public function setConnectTimeout($timeout) {
-    if (null === $this->connection) {
-      throw new IllegalStateException('No connection set');
-    }
+  /** @return float */
+  public function getConnectTimeout() { return $this->connectTimeout; }
 
-    $this->connection->setConnectTimeout($timeout);
-  }
+  /** @param float $timeout */
+  public function setTimeout($timeout) { $this->readTimeout= $timeout; }
 
-  /**
-   * Retrieve connect timeout
-   *
-   * @return float
-   * @throws lang.IllegalStateException if no connection is set
-   */
-  public function getConnectTimeout() {
-    if (null === $this->connection) {
-      throw new IllegalStateException('No connection set');
-    }
-
-    return $this->connection->getConnectTimeout();
-  }
-
-  /**
-   * Set timeout
-   *
-   * @param  int $timeout
-   * @throws lang.IllegalStateException if no connection is set
-   */
-  public function setTimeout($timeout) {
-    if (null === $this->connection) {
-      throw new IllegalStateException('No connection set');
-    }
-
-    $this->connection->setTimeout($timeout);
-  }
-
-  /**
-   * Get timeout
-   *
-   * @return int
-   * @throws lang.IllegalStateException if no connection is set
-   */
-  public function getTimeout() {
-    if (null === $this->connection) {
-      throw new IllegalStateException('No connection set');
-    }
-
-    return $this->connection->getTimeout();
-  }
+  /** @return float */
+  public function getTimeout() { return $this->readTimeout; }
 
   /**
    * Sets deserializer
@@ -185,32 +200,168 @@ class RestClient extends \lang\Object implements Traceable {
   }
 
   /**
+   * Creates a new request object
+   *
+   * @param  string|array $resource
+   * @param  string $method
+   * @return webservices.rest.RestRequest
+   */
+  private function newRequest($resource, $method) {
+    if (is_array($resource)) {
+      $request= new RestRequest(array_shift($resource), $method);
+      foreach ($resource as $segment => $name) {
+        $request->addSegment($segment, $name);
+      }
+    } else {
+      $request= new RestRequest($resource, $method);
+    }
+    return $request;
+  }
+
+  /**
+   * Executes a GET request against a given resource
+   *
+   * @param  string|array $resource
+   * @param  [:string] $params
+   * @param  string|string[] $accept The accept-types
+   * @return webservices.rest.RestResponse
+   */
+  public function get($resource, $params= [], $accept= []) {
+    $request= $this->newRequest($resource, HttpConstants::GET);
+    foreach ($params as $name => $param) {
+      $request->addParameter($name, $param);
+    }
+    foreach ((array)$accept as $range) {
+      $request->addAccept($range);
+    }
+    return $this->execute($request);
+  }
+
+  /**
+   * Executes a POST request against a given resource
+   *
+   * @param  string|array $resource
+   * @param  var $payload Payload to be serialized
+   * @param  string $type The content-type
+   * @param  string|string[] $accept The accept-types
+   * @return webservices.rest.RestResponse
+   */
+  public function post($resource, $payload, $type= null, $accept= []) {
+    $request= $this->newRequest($resource, HttpConstants::POST);
+    $request->setPayload($payload, $type ?: $this->contentType);
+    foreach ((array)$accept as $range) {
+      $request->addAccept($range);
+    }
+    return $this->execute($request);
+  }
+
+  /**
+   * Executes a PUT request against a given resource
+   *
+   * @param  string|array $resource
+   * @param  var $payload Payload to be serialized
+   * @param  string $type The content-type
+   * @param  string|string[] $accept The accept-types
+   * @return webservices.rest.RestResponse
+   */
+  public function put($resource, $payload, $type= null, $accept= []) {
+    $request= $this->newRequest($resource, HttpConstants::PUT);
+    $request->setPayload($payload, $type ?: $this->contentType);
+    foreach ((array)$accept as $range) {
+      $request->addAccept($range);
+    }
+    return $this->execute($request);
+  }
+
+  /**
+   * Executes a DELETE request against a given resource
+   *
+   * @param  string|array $resource
+   * @param  [:string] $params
+   * @return webservices.rest.RestResponse
+   */
+  public function delete($resource, $params= []) {
+    $request= $this->newRequest($resource, HttpConstants::DELETE);
+    foreach ($params as $name => $param) {
+      $request->addParameter($name, $param);
+    }
+    return $this->execute($request);
+  }
+
+  /**
+   * Executes a PATCH request against a given resource
+   *
+   * @param  string|array $resource
+   * @param  var $payload Payload to be serialized
+   * @param  string $type The content-type
+   * @param  string|string[] $accept The accept-types
+   * @return webservices.rest.RestResponse
+   */
+  public function patch($resource, $payload, $type= null, $accept= []) {
+    $request= $this->newRequest($resource, HttpConstants::PATCH);
+    $request->setPayload($payload, $type ?: $this->contentType);
+    foreach ((array)$accept as $range) {
+      $request->addAccept($range);
+    }
+    return $this->execute($request);
+  }
+
+  /**
+   * Executes a HEAD request against a given resource
+   *
+   * @param  string|array $resource
+   * @param  [:string] $params
+   * @param  string|string[] $accept The accept-types
+   * @return webservices.rest.RestResponse
+   */
+  public function head($resource, $params= [], $accept= []) {
+    $request= $this->newRequest($resource, HttpConstants::HEAD);
+    foreach ($params as $name => $param) {
+      $request->addParameter($name, $param);
+    }
+    foreach ((array)$accept as $range) {
+      $request->addAccept($range);
+    }
+    return $this->execute($request);
+  }
+
+  /**
    * Execute a request
    *
    * @param  webservices.rest.RestRequest $request
    * @return webservices.rest.RestResponse
-   * @throws lang.IllegalStateException if no connection is set
    */
   public function execute(RestRequest $request) {
-    if (null === $this->connection) {
-      throw new IllegalStateException('No connection set');
+    $url= $request->targetUrl($this->base);
+    $key= $url->getHost();
+    if (!isset($this->connections[$key])) {
+      $this->connections[$key]= $this->connectionTo->__invoke($url);
+      $this->connections[$key]->setConnectTimeout($this->connectTimeout);
+      $this->connections[$key]->setTimeout($this->readTimeout);
     }
 
-    $send= $this->connection->create(new HttpRequest());
+    $send= $this->connections[$key]->create(new HttpRequest());
+    $send->addHeaders($this->headers);
     $send->addHeaders($request->headerList());
     $send->setMethod($request->getMethod());
-    $send->setTarget($request->getTarget($this->connection->getUrl()->getPath('/')));
+    $send->setTarget($url->getPath());
+
+    if ($accept= $request->getAccept() ?: $this->accept) {
+      $send->setHeader('Accept', implode(', ', $accept));
+    }
 
     // Compose body
     // * Serialize payloads using the serializer for the given mimetype
     // * Use bodies as-is, e.g. file uploads
     // * If no body and no payload is set, use parameters
     if ($request->hasPayload()) {
+      $send->setHeader('Content-Type', $request->getContentType());
       $send->setParameters(new RequestData(
         $this->marshalling->marshal($request->getPayload()),
         $this->serializerFor($request->getContentType())
       ));
     } else if ($request->hasBody()) {
+      $send->setHeader('Content-Type', $request->getContentType());
       $send->setParameters($request->getBody());
     } else {
       $send->setParameters($request->getParameters());
@@ -218,7 +369,7 @@ class RestClient extends \lang\Object implements Traceable {
     
     try {
       $this->cat && $this->cat->debug('>>>', $send->getRequestString());
-      $response= $this->connection->send($send);
+      $response= $this->connections[$key]->send($send);
     } catch (\io\IOException $e) {
       throw new RestException('Cannot send request', $e);
     }
@@ -236,6 +387,12 @@ class RestClient extends \lang\Object implements Traceable {
    * @return string
    */
   public function toString() {
-    return nameof($this).'(->'.\xp::stringOf($this->connection).')';
+    return sprintf(
+      '%s(->%s, timeout: [read= %.2f, connect= %.2f])',
+      nameof($this),
+      $this->base ? $this->base->toString() : '(null)',
+      $this->readTimeout,
+      $this->connectTimeout
+    );
   }
 }

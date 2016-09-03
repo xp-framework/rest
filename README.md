@@ -16,19 +16,68 @@ Client
 
 The `RestClient` class serves as the entry point to this API. Create a new instance of it with the REST service's endpoint URL and then invoke its `execute()` method to work with the resources.
 
-### Example
+### Creating: post
 
-Here's an overview of the typical usage for working with the REST API.
+```php
+$client= new RestClient('http://api.example.com/');
+$response= $client->post('users', ['name' => 'Test'], 'application/json');
+
+// Check status codes
+if (201 !== $response->status()) {
+  throw new IllegalStateException('Could not create user!');
+}
+
+// Retrieve response headers
+$url= $response->header('Location');
+```
+
+### Reading: get / head
+```php
+$client= new RestClient('http://api.example.com/');
+
+// Unmarshal to object by optionally passing a type; otherwise returned as map
+$user= $client->get('users/self')->data(User::class);
+
+// Test for existance with HEAD
+$exists= (200 === $client->head('users/1549')->status());
+
+// Pass parameters
+$list= $client->get('users', ['page' => 1, 'per_page' => 50])->data();
+```
+
+### Updating: put / patch
+```php
+$client= (new RestClient('http://api.example.com/'))
+  ->using(RestFormat::$JSON)
+  ->accepting(RestFormat::$JSON)
+  ->with('User-Agent', 'Test')
+;
+
+// Default content type and accept types set on connection used
+$updated= $client->put('users/self', ['name' => 'Tested', 'login' => $mail])->data();
+
+// Can also use PATCH - typically used to modify only parts of the resoure
+$updated= $client->patch('users/self', ['name' => 'Changed'])->data();
+```
+
+### Deleting: delete
+```php
+$client= new RestClient('http://api.example.com/');
+
+// Pass segments
+$client->delete(['user/{id}', 'id' => 6100]);
+```
+
+If you need to customize the request beyong the typical uses, use the `execute()` method.
 
 ```php
 use webservices\rest\RestClient;
 use webservices\rest\RestRequest;
-use peer\http\HttpConstants;
 
 $client= new RestClient('http://api.example.com/');
 
-$request= (new RestRequest('/resource/{id}'))
- ->withMethod(HttpConstants::GET)
+$request= (new RestRequest('resource/{id}'))
+ ->withMethod('GET')
  ->withSegment('id', 5000)
  ->withParameter('details', 'true')
  ->withHeader('X-Binford', '6100 (more power)'
