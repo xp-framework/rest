@@ -14,11 +14,66 @@ Client
 
 ### Entry point
 
-The `RestClient` class serves as the entry point to this API. Create a new instance of it with the REST service's endpoint URL and then invoke its `execute()` method to work with the resources.
+The `RestClient` class serves as the entry point to this API. Create a new instance of it with the REST service's endpoint URL and then invoke its `resource()` method to work with the resources.
 
-### Example
+### Creating: post
 
-Here's an overview of the typical usage for working with the REST API.
+```php
+$client= new RestClient('http://api.example.com/');
+$response= $client->resource('users')->post(['name' => 'Test'], 'application/json');
+
+// Check status codes
+if (201 !== $response->status()) {
+  throw new IllegalStateException('Could not create user!');
+}
+
+// Retrieve response headers
+$url= $response->header('Location');
+```
+
+### Reading: get / head
+
+```php
+$client= new RestClient('http://api.example.com/');
+
+// Unmarshal to object by optionally passing a type; otherwise returned as map
+$user= $client->resource('users/self')->get()->data(User::class);
+
+// Test for existance with HEAD
+$exists= (200 === $client->resource('users/1549')->head()->status());
+
+// Pass parameters
+$list= $client->resource('user')->get(['page' => 1, 'per_page' => 50])->data();
+```
+
+### Updating: put / patch
+
+```php
+$client= new RestClient('http://api.example.com/');
+$resource= $client->resource('users/self')
+  ->using('application/json')
+  ->accepting('application/json')
+;
+
+// Default content type and accept types set on resource used
+$updated= $resource->put(['name' => 'Tested', 'login' => $mail])->data();
+
+// Resources can be reused!
+$updated= $resource->patch(['name' => 'Changed'])->data();
+```
+
+### Deleting: delete
+
+```php
+$client= new RestClient('http://api.example.com/');
+
+// Pass segments
+$client->resource('user/{id}', ['id' => 6100])->delete();
+```
+
+### Execute
+
+If you need full control over the request, use the generic `execute()` method.
 
 ```php
 use webservices\rest\RestClient;
