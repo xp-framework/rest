@@ -21,8 +21,8 @@ class RestClientExecutionTest extends TestCase {
   #[@beforeClass]
   public static function dummyConnectionClass() {
     self::$conn= ClassLoader::defineClass('RestClientExecutionTest_Connection', 'peer.http.HttpConnection', [], '{
-      protected $result= NULL;
-      protected $exception= NULL;
+      protected $result= null;
+      protected $exception= null;
 
       public function __construct($status, $body, $headers) {
         parent::__construct("http://test");
