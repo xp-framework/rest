@@ -268,6 +268,39 @@ class RestClient extends \lang\Object implements Traceable {
   }
 
   /**
+   * Executes a PATCH request against a given resource
+   *
+   * @param  string|array $resource
+   * @param  var $payload Payload to be serialized
+   * @param  string $type The content-type
+   * @return webservices.rest.RestResponse
+   */
+  public function patch($resource, $payload, $type= null) {
+    $request= $this->newRequest($resource, HttpConstants::PATCH);
+    $request->setPayload($payload, $type ?: $this->format);
+    return $this->execute($request);
+  }
+
+  /**
+   * Executes a HEAD request against a given resource
+   *
+   * @param  string|array $resource
+   * @param  [:string] $params
+   * @param  string[] $accept The accept-types
+   * @return webservices.rest.RestResponse
+   */
+  public function head($resource, $params= [], $accept= []) {
+    $request= $this->newRequest($resource, HttpConstants::HEAD);
+    foreach ($params as $name => $param) {
+      $request->addParameter($name, $param);
+    }
+    foreach ((array)$accept ?: $this->accept as $range) {
+      $request->addAccept($range);
+    }
+    return $this->execute($request);
+  }
+
+  /**
    * Execute a request
    *
    * @param  webservices.rest.RestRequest $request

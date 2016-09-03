@@ -285,4 +285,41 @@ class RestClientSendTest extends TestCase {
       $this->fixture->delete('/user', ['name' => 'test'])->content()
     );
   }
+
+  #[@test]
+  public function patch() {
+    $this->assertEquals(
+      "PATCH /user HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Content-Type: application/json\r\n".
+      "Content-Length: 15\r\n".
+      "\r\n".
+      "{\"name\":\"Test\"}",
+      $this->fixture->patch('/user', ['name' => 'Test'], 'application/json')->content()
+    );
+  }
+
+  #[@test]
+  public function head() {
+    $this->assertEquals(
+      "HEAD /user/1 HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "\r\n",
+      $this->fixture->head('/user/1')->content()
+    );
+  }
+
+  #[@test]
+  public function head_with_accept() {
+    $this->assertEquals(
+      "HEAD / HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Accept: */*\r\n".
+      "\r\n",
+      $this->fixture->head('/', [], '*/*')->content()
+    );
+  }
 }
