@@ -136,6 +136,15 @@ class RestRequest extends \lang\Object {
   }
 
   /**
+   * Gets accepted mime types
+   *
+   * @return  string[]
+   */
+  public function getAccept() {
+    return $this->accept;
+  }
+
+  /**
    * Adds a cookie
    *
    * @param   string $name cookie name
@@ -385,16 +394,12 @@ class RestRequest extends \lang\Object {
   }
 
   /**
-   * Returns all headers
+   * Returns headers except Content-Type and Accept
    *
    * @return  peer.http.Header[]
    */
   public function headerList() {
-    return array_merge(
-      $this->headers,
-      $this->contentType ? [new Header('Content-Type', $this->contentType)] : [],
-      $this->accept ? [new Header('Accept', implode(', ', $this->accept))] : []
-    );
+    return $this->headers;
   }
 
   /**

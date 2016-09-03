@@ -22,7 +22,7 @@ class RestClient extends \lang\Object implements Traceable {
   private $cat= null;
   private $accept= [];
   private $headers= [];
-  private $format= null;
+  private $contentType= null;
   private $serializers= [];
   private $deserializers= [];
   private $marshalling= null;
@@ -65,9 +65,9 @@ class RestClient extends \lang\Object implements Traceable {
    */
   public function using($format) {
     if ($format instanceof RestFormat) {
-      $this->format= $format->serializer()->contentType();
+      $this->contentType= $format->serializer()->contentType();
     } else {
-      $this->format= $format;
+      $this->contentType= $format;
     }
     return $this;
   }
@@ -223,7 +223,7 @@ class RestClient extends \lang\Object implements Traceable {
    *
    * @param  string|array $resource
    * @param  [:string] $params
-   * @param  string[] $accept The accept-types
+   * @param  string|string[] $accept The accept-types
    * @return webservices.rest.RestResponse
    */
   public function get($resource, $params= [], $accept= []) {
@@ -231,7 +231,7 @@ class RestClient extends \lang\Object implements Traceable {
     foreach ($params as $name => $param) {
       $request->addParameter($name, $param);
     }
-    foreach ((array)$accept ?: $this->accept as $range) {
+    foreach ((array)$accept as $range) {
       $request->addAccept($range);
     }
     return $this->execute($request);
@@ -247,7 +247,7 @@ class RestClient extends \lang\Object implements Traceable {
    */
   public function post($resource, $payload, $type= null) {
     $request= $this->newRequest($resource, HttpConstants::POST);
-    $request->setPayload($payload, $type ?: $this->format);
+    $request->setPayload($payload, $type ?: $this->contentType);
     return $this->execute($request);
   }
 
@@ -261,7 +261,7 @@ class RestClient extends \lang\Object implements Traceable {
    */
   public function put($resource, $payload, $type= null) {
     $request= $this->newRequest($resource, HttpConstants::PUT);
-    $request->setPayload($payload, $type ?: $this->format);
+    $request->setPayload($payload, $type ?: $this->contentType);
     return $this->execute($request);
   }
 
@@ -290,7 +290,7 @@ class RestClient extends \lang\Object implements Traceable {
    */
   public function patch($resource, $payload, $type= null) {
     $request= $this->newRequest($resource, HttpConstants::PATCH);
-    $request->setPayload($payload, $type ?: $this->format);
+    $request->setPayload($payload, $type ?: $this->contentType);
     return $this->execute($request);
   }
 
@@ -299,7 +299,7 @@ class RestClient extends \lang\Object implements Traceable {
    *
    * @param  string|array $resource
    * @param  [:string] $params
-   * @param  string[] $accept The accept-types
+   * @param  string|string[] $accept The accept-types
    * @return webservices.rest.RestResponse
    */
   public function head($resource, $params= [], $accept= []) {
@@ -307,7 +307,7 @@ class RestClient extends \lang\Object implements Traceable {
     foreach ($params as $name => $param) {
       $request->addParameter($name, $param);
     }
-    foreach ((array)$accept ?: $this->accept as $range) {
+    foreach ((array)$accept as $range) {
       $request->addAccept($range);
     }
     return $this->execute($request);
@@ -334,16 +334,22 @@ class RestClient extends \lang\Object implements Traceable {
     $send->setMethod($request->getMethod());
     $send->setTarget($url->getPath());
 
+    if ($accept= $request->getAccept() ?: $this->accept) {
+      $send->setHeader('Accept', implode(', ', $accept));
+    }
+
     // Compose body
     // * Serialize payloads using the serializer for the given mimetype
     // * Use bodies as-is, e.g. file uploads
     // * If no body and no payload is set, use parameters
     if ($request->hasPayload()) {
+      $send->setHeader('Content-Type', $request->getContentType());
       $send->setParameters(new RequestData(
         $this->marshalling->marshal($request->getPayload()),
         $this->serializerFor($request->getContentType())
       ));
     } else if ($request->hasBody()) {
+      $send->setHeader('Content-Type', $request->getContentType());
       $send->setParameters($request->getBody());
     } else {
       $send->setParameters($request->getParameters());

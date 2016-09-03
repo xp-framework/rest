@@ -48,8 +48,8 @@ class RestClientSendTest extends TestCase {
       "POST / HTTP/1.1\r\n".
       "Connection: close\r\n".
       "Host: test\r\n".
-      "Content-Length: 5\r\n".
       "Content-Type: application/x-www-form-urlencoded\r\n".
+      "Content-Length: 5\r\n".
       "\r\n".
       "Hello",
       $this->fixture->execute((new RestRequest('/', HttpConstants::POST))->withBody(new RequestData('Hello')))->content()
@@ -96,6 +96,19 @@ class RestClientSendTest extends TestCase {
       "\r\n".
       "key=value",
       $this->fixture->execute((new RestRequest('/', HttpConstants::POST))->withPayload(['key' => 'value'], RestFormat::$FORM))->content()
+    );
+  }
+
+  #[@test]
+  public function default_accept() {
+    $fixture= $this->fixture->accepting('application/json');
+    $this->assertEquals(
+      "GET / HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Accept: application/json\r\n".
+      "\r\n",
+      $fixture->execute(new RestRequest('/', HttpConstants::GET))->content()
     );
   }
 
