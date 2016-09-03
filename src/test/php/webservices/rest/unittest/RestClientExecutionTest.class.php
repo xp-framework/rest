@@ -56,9 +56,9 @@ class RestClientExecutionTest extends TestCase {
    * @return  webservices.rest.RestClient
    */
   public function fixtureWith($status, $body= null, $headers= []) {
-    $fixture= new RestClient();
-    $fixture->setConnection(self::$conn->newInstance($status, $body, $headers));
-    return $fixture;
+    return (new RestClient('http://test'))->usingConnections(function($url) use($status, $body, $headers) {
+      return self::$conn->newInstance($status, $body, $headers);
+    });
   }
 
   #[@test]
