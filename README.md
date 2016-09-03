@@ -50,6 +50,7 @@ $list= $client->get('users', ['page' => 1, 'per_page' => 50])->data();
 $client= (new RestClient('http://api.example.com/'))
   ->using(RestFormat::$JSON)
   ->accepting(RestFormat::$JSON)
+  ->with('User-Agent', 'Test')
 ;
 
 // Default content type and accept types set on connection used

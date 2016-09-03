@@ -21,6 +21,7 @@ class RestClient extends \lang\Object implements Traceable {
   private $base= null;
   private $cat= null;
   private $accept= [];
+  private $headers= [];
   private $format= null;
   private $serializers= [];
   private $deserializers= [];
@@ -68,6 +69,18 @@ class RestClient extends \lang\Object implements Traceable {
     } else {
       $this->format= $format;
     }
+    return $this;
+  }
+
+  /**
+   * Adds a header to be sent with every request
+   *
+   * @param  string $header
+   * @param  var $value
+   * @return self
+   */
+  public function with($header, $value= null) {
+    $this->headers[$header]= $value;
     return $this;
   }
 
@@ -316,6 +329,7 @@ class RestClient extends \lang\Object implements Traceable {
     }
 
     $send= $this->connections[$key]->create(new HttpRequest());
+    $send->addHeaders($this->headers);
     $send->addHeaders($request->headerList());
     $send->setMethod($request->getMethod());
     $send->setTarget($url->getPath());

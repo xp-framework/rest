@@ -170,6 +170,18 @@ class RestClientSendTest extends TestCase {
   }
 
   #[@test]
+  public function with_header() {
+    $this->assertEquals(
+      "GET / HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "User-Agent: Test\r\n".
+      "\r\n",
+      $this->fixture->with('User-Agent', 'Test')->get('/')->content()
+    );
+  }
+
+  #[@test]
   public function post() {
     $this->assertEquals(
       "POST /user HTTP/1.1\r\n".
