@@ -18,12 +18,14 @@ use lang\ClassLoader;
  * @see   xp://webservices.rest.RestClient
  */
 class RestClientSendTest extends TestCase {
-  protected static $conn= null;   
-  protected $fixture= null;
+  private static $conn;
+  private $fixture;
 
-  /**
-   * Creates connection class which echoes the request
-   */
+  /** @return void */
+  public function setUp() {
+    $this->fixture= (new RestClient('http://test/api'))->usingConnections([self::$conn, 'newInstance']);
+  }
+
   #[@beforeClass]
   public static function requestEchoingConnectionClass() {
     self::$conn= ClassLoader::defineClass('RestClientSendTest_Connection', HttpConnection::class, [], [
@@ -36,13 +38,6 @@ class RestClientSendTest extends TestCase {
         )));
       }
     ]);
-  }
-
-  /**
-   * Creates fixture.
-   */
-  public function setUp() {
-    $this->fixture= (new RestClient('http://test/api'))->usingConnections([self::$conn, 'newInstance']);
   }
 
   #[@test]
