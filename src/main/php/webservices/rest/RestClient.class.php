@@ -243,11 +243,15 @@ class RestClient extends \lang\Object implements Traceable {
    * @param  string|array $resource
    * @param  var $payload Payload to be serialized
    * @param  string $type The content-type
+   * @param  string|string[] $accept The accept-types
    * @return webservices.rest.RestResponse
    */
-  public function post($resource, $payload, $type= null) {
+  public function post($resource, $payload, $type= null, $accept= []) {
     $request= $this->newRequest($resource, HttpConstants::POST);
     $request->setPayload($payload, $type ?: $this->contentType);
+    foreach ((array)$accept as $range) {
+      $request->addAccept($range);
+    }
     return $this->execute($request);
   }
 
@@ -257,11 +261,15 @@ class RestClient extends \lang\Object implements Traceable {
    * @param  string|array $resource
    * @param  var $payload Payload to be serialized
    * @param  string $type The content-type
+   * @param  string|string[] $accept The accept-types
    * @return webservices.rest.RestResponse
    */
-  public function put($resource, $payload, $type= null) {
+  public function put($resource, $payload, $type= null, $accept= []) {
     $request= $this->newRequest($resource, HttpConstants::PUT);
     $request->setPayload($payload, $type ?: $this->contentType);
+    foreach ((array)$accept as $range) {
+      $request->addAccept($range);
+    }
     return $this->execute($request);
   }
 
@@ -286,11 +294,15 @@ class RestClient extends \lang\Object implements Traceable {
    * @param  string|array $resource
    * @param  var $payload Payload to be serialized
    * @param  string $type The content-type
+   * @param  string|string[] $accept The accept-types
    * @return webservices.rest.RestResponse
    */
-  public function patch($resource, $payload, $type= null) {
+  public function patch($resource, $payload, $type= null, $accept= []) {
     $request= $this->newRequest($resource, HttpConstants::PATCH);
     $request->setPayload($payload, $type ?: $this->contentType);
+    foreach ((array)$accept as $range) {
+      $request->addAccept($range);
+    }
     return $this->execute($request);
   }
 
