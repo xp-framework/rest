@@ -185,6 +185,17 @@ class RestClient extends \lang\Object implements Traceable {
   }
 
   /**
+   * Returns a resource by a given path
+   *
+   * @param  string $path
+   * @param  [:string] $segments Optional values for placeholders in path
+   * @return webservices.rest.RestResource
+   */
+  public function resource($path, $segments= []) {
+    return new RestResource($this, $path, $segments);
+  }
+
+  /**
    * Execute a request
    *
    * @param  webservices.rest.RestRequest $request
