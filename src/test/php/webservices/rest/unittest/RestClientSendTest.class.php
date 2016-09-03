@@ -6,6 +6,9 @@ use webservices\rest\RestRequest;
 use webservices\rest\RestFormat;
 use io\streams\MemoryInputStream;
 use peer\http\HttpConstants;
+use peer\http\HttpConnection;
+use peer\http\HttpRequest;
+use peer\http\HttpResponse;
 use peer\http\RequestData;
 use lang\ClassLoader;
 
@@ -23,16 +26,16 @@ class RestClientSendTest extends TestCase {
    */
   #[@beforeClass]
   public static function requestEchoingConnectionClass() {
-    self::$conn= ClassLoader::defineClass('RestClientSendTest_Connection', 'peer.http.HttpConnection', [], '{
-      public function send(\peer\http\HttpRequest $request) {
+    self::$conn= ClassLoader::defineClass('RestClientSendTest_Connection', HttpConnection::class, [], [
+      'send' => function(HttpRequest $request) {
         $str= $request->getRequestString();
-        return new \peer\http\HttpResponse(new \io\streams\MemoryInputStream(sprintf(
+        return new HttpResponse(new MemoryInputStream(sprintf(
           "HTTP/1.0 200 OK\r\nContent-Type: text/plain\r\nContent-Length: %d\r\n\r\n%s",
           strlen($str),
           $str
         )));
       }
-    }');
+    ]);
   }
 
   /**
