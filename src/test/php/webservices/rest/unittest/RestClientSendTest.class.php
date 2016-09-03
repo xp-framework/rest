@@ -105,6 +105,19 @@ class RestClientSendTest extends TestCase {
   }
 
   #[@test]
+  public function default_headers() {
+    $fixture= $this->fixture->with(['User-Agent' => 'Test']);
+    $this->assertEquals(
+      "GET / HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "User-Agent: Test\r\n".
+      "\r\n",
+      $fixture->execute(new RestRequest('/', HttpConstants::GET))->content()
+    );
+  }
+
+  #[@test]
   public function get() {
     $this->assertEquals(
       "GET / HTTP/1.1\r\n".

@@ -20,6 +20,7 @@ class RestClient extends \lang\Object implements Traceable {
   protected $serializers= [];
   protected $deserializers= [];
   protected $marshalling= null;
+  private $headers= [];
 
   /**
    * Creates a new Restconnection instance
@@ -29,6 +30,17 @@ class RestClient extends \lang\Object implements Traceable {
   public function __construct($base= null) {
     if (null !== $base) $this->setBase($base);
     $this->marshalling= new RestMarshalling();
+  }
+
+  /**
+   * Adds headers to be sent with every request
+   *
+   * @param  [:string] $headers
+   * @return self
+   */
+  public function with($headers) {
+    $this->headers= $headers;
+    return $this;
   }
 
   /**
@@ -208,6 +220,7 @@ class RestClient extends \lang\Object implements Traceable {
     }
 
     $send= $this->connection->create(new HttpRequest());
+    $send->addHeaders($this->headers);
     $send->addHeaders($request->headerList());
     $send->setMethod($request->getMethod());
     $send->setTarget($request->getTarget($this->connection->getUrl()->getPath('/')));
