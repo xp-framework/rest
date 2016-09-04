@@ -14,12 +14,12 @@ Client
 
 ### Entry point
 
-The `RestClient` class serves as the entry point to this API. Create a new instance of it with the REST service's endpoint URL and then invoke its `resource()` method to work with the resources.
+The `Endpoint` class serves as the entry point to this API. Create a new instance of it with the REST service's endpoint URL and then invoke its `resource()` method to work with the resources.
 
 ### Creating: post
 
 ```php
-$client= new RestClient('http://api.example.com/');
+$client= new Endpoint('http://api.example.com/');
 $response= $client->resource('users')->post(['name' => 'Test'], 'application/json');
 
 // Check status codes
@@ -34,7 +34,7 @@ $url= $response->header('Location');
 ### Reading: get / head
 
 ```php
-$client= new RestClient('http://api.example.com/');
+$client= new Endpoint('http://api.example.com/');
 
 // Unmarshal to object by optionally passing a type; otherwise returned as map
 $user= $client->resource('users/self')->get()->data(User::class);
@@ -49,7 +49,7 @@ $list= $client->resource('user')->get(['page' => 1, 'per_page' => 50])->data();
 ### Updating: put / patch
 
 ```php
-$client= new RestClient('http://api.example.com/');
+$client= new Endpoint('http://api.example.com/');
 $resource= $client->resource('users/self')
   ->using('application/json')
   ->accepting('application/json')
@@ -65,7 +65,7 @@ $updated= $resource->patch(['name' => 'Changed'])->data();
 ### Deleting: delete
 
 ```php
-$client= new RestClient('http://api.example.com/');
+$client= new Endpoint('http://api.example.com/');
 
 // Pass segments
 $client->resource('user/{id}', ['id' => 6100])->delete();
@@ -76,11 +76,11 @@ $client->resource('user/{id}', ['id' => 6100])->delete();
 If you need full control over the request, use the generic `execute()` method.
 
 ```php
-use webservices\rest\RestClient;
+use webservices\rest\Endpoint;
 use webservices\rest\RestRequest;
 use peer\http\HttpConstants;
 
-$client= new RestClient('http://api.example.com/');
+$client= new Endpoint('http://api.example.com/');
 
 $request= (new RestRequest('/resource/{id}'))
  ->withMethod(HttpConstants::GET)
@@ -111,7 +111,7 @@ $codes= $response->data('[:int]');
 Basic authentication is supported by embedding the credentials in the endpoint URL:
 
 ```php
-use webservices\rest\RestClient;
+use webservices\rest\Endpoint;
 
-$client= new RestClient('http://user:pass@api.example.com/');
+$client= new Endpoint('http://user:pass@api.example.com/');
 ```
