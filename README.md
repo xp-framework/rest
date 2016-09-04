@@ -19,8 +19,8 @@ The `Endpoint` class serves as the entry point to this API. Create a new instanc
 ### Creating: post
 
 ```php
-$client= new Endpoint('http://api.example.com/');
-$response= $client->resource('users')->post(['name' => 'Test'], 'application/json');
+$api= new Endpoint('http://api.example.com/');
+$response= $api->resource('users')->post(['name' => 'Test'], 'application/json');
 
 // Check status codes
 if (201 !== $response->status()) {
@@ -34,23 +34,23 @@ $url= $response->header('Location');
 ### Reading: get / head
 
 ```php
-$client= new Endpoint('http://api.example.com/');
+$api= new Endpoint('http://api.example.com/');
 
 // Unmarshal to object by optionally passing a type; otherwise returned as map
-$user= $client->resource('users/self')->get()->data(User::class);
+$user= $api->resource('users/self')->get()->data(User::class);
 
 // Test for existance with HEAD
-$exists= (200 === $client->resource('users/1549')->head()->status());
+$exists= (200 === $api->resource('users/1549')->head()->status());
 
 // Pass parameters
-$list= $client->resource('user')->get(['page' => 1, 'per_page' => 50])->data();
+$list= $api->resource('user')->get(['page' => 1, 'per_page' => 50])->data();
 ```
 
 ### Updating: put / patch
 
 ```php
-$client= new Endpoint('http://api.example.com/');
-$resource= $client->resource('users/self')
+$api= new Endpoint('http://api.example.com/');
+$resource= $api->resource('users/self')
   ->using('application/json')
   ->accepting('application/json')
 ;
@@ -65,10 +65,10 @@ $updated= $resource->patch(['name' => 'Changed'])->data();
 ### Deleting: delete
 
 ```php
-$client= new Endpoint('http://api.example.com/');
+$api= new Endpoint('http://api.example.com/');
 
 // Pass segments
-$client->resource('user/{id}', ['id' => 6100])->delete();
+$api->resource('user/{id}', ['id' => 6100])->delete();
 ```
 
 ### Execute
@@ -80,7 +80,7 @@ use webservices\rest\Endpoint;
 use webservices\rest\RestRequest;
 use peer\http\HttpConstants;
 
-$client= new Endpoint('http://api.example.com/');
+$api= new Endpoint('http://api.example.com/');
 
 $request= (new RestRequest('/resource/{id}'))
  ->withMethod(HttpConstants::GET)
@@ -89,7 +89,7 @@ $request= (new RestRequest('/resource/{id}'))
  ->withHeader('X-Binford', '6100 (more power)'
 ;
 
-$response= $client->execute($request);
+$response= $api->execute($request);
 $content= $response->content();            // Raw data as string
 $value= $response->data();                 // Deserialize to map
 ```
@@ -113,5 +113,5 @@ Basic authentication is supported by embedding the credentials in the endpoint U
 ```php
 use webservices\rest\Endpoint;
 
-$client= new Endpoint('http://user:pass@api.example.com/');
+$api= new Endpoint('http://user:pass@api.example.com/');
 ```
