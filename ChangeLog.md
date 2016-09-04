@@ -3,6 +3,17 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+* Merged PR #16: Resource API. Entry point is `webservices.rest.Endpoint`.
+  - New `resource()` method exposes a fluent interface covering typical
+    use cases GET, HEAD, POST, PUT, PATCH and DELETE.
+  - New `with()` method adds ability to supply omnipresent headers, such
+    as *User-Agent* (required by GitHub, for example).
+  - Methods now support absolute, relative and full URLs for ease of use
+    with HATEOAS links.
+  - RestClient class is now deprecated. Migration to new API is typically
+    as easy as exchanging *new RestClient(...)* with *new Endpoint(...)*.
+  (@thekid)
+
 ## 8.0.0 / 2016-09-01
 
 * Merged PR #14: Remove deprecated execute() overloading - @thekid
