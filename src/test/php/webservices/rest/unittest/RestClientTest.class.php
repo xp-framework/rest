@@ -14,6 +14,7 @@ use unittest\actions\RuntimeVersion;
 /**
  * TestCase
  *
+ * @deprecated RestClient was replaced by Endpoing
  * @see   xp://webservices.rest.RestClient
  */
 class RestClientTest extends TestCase {
@@ -215,6 +216,11 @@ class RestClientTest extends TestCase {
     $fixture->setConnectTimeout(31337);
 
     $this->assertEquals(31337, $fixture->getConnectTimeout());
+  }
+
+  #[@test, @expect(IllegalStateException::class)]
+  public function setTimeoutWithoutConnectionFails() {
+    $this->newFixture()->setTimeout(31337);
   }
 
   #[@test]
