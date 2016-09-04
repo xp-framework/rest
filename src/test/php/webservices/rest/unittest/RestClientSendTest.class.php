@@ -5,6 +5,7 @@ use webservices\rest\RestClient;
 use webservices\rest\RestRequest;
 use webservices\rest\RestFormat;
 use io\streams\MemoryInputStream;
+use peer\http\HttpConnection;
 use peer\http\HttpConstants;
 use peer\http\RequestData;
 use lang\ClassLoader;
@@ -12,22 +13,22 @@ use lang\ClassLoader;
 /**
  * TestCase
  *
+ * @deprecated RestClient was replaced by Endpoing
  * @see   xp://webservices.rest.RestClient
  */
 class RestClientSendTest extends TestCase {
-  protected static $conn= null;   
-  protected $fixture= null;
+  private static $conn;
+  private $fixture;
 
-  /**
-   * Creates connection class which echoes the request
-   */
+  /** @return void */
+  public function setUp() {
+    $this->fixture= new RestClient('http://test');
+    $this->fixture->setConnection(self::$conn->newInstance('http://test'));
+  }
+
   #[@beforeClass]
   public static function requestEchoingConnectionClass() {
-    self::$conn= ClassLoader::defineClass('RestClientSendTest_Connection', 'peer.http.HttpConnection', [], '{
-      public function __construct() {
-        parent::__construct("http://test");
-      }
-      
+    self::$conn= ClassLoader::defineClass('RestClientSendTest_Connection', HttpConnection::class, [], '{
       public function send(\peer\http\HttpRequest $request) {
         $str= $request->getRequestString();
         return new \peer\http\HttpResponse(new \io\streams\MemoryInputStream(sprintf(
@@ -37,14 +38,6 @@ class RestClientSendTest extends TestCase {
         )));
       }
     }');
-  }
-
-  /**
-   * Creates fixture.
-   */
-  public function setUp() {
-    $this->fixture= new RestClient();
-    $this->fixture->setConnection(self::$conn->newInstance());
   }
 
   #[@test]

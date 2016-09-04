@@ -9,6 +9,7 @@ use webservices\rest\Payload;
 use peer\http\HttpConstants;
 use peer\http\RequestData;
 use peer\http\Header;
+use peer\URL;
 
 /**
  * TestCase
@@ -253,21 +254,21 @@ class RestRequestTest extends TestCase {
   #[@test]
   public function targetWithoutParameters() {
     $fixture= new RestRequest('/issues');
-    $this->assertEquals('/issues', $fixture->getTarget());
+    $this->assertEquals('/issues', $fixture->targetUrl(new URL('http://test'))->getPath());
   }
 
   #[@test]
   public function targetWithSegmentParameter() {
     $fixture= new RestRequest('/users/{user}');
     $fixture->addSegment('user', 'thekid');
-    $this->assertEquals('/users/thekid', $fixture->getTarget());
+    $this->assertEquals('/users/thekid', $fixture->targetUrl(new URL('http://test'))->getPath());
   }
 
   #[@test]
   public function segments_are_url_encoded() {
     $fixture= new RestRequest('/users/{user}');
     $fixture->addSegment('user', 'Timm Friebe');
-    $this->assertEquals('/users/Timm+Friebe', $fixture->getTarget());
+    $this->assertEquals('/users/Timm+Friebe', $fixture->targetUrl(new URL('http://test'))->getPath());
   }
 
   #[@test]
@@ -275,7 +276,7 @@ class RestRequestTest extends TestCase {
     $fixture= new RestRequest('/repos/{user}/{repo}');
     $fixture->addSegment('user', 'thekid');
     $fixture->addSegment('repo', 'xp-framework');
-    $this->assertEquals('/repos/thekid/xp-framework', $fixture->getTarget());
+    $this->assertEquals('/repos/thekid/xp-framework', $fixture->targetUrl(new URL('http://test'))->getPath());
   }
 
   #[@test]
@@ -284,19 +285,37 @@ class RestRequestTest extends TestCase {
     $fixture->addSegment('user', 'thekid');
     $fixture->addSegment('repo', 'xp-framework');
     $fixture->addSegment('id', 1);
-    $this->assertEquals('/repos/thekid/xp-framework/issues/1', $fixture->getTarget());
+    $this->assertEquals('/repos/thekid/xp-framework/issues/1', $fixture->targetUrl(new URL('http://test'))->getPath());
   }
 
   #[@test, @values(['/rest/api/v2/', '/rest/api/v2'])]
   public function relativeResource($base) {
     $fixture= new RestRequest('issues');
-    $this->assertEquals('/rest/api/v2/issues', $fixture->getTarget($base));
+    $this->assertEquals('/rest/api/v2/issues', $fixture->targetUrl(new URL('http://test'.$base))->getPath());
+  }
+
+  #[@test, @values(['/rest/api/v2/', '/rest/api/v2'])]
+  public function dotdotResource($base) {
+    $fixture= new RestRequest('../v3/issues');
+    $this->assertEquals('/rest/api/v2/../v3/issues', $fixture->targetUrl(new URL('http://test'.$base))->getPath());
   }
 
   #[@test, @values(['/rest/api/v2/', '/rest/api/v2'])]
   public function absoluteResource($base) {
     $fixture= new RestRequest('/issues');
-    $this->assertEquals('/rest/api/v2/issues', $fixture->getTarget($base));
+    $this->assertEquals('/issues', $fixture->targetUrl(new URL('http://test'.$base))->getPath());
+  }
+
+  #[@test]
+  public function fullResource() {
+    $fixture= new RestRequest('http://example');
+    $this->assertEquals('http://example', $fixture->targetUrl(new URL('http://test'))->getURL());
+  }
+
+  #[@test]
+  public function slashslashResource() {
+    $fixture= new RestRequest('//example');
+    $this->assertEquals('http://example', $fixture->targetUrl(new URL('http://test'))->getURL());
   }
 
   #[@test]

@@ -14,6 +14,7 @@ use unittest\actions\RuntimeVersion;
 /**
  * TestCase
  *
+ * @deprecated RestClient was replaced by Endpoing
  * @see   xp://webservices.rest.RestClient
  */
 class RestClientTest extends TestCase {

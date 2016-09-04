@@ -10,9 +10,9 @@ use lang\XPClass;
 /**
  * REST client
  *
- * @test xp://net.xp_framework.unittest.webservices.rest.RestClientTest
- * @test xp://net.xp_framework.unittest.webservices.rest.RestClientSendTest
- * @test xp://net.xp_framework.unittest.webservices.rest.RestClientExecutionTest
+ * @deprecated Use webservices.rest.Endpoint instead!
+ * @test xp://webservices.rest.unittest.RestClientTest
+ * @test xp://webservices.rest.unittest.RestClientSendTest
  */
 class RestClient extends \lang\Object implements Traceable {
   protected $connection= null;
