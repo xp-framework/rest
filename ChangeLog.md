@@ -3,7 +3,7 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
-## 8.1.0 / 2016-09-04
+## 8.0.0 / 2016-09-04
 
 * Merged PR #16: Resource API. Entry point is `webservices.rest.Endpoint`.
   - New `resource()` method exposes a fluent interface covering typical
@@ -16,9 +16,6 @@ REST Client and Server APIs for the XP Framework ChangeLog
     as easy as exchanging *new RestClient(...)* with *new Endpoint(...)*.
     The PR contains an overview of possible caveats you may encounter.
   (@thekid)
-
-## 8.0.0 / 2016-09-01
-
 * Merged PR #14: Remove deprecated execute() overloading - @thekid
 
 ## 7.3.2 / 2016-08-29
