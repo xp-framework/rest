@@ -12,6 +12,7 @@ REST Client and Server APIs for the XP Framework ChangeLog
     with HATEOAS links.
   - RestClient class is now deprecated. Migration to new API is typically
     as easy as exchanging *new RestClient(...)* with *new Endpoint(...)*.
+    The PR contains an overview of possible caveats you may encounter.
   (@thekid)
 
 ## 8.0.0 / 2016-09-01
