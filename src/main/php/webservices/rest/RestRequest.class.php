@@ -398,6 +398,40 @@ class RestRequest extends \lang\Object {
   }
 
   /**
+   * Resolves segments in resource
+   *
+   * @param  string $resource
+   * @return string
+   */
+  private function resolve($resource) {
+    $l= strlen($resource);
+    $target= '';
+    $offset= 0;
+    do {
+      $b= strcspn($resource, '{', $offset);
+      $target.= substr($resource, $offset, $b);
+      $offset+= $b;
+      if ($offset >= $l) break;
+      $e= strcspn($resource, '}', $offset);
+      $target.= urlencode($this->getSegment(substr($resource, $offset+ 1, $e- 1)));
+      $offset+= $e+ 1;
+    } while ($offset < $l);
+
+    return $target;
+  }
+
+  /**
+   * Gets target
+   *
+   * @deprecated Use targetUrl() instead!
+   * @param  string $base
+   * @return string
+   */
+  public function getTarget($base= '/') {
+    return $this->resolve(rtrim($base, '/').'/'.ltrim($this->resource, '/'));
+  }
+
+  /**
    * Copy authentication if on same host 
    *
    * @param  peer.URL $base
@@ -436,20 +470,7 @@ class RestRequest extends \lang\Object {
       $url= clone $base;
     }
 
-    $l= strlen($resource);
-    $target= '';
-    $offset= 0;
-    do {
-      $b= strcspn($resource, '{', $offset);
-      $target.= substr($resource, $offset, $b);
-      $offset+= $b;
-      if ($offset >= $l) break;
-      $e= strcspn($resource, '}', $offset);
-      $target.= urlencode($this->getSegment(substr($resource, $offset+ 1, $e- 1)));
-      $offset+= $e+ 1;
-    } while ($offset < $l);
-
-    return $url->setPath($target);
+    return $url->setPath($this->resolve($resource));
   }
 
   /**

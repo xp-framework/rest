@@ -6,26 +6,20 @@ use peer\http\HttpRequest;
 use lang\IllegalStateException;
 use lang\IllegalArgumentException;
 use lang\XPClass;
-use peer\URL;
 
 /**
  * REST client
  *
- * @test xp://net.xp_framework.unittest.webservices.rest.RestClientTest
- * @test xp://net.xp_framework.unittest.webservices.rest.RestClientSendTest
- * @test xp://net.xp_framework.unittest.webservices.rest.RestClientExecutionTest
+ * @deprecated Use webservices.rest.Endpoint instead!
+ * @test xp://webservices.rest.unittest.RestClientTest
+ * @test xp://webservices.rest.unittest.RestClientSendTest
  */
 class RestClient extends \lang\Object implements Traceable {
-  private $connectionTo;
-  private $cat= null;
-  private $serializers= [];
-  private $deserializers= [];
-  private $marshalling= null;
-  private $base= null;
-  private $connectTimeout= 2.0;
-  private $readTimeout= 60.0;
-  private $headers= [];
-  private $connections= [];
+  protected $connection= null;
+  protected $cat= null;
+  protected $serializers= [];
+  protected $deserializers= [];
+  protected $marshalling= null;
 
   /**
    * Creates a new Restconnection instance
@@ -33,20 +27,8 @@ class RestClient extends \lang\Object implements Traceable {
    * @param  peer.URL|string $base default NULL
    */
   public function __construct($base= null) {
-    $this->connectionTo= function($url) { return new HttpConnection($url); };
-    $this->marshalling= new RestMarshalling();
     if (null !== $base) $this->setBase($base);
-  }
-
-  /**
-   * Adds headers to be sent with every request
-   *
-   * @param  [:string] $headers
-   * @return self
-   */
-  public function with($headers) {
-    $this->headers= $headers;
-    return $this;
+    $this->marshalling= new RestMarshalling();
   }
 
   /**
@@ -59,33 +41,12 @@ class RestClient extends \lang\Object implements Traceable {
   }
 
   /**
-   * Sets function to create connections with
-   *
-   * @param  function(peer.URL): peer.http.HttpConnection $creation
-   * @return self
-   */
-  public function usingConnections($creation) {
-    $this->connectionTo= cast($creation, 'function(var): var');
-    return $this;
-  }
-
-  /**
-   * Sets connection
-   *
-   * @deprecated Use usingConnections() instead
-   * @param  peer.URL|string $base either a peer.URL or a string
-   */
-  public function setConnection($conn) {
-    $this->base= $conn->getUrl();
-  }
-
-  /**
    * Sets base
    *
    * @param  peer.URL|string $base either a peer.URL or a string
    */
   public function setBase($base) {
-    $this->base= $base instanceof URL ? $base : new URL($base);
+    $this->setConnection(new HttpConnection($base));
   }
 
   /**
@@ -99,20 +60,79 @@ class RestClient extends \lang\Object implements Traceable {
     return $this;
   }
 
-  /** @return peer.URL */
-  public function getBase() { return $this->base; }
+  /**
+   * Get base
+   *
+   * @return  peer.URL
+   */
+  public function getBase() {
+    return $this->connection ? $this->connection->getURL() : null;
+  }
 
-  /** @param float $timeout */
-  public function setConnectTimeout($timeout) { $this->connectTimeout= $timeout; }
+  /**
+   * Sets HTTP connection
+   *
+   * @param  peer.http.HttpConnection $connection
+   */
+  public function setConnection(HttpConnection $connection) {
+    $this->connection= $connection;
+  }
 
-  /** @return float */
-  public function getConnectTimeout() { return $this->connectTimeout; }
+  /**
+   * Set connect timeout
+   *
+   * @param  float $timeout
+   * @throws lang.IllegalStateException if no connection is set
+   */
+  public function setConnectTimeout($timeout) {
+    if (null === $this->connection) {
+      throw new IllegalStateException('No connection set');
+    }
 
-  /** @param float $timeout */
-  public function setTimeout($timeout) { $this->readTimeout= $timeout; }
+    $this->connection->setConnectTimeout($timeout);
+  }
 
-  /** @return float */
-  public function getTimeout() { return $this->readTimeout; }
+  /**
+   * Retrieve connect timeout
+   *
+   * @return float
+   * @throws lang.IllegalStateException if no connection is set
+   */
+  public function getConnectTimeout() {
+    if (null === $this->connection) {
+      throw new IllegalStateException('No connection set');
+    }
+
+    return $this->connection->getConnectTimeout();
+  }
+
+  /**
+   * Set timeout
+   *
+   * @param  int $timeout
+   * @throws lang.IllegalStateException if no connection is set
+   */
+  public function setTimeout($timeout) {
+    if (null === $this->connection) {
+      throw new IllegalStateException('No connection set');
+    }
+
+    $this->connection->setTimeout($timeout);
+  }
+
+  /**
+   * Get timeout
+   *
+   * @return int
+   * @throws lang.IllegalStateException if no connection is set
+   */
+  public function getTimeout() {
+    if (null === $this->connection) {
+      throw new IllegalStateException('No connection set');
+    }
+
+    return $this->connection->getTimeout();
+  }
 
   /**
    * Sets deserializer
@@ -165,17 +185,6 @@ class RestClient extends \lang\Object implements Traceable {
   }
 
   /**
-   * Returns a resource by a given path
-   *
-   * @param  string $path
-   * @param  [:string] $segments Optional values for placeholders in path
-   * @return webservices.rest.RestResource
-   */
-  public function resource($path, $segments= []) {
-    return new RestResource($this, $path, $segments);
-  }
-
-  /**
    * Execute a request
    *
    * @param  webservices.rest.RestRequest $request
@@ -183,19 +192,14 @@ class RestClient extends \lang\Object implements Traceable {
    * @throws lang.IllegalStateException if no connection is set
    */
   public function execute(RestRequest $request) {
-    $url= $request->targetUrl($this->base);
-    $key= $url->getHost();
-    if (!isset($this->connections[$key])) {
-      $this->connections[$key]= $this->connectionTo->__invoke($url);
-      $this->connections[$key]->setConnectTimeout($this->connectTimeout);
-      $this->connections[$key]->setTimeout($this->readTimeout);
+    if (null === $this->connection) {
+      throw new IllegalStateException('No connection set');
     }
 
-    $send= $this->connections[$key]->create(new HttpRequest());
-    $send->addHeaders($this->headers);
+    $send= $this->connection->create(new HttpRequest());
     $send->addHeaders($request->headerList());
     $send->setMethod($request->getMethod());
-    $send->setTarget($url->getPath());
+    $send->setTarget($request->getTarget($this->connection->getUrl()->getPath('/')));
 
     // Compose body
     // * Serialize payloads using the serializer for the given mimetype
@@ -214,7 +218,7 @@ class RestClient extends \lang\Object implements Traceable {
     
     try {
       $this->cat && $this->cat->debug('>>>', $send->getRequestString());
-      $response= $this->connections[$key]->send($send);
+      $response= $this->connection->send($send);
     } catch (\io\IOException $e) {
       throw new RestException('Cannot send request', $e);
     }
@@ -232,12 +236,6 @@ class RestClient extends \lang\Object implements Traceable {
    * @return string
    */
   public function toString() {
-    return sprintf(
-      '%s(->%s, timeout: [read= %.2f, connect= %.2f])',
-      nameof($this),
-      $this->base ? $this->base->toString() : '(null)',
-      $this->readTimeout,
-      $this->connectTimeout
-    );
+    return nameof($this).'(->'.\xp::stringOf($this->connection).')';
   }
 }

@@ -81,7 +81,7 @@ class RestClientTest extends TestCase {
     $this->newFixture()->execute(null);
   }
 
-  #[@test, @expect(class= IllegalStateException::class, withMessage= 'No base set')]
+  #[@test, @expect(class= IllegalStateException::class, withMessage= 'No connection set')]
   public function executeWithoutBase() {
     $this->newFixture()->execute(new \webservices\rest\RestRequest());
   }
@@ -195,7 +195,7 @@ class RestClientTest extends TestCase {
   #[@test]
   public function stringRepresentation() {
     $this->assertEquals(
-      "webservices.rest.RestClient(->(null), timeout: [read= 60.00, connect= 2.00])",
+      "webservices.rest.RestClient(->null)",
       $this->newFixture()->toString()
     );
   }
@@ -203,7 +203,7 @@ class RestClientTest extends TestCase {
   #[@test]
   public function stringRepresentationWithBase() {
     $this->assertEquals(
-      "webservices.rest.RestClient(->http://api.example.com/, timeout: [read= 60.00, connect= 2.00])",
+      "webservices.rest.RestClient(->peer.http.HttpConnection(->URL{http://api.example.com/ via peer.http.SocketHttpTransport}, timeout: [read= 60.00, connect= 2.00]))",
       $this->newFixture('http://api.example.com/')->toString()
     );
   }
@@ -239,6 +239,6 @@ class RestClientTest extends TestCase {
     $fixture= $this->newFixture();
     $fixture->setBase('http://localhost/');
 
-    $this->assertEquals(60.0, $fixture->getTimeout());
+    $this->assertEquals(60, $fixture->getTimeout());
   }
 }

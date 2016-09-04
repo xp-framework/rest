@@ -1,7 +1,7 @@
 <?php namespace webservices\rest\unittest;
 
 use unittest\TestCase;
-use webservices\rest\RestClient;
+use webservices\rest\Endpoint;
 use webservices\rest\RestRequest;
 use webservices\rest\RestFormat;
 use io\streams\MemoryInputStream;
@@ -16,7 +16,7 @@ class RoundtripTest extends TestCase {
 
   /** @return void */
   public function setUp() {
-    $this->fixture= (new RestClient('http://test'))->usingConnections([self::$conn, 'newInstance']);
+    $this->fixture= (new Endpoint('http://test'))->usingConnections([self::$conn, 'newInstance']);
   }
 
   #[@beforeClass]

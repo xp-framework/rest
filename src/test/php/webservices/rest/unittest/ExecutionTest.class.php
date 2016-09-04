@@ -1,7 +1,7 @@
 <?php namespace webservices\rest\unittest;
 
 use unittest\TestCase;
-use webservices\rest\RestClient;
+use webservices\rest\Endpoint;
 use webservices\rest\RestRequest;
 use webservices\rest\RestException;
 use io\streams\MemoryInputStream;
@@ -9,20 +9,14 @@ use peer\http\HttpConstants;
 use lang\Type;
 use lang\ClassLoader;
 
-/**
- * TestCase
- *
- * @see   xp://webservices.rest.RestClient
- */
-class RestClientExecutionTest extends TestCase {
-  protected $fixture= null;
-  protected static $conn= null;   
+class ExecutionTest extends TestCase {
+  private $fixture;
+  private static $conn;
 
   #[@beforeClass]
   public static function dummyConnectionClass() {
-    self::$conn= ClassLoader::defineClass('RestClientExecutionTest_Connection', 'peer.http.HttpConnection', [], '{
-      protected $result= null;
-      protected $exception= null;
+    self::$conn= ClassLoader::defineClass('EndpointExecutionTest_Connection', 'peer.http.HttpConnection', [], '{
+      private $result, $exception;
 
       public function __construct($status, $body, $headers) {
         parent::__construct("http://test");
@@ -53,10 +47,10 @@ class RestClientExecutionTest extends TestCase {
    * @param   var status either an int with a status code or an exception object
    * @param   string body default NULL
    * @param   [:string] headers default [:]
-   * @return  webservices.rest.RestClient
+   * @return  webservices.rest.Endpoint
    */
   public function fixtureWith($status, $body= null, $headers= []) {
-    return (new RestClient('http://test'))->usingConnections(function($url) use($status, $body, $headers) {
+    return (new Endpoint('http://test'))->usingConnections(function($url) use($status, $body, $headers) {
       return self::$conn->newInstance($status, $body, $headers);
     });
   }
