@@ -32,7 +32,7 @@ class Endpoint extends \lang\Object implements Traceable {
    */
   public function __construct($base= null) {
     $this->base= $base instanceof URL ? $base : new URL((string)$base);
-    $this->connectionTo= cast([HttpConnection::class, 'new'], 'function(var): var');
+    $this->connectionTo= cast(['peer.http.HttpConnection', 'new'], 'function(var): var');
     $this->marshalling= new RestMarshalling();
   }
 

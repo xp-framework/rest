@@ -9,6 +9,13 @@ REST Client and Server APIs for the XP Framework ChangeLog
   argument uri, adding support to the `resource()` method by doing so.
   (@thekid)
 
+## 8.0.1 / 2016-09-17
+
+* Restored PHP 5.4 compatibility which was officially dropped in 6.4.0.
+  Doing so only required changing a single line, so doing it in order
+  to increase adoption of 8.0.0
+  (@thekid)
+
 ## 8.0.0 / 2016-09-04
 
 * Merged PR #16: Resource API. Entry point is `webservices.rest.Endpoint`.
