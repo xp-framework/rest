@@ -84,4 +84,16 @@ class LinksTest extends \unittest\TestCase {
       $links->map('title')
     );
   }
+
+  #[@test]
+  public function string_representation() {
+    $links= new Links('<http://example.com/?page=3>; rel="next", <http://example.com/>; title="Home"');
+    $this->assertEquals(
+      "webservices.rest.Links@[\n".
+      "  webservices.rest.Link<http://example.com/?page=3>; rel=\"next\"\n".
+      "  webservices.rest.Link<http://example.com/>; title=\"Home\"\n".
+      "]",
+      $links->toString()
+    );
+  }
 }

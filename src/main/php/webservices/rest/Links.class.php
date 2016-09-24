@@ -10,7 +10,7 @@ use lang\FormatException;
  * @see  https://www.w3.org/wiki/LinkHeader
  * @see  https://tools.ietf.org/html/rfc5988 Web Linking
  */
-class Links {
+class Links implements \lang\Value {
   private $links= [];
 
   /**
@@ -106,5 +106,29 @@ class Links {
       if ($link->present($param)) $map[$link->param($param)]= $link;
     }
     return $map;
+  }
+
+  /**
+   * Compares this links to a given value
+   *
+   * @param  var $value
+   * @return int
+   */
+  public function compareTo($value) {
+    return $value instanceof self ? Objects::compare($this->links, $value->links) : 1;
+  }
+
+  /** @return string */
+  public function hashCode() {
+    return 'L'.Objects::hashOf($this->links);
+  }
+
+  /** @return string */
+  public function toString() {
+    $s= nameof($this)."@[\n";
+    foreach ($this->links as $link) {
+      $s.= '  '.$link->toString()."\n";
+    }
+    return $s.']';
   }
 }
