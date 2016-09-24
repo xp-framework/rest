@@ -34,7 +34,7 @@ class Link implements \lang\Value {
    * @param  string $name
    * @return bool
    */
-  public function hasParam($name) {
+  public function present($name) {
     return array_key_exists($name, $this->params);
   }
 

@@ -73,7 +73,7 @@ class Links {
     } else {
       foreach ($this->links as $link) {
         foreach ($search as $param => $compare) {
-          if (!$link->hasParam($param) || (null !== $compare && $compare !== $link->param($param))) continue 2;
+          if (!$link->present($param) || (null !== $compare && $compare !== $link->param($param))) continue 2;
         }
         yield $link;
       }
@@ -103,7 +103,7 @@ class Links {
   public function map($param) {
     $map= [];
     foreach ($this->links as $link) {
-      if ($link->hasParam($param)) $map[$link->param($param)]= $link;
+      if ($link->present($param)) $map[$link->param($param)]= $link;
     }
     return $map;
   }
