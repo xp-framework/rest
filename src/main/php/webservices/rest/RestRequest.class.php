@@ -26,7 +26,7 @@ class RestRequest extends \lang\Object {
    * Creates a new RestRequest instance
    *
    * @param   string $uri default '/'
-   * @param   string method default HttpConstants::GET
+   * @param   string $method default HttpConstants::GET
    */
   public function __construct($uri= '/', $method= HttpConstants::GET) {
     if ($p= strpos($uri, '?')) {
