@@ -3,7 +3,7 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
-## 8.1.0 / 2016-09-24
+## 8.1.0 / ????-??-??
 
 * Changed `RestRequest` to optionally accept parameters in constructor
   argument uri, adding support to the `resource()` method by doing so.
