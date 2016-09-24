@@ -67,7 +67,11 @@ class LinksTest extends \unittest\TestCase {
   public function mapping_by_rel() {
     $links= new Links('<http://example.com/?page=3>; rel="next", <http://example.com/?page=3>; rel="last", <http://example.com/?page=1>; rel="prev"');
     $this->assertEquals(
-      ['next' => 'http://example.com/?page=3', 'last' => 'http://example.com/?page=3', 'prev' => 'http://example.com/?page=1'],
+      [
+        'next' => new Link('http://example.com/?page=3', ['rel' => 'next']),
+        'last' => new Link('http://example.com/?page=3', ['rel' => 'last']),
+        'prev' => new Link('http://example.com/?page=1', ['rel' => 'prev'])
+      ],
       $links->map('rel')
     );
   }
@@ -76,7 +80,7 @@ class LinksTest extends \unittest\TestCase {
   public function mapping_by_title_excludes_links_without_title() {
     $links= new Links('<http://example.com/?page=3>; rel="next", <http://example.com/>; title="Home"');
     $this->assertEquals(
-      ['Home' => 'http://example.com/'],
+      ['Home' => new Link('http://example.com/', ['title' => 'Home'])],
       $links->map('title')
     );
   }

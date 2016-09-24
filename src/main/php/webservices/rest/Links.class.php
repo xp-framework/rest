@@ -95,15 +95,15 @@ class Links {
   }
 
   /**
-   * Creates a lookup map to a URI by a given link parameter
+   * Creates a lookup map to by a given link parameter
    *
    * @param  string $param
-   * @return [:string]
+   * @return [:webservices.rest.Link]
    */
   public function map($param) {
     $map= [];
     foreach ($this->links as $link) {
-      if ($link->hasParam($param)) $map[$link->param($param)]= $link->uri();
+      if ($link->hasParam($param)) $map[$link->param($param)]= $link;
     }
     return $map;
   }
