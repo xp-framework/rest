@@ -213,6 +213,24 @@ class RestRequestTest extends TestCase {
   }
 
   #[@test]
+  public function oneParameterViaUrl() {
+    $fixture= new RestRequest('/users?page=1');
+    $this->assertEquals(
+      ['page' => '1'],
+      $fixture->getParameters()
+    );
+  }
+
+  #[@test]
+  public function twoParametersViaUrl() {
+    $fixture= new RestRequest('/users?page=1&per_page=50');
+    $this->assertEquals(
+      ['page' => '1', 'per_page' => '50'],
+      $fixture->getParameters()
+    );
+  }
+
+  #[@test]
   public function noSegments() {
     $fixture= new RestRequest();
     $this->assertEquals([], $fixture->getSegments());

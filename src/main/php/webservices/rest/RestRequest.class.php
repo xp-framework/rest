@@ -25,11 +25,16 @@ class RestRequest extends \lang\Object {
   /**
    * Creates a new RestRequest instance
    *
-   * @param   string resource default NULL
+   * @param   string $uri default '/'
    * @param   string method default HttpConstants::GET
    */
-  public function __construct($resource= null, $method= HttpConstants::GET) {
-    if (null !== $resource) $this->setResource($resource);
+  public function __construct($uri= '/', $method= HttpConstants::GET) {
+    if ($p= strpos($uri, '?')) {
+      parse_str(substr($uri, $p + 1), $this->parameters);
+      $this->resource= substr($uri, 0, $p);
+    } else {
+      $this->resource= $uri;
+    }
     $this->method= $method;
   }
   
