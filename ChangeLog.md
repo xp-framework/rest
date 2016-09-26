@@ -3,8 +3,9 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
-## 8.1.0 / ????-??-??
+## 8.1.0 / 2016-09-26
 
+* Merged pull request #17: Link header support - @thekid
 * Changed `RestRequest` to optionally accept parameters in constructor
   argument uri, adding support to the `resource()` method by doing so.
   (@thekid)
