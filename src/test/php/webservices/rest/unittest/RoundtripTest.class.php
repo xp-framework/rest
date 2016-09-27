@@ -91,6 +91,34 @@ class RoundtripTest extends TestCase {
   }
 
   #[@test]
+  public function with_payload_and_parameters() {
+    $this->assertEquals(
+      "POST /?user=test HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Content-Type: application/x-www-form-urlencoded; charset=utf-8\r\n".
+      "Content-Length: 9\r\n".
+      "\r\n".
+      "key=value",
+      $this->fixture->execute((new RestRequest('/', HttpConstants::POST))->withParameter('user', 'test')->withPayload(['key' => 'value'], RestFormat::$FORM))->content()
+    );
+  }
+
+  #[@test]
+  public function with_body_and_parameters() {
+    $this->assertEquals(
+      "POST /?user=test HTTP/1.1\r\n".
+      "Connection: close\r\n".
+      "Host: test\r\n".
+      "Content-Length: 9\r\n".
+      "Content-Type: application/x-www-form-urlencoded\r\n".
+      "\r\n".
+      "key=value",
+      $this->fixture->execute((new RestRequest('/', HttpConstants::POST))->withParameter('user', 'test')->withBody(new \peer\http\RequestData('key=value')))->content()
+    );
+  }
+
+  #[@test]
   public function default_headers() {
     $fixture= $this->fixture->with(['User-Agent' => 'Test']);
     $this->assertEquals(

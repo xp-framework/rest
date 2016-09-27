@@ -13,7 +13,7 @@ use lang\ClassLoader;
 /**
  * TestCase
  *
- * @deprecated RestClient was replaced by Endpoing
+ * @deprecated RestClient was replaced by Endpoint
  * @see   xp://webservices.rest.RestClient
  */
 class RestClientSendTest extends TestCase {

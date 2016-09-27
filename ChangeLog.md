@@ -3,6 +3,10 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.1.1 / 2016-09-27
+
+* Fixed requests with payload *and* query parameters - @thekid
+
 ## 8.1.0 / 2016-09-26
 
 * Merged pull request #17: Link header support - @thekid

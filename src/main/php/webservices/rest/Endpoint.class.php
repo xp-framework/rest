@@ -165,7 +165,8 @@ class Endpoint extends \lang\Object implements Traceable {
     $url= $request->targetUrl($this->base);
     $host= $url->getHost();
     if (!isset($this->connections[$host])) {
-      $this->connections[$host]= $this->connectionTo->__invoke($url);
+      $target= clone $url;    // Clone & remove query from URL as it will lead to duplication!
+      $this->connections[$host]= $this->connectionTo->__invoke($target->setQuery(null));
       $this->connections[$host]->setConnectTimeout($this->timeouts['connect']);
       $this->connections[$host]->setTimeout($this->timeouts['read']);
     }
@@ -174,21 +175,25 @@ class Endpoint extends \lang\Object implements Traceable {
     $send->addHeaders($this->headers);
     $send->addHeaders($request->headerList());
     $send->setMethod($request->getMethod());
-    $send->setTarget($url->getPath());
 
     // Compose body
     // * Serialize payloads using the serializer for the given mimetype
     // * Use bodies as-is, e.g. file uploads
     // * If no body and no payload is set, use parameters
     if ($request->hasPayload()) {
+      $query= $url->getQuery();
+      $send->setTarget($url->getPath().($query ? '?'.$query : ''));
       $send->setParameters(new RequestData(
         $this->marshalling->marshal($request->getPayload()),
         $this->serializerFor($request->getContentType())
       ));
     } else if ($request->hasBody()) {
+      $query= $url->getQuery();
+      $send->setTarget($url->getPath().($query ? '?'.$query : ''));
       $send->setParameters($request->getBody());
     } else {
-      $send->setParameters($request->getParameters());
+      $send->setTarget($url->getPath());
+      $send->setParameters($url->getParams());
     }
     
     try {

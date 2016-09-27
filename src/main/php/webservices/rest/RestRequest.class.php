@@ -475,7 +475,7 @@ class RestRequest extends \lang\Object {
       $url= clone $base;
     }
 
-    return $url->setPath($this->resolve($resource));
+    return $url->setPath($this->resolve($resource))->setParams($this->parameters);
   }
 
   /**
