@@ -258,6 +258,20 @@ class RestRequestTest extends TestCase {
   }
 
   #[@test]
+  public function segmentsAsParameters() {
+    $fixture= new RestRequest('/issues?user={user}');
+    $fixture->addSegment('user', 'thekid');
+    $this->assertEquals(['user' => 'thekid'], $fixture->targetUrl(new URL('http://localhost'))->getParams());
+  }
+
+  #[@test]
+  public function segmentsInParameters() {
+    $fixture= new RestRequest('/issues?user=uid-{user}');
+    $fixture->addSegment('user', '1549');
+    $this->assertEquals(['user' => 'uid-1549'], $fixture->targetUrl(new URL('http://localhost'))->getParams());
+  }
+
+  #[@test]
   public function withSegmentReturnsThis() {
     $fixture= new RestRequest('/users/{user}');
     $this->assertEquals($fixture, $fixture->withSegment('user', 'thekid'));
