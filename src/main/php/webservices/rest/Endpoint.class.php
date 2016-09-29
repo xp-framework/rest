@@ -39,11 +39,16 @@ class Endpoint extends \lang\Object implements Traceable {
   /**
    * Adds headers to be sent with every request
    *
-   * @param  [:string] $headers
+   * @param  string|[:string] $arg
+   * @param  string $value
    * @return self
    */
-  public function with($headers) {
-    $this->headers= $headers;
+  public function with($arg, $value= null) {
+    if (is_array($arg)) {
+      $this->headers= array_merge($this->headers, $arg);
+    } else {
+      $this->headers[$arg]= $value;
+    }
     return $this;
   }
 

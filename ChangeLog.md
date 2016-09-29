@@ -3,6 +3,13 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.2.0 / 2016-09-29
+
+* Changed `Endpoint::with()` to be liberal in what it accepts. It can now
+  be called with both a map as single argument and with two arguments, the
+  header and its value.
+  (@thekid)
+
 ## 8.1.1 / 2016-09-27
 
 * Fixed requests with payload *and* query parameters - @thekid

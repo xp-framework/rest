@@ -133,8 +133,32 @@ class EndpointTest extends TestCase {
   #[@test]
   public function with_headers() {
     $this->assertEquals(
-      ['User-Agent', 'Test'],
-      $this->newFixture()->with(['User-Agent', 'Test'])->headers()
+      ['User-Agent' => 'Test'],
+      $this->newFixture()->with(['User-Agent' => 'Test'])->headers()
+    );
+  }
+
+  #[@test]
+  public function with_header() {
+    $this->assertEquals(
+      ['User-Agent' => 'Test'],
+      $this->newFixture()->with('User-Agent', 'Test')->headers()
+    );
+  }
+
+  #[@test]
+  public function with_headers_invoked_multiple_times() {
+    $this->assertEquals(
+      ['User-Agent' => 'Test', 'Token' => 'AA8F'],
+      $this->newFixture()->with(['User-Agent' => 'Test'])->with(['Token' => 'AA8F'])->headers()
+    );
+  }
+
+  #[@test]
+  public function with_header_invoked_multiple_times() {
+    $this->assertEquals(
+      ['User-Agent' => 'Test', 'Token' => 'AA8F'],
+      $this->newFixture()->with('User-Agent', 'Test')->with('Token', 'AA8F')->headers()
     );
   }
 
