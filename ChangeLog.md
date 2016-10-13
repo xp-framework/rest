@@ -3,6 +3,10 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.2.1 / 2016-10-13
+
+* Merged PR #18: Use rawurlencode() over urlencode() - @kiesel
+
 ## 8.2.0 / 2016-09-29
 
 * Changed `Endpoint::with()` to be liberal in what it accepts. It can now
