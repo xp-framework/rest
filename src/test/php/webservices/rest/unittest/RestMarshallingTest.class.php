@@ -20,6 +20,7 @@ use webservices\rest\RestMarshalling;
  * @see   xp://webservices.rest.RestMarshalling
  */
 class RestMarshallingTest extends \unittest\TestCase {
+  private static $enumClass;
   private static $walletClass;
   private static $moneyMarshaller;
   private static $walletMarshaller;
@@ -32,6 +33,19 @@ class RestMarshallingTest extends \unittest\TestCase {
    */
   public function setUp() {
     $this->fixture= new RestMarshalling();
+  }
+
+  #[@beforeClass]
+  public static function defineEnumClass() {
+    self::$enumClass= ClassLoader::defineClass('ExampleEnum', 'lang.Enum', [], '{
+      public static $ELEMENT1;
+      public static $ELEMENT2;
+      
+      static function __static() {
+        static::$ELEMENT1= new static(0, "ELEMENT1");
+        static::$ELEMENT2= new static(1, "ELEMENT2");
+      }
+    }');
   }
 
   #[@beforeClass]
@@ -632,4 +646,13 @@ class RestMarshallingTest extends \unittest\TestCase {
       $this->fixture->unmarshal(self::$walletClass, ['0.25 USD'])
     );
   }
+
+  #[@test]
+  public function unmarshal_enum() {
+    $this->assertEquals(
+      self::$enumClass->_reflect->getStaticPropertyValue('ELEMENT2'),
+      $this->fixture->unmarshal(self::$enumClass, 'ELEMENT2')
+    );
+  }
+
 }
