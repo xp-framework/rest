@@ -52,6 +52,11 @@ class RestMarshalling extends \lang\Object {
       $this->marshallers[XPClass::forName('lang.types.Double')]= $decimals;
       $this->marshallers[XPClass::forName('lang.types.Boolean')]= $booleans;
     }
+
+    $this->marshallers[XPClass::forName('lang.Enum')]= newinstance('webservices.rest.TypeMarshaller', [], [
+      'marshal'   => function($t) { return $t->name(); },
+      'unmarshal' => function(Type $target, $in) { return Enum::valueOf($target, (string)$in); }
+    ]);
   }
 
   /**
@@ -116,8 +121,6 @@ class RestMarshalling extends \lang\Object {
       return $value->toString('c');    // ISO 8601, e.g. "2004-02-12T15:19:21+00:00"
     } else if ($value instanceof \Traversable) {
       return new Iteration($value, [$this, 'marshal']);
-    } else if ($value instanceof Enum) {
-      return $value->name();
     } else if (is_object($value)) {
       foreach ($this->marshallers->keys() as $t) {      // Specific class marshalling
         if ($t->isInstance($value)) return $this->marshallers[$t]->marshal($value, $this);
@@ -220,12 +223,7 @@ class RestMarshalling extends \lang\Object {
       if ($type->hasMethod('valueOf')) {
         $valueOf= $type->getMethod('valueOf');
         if (Modifiers::isStatic($valueOf->getModifiers()) && Modifiers::isPublic($valueOf->getModifiers())) {
-          if ($type->isEnum()) {
-            return $valueOf->invoke(null, [
-              $type,
-              $this->unmarshal($this->paramType($valueOf->getParameter(1)), $value)
-            ]);
-          } else if (1 === $valueOf->numParameters()) {
+          if (1 === $valueOf->numParameters()) {
             return $valueOf->invoke(null, [$this->unmarshal($this->paramType($valueOf->getParameter(0)), $value)]);
           } else {
             $param= 0;
