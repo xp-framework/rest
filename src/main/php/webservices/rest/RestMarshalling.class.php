@@ -1,5 +1,6 @@
 <?php namespace webservices\rest;
 
+use lang\Enum;
 use lang\XPClass;
 use lang\Type;
 use lang\Primitive;
@@ -115,6 +116,8 @@ class RestMarshalling extends \lang\Object {
       return $value->toString('c');    // ISO 8601, e.g. "2004-02-12T15:19:21+00:00"
     } else if ($value instanceof \Traversable) {
       return new Iteration($value, [$this, 'marshal']);
+    } else if ($value instanceof Enum) {
+      return $value->name();
     } else if (is_object($value)) {
       foreach ($this->marshallers->keys() as $t) {      // Specific class marshalling
         if ($t->isInstance($value)) return $this->marshallers[$t]->marshal($value, $this);

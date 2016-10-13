@@ -655,4 +655,12 @@ class RestMarshallingTest extends \unittest\TestCase {
     );
   }
 
+  #[@test]
+  public function marshal_enum() {
+    $this->assertEquals(
+      'ELEMENT2',
+      $this->fixture->marshal(self::$enumClass->_reflect->getStaticPropertyValue('ELEMENT2'))
+    );
+  }
+
 }
