@@ -217,7 +217,12 @@ class RestMarshalling extends \lang\Object {
       if ($type->hasMethod('valueOf')) {
         $valueOf= $type->getMethod('valueOf');
         if (Modifiers::isStatic($valueOf->getModifiers()) && Modifiers::isPublic($valueOf->getModifiers())) {
-          if (1 === $valueOf->numParameters()) {
+          if ($type->isEnum()) {
+            return $valueOf->invoke(null, [
+              $type,
+              $this->unmarshal($this->paramType($valueOf->getParameter(1)), $value)
+            ]);
+          } else if (1 === $valueOf->numParameters()) {
             return $valueOf->invoke(null, [$this->unmarshal($this->paramType($valueOf->getParameter(0)), $value)]);
           } else {
             $param= 0;
