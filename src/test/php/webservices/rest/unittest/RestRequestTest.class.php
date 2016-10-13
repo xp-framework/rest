@@ -300,7 +300,7 @@ class RestRequestTest extends TestCase {
   public function segments_are_url_encoded() {
     $fixture= new RestRequest('/users/{user}');
     $fixture->addSegment('user', 'Timm Friebe');
-    $this->assertEquals('/users/Timm+Friebe', $fixture->targetUrl(new URL('http://test'))->getPath());
+    $this->assertEquals('/users/Timm%20Friebe', $fixture->targetUrl(new URL('http://test'))->getPath());
   }
 
   #[@test]
