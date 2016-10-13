@@ -3,6 +3,10 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.3.0 / 2016-10-13
+
+* Merged PR #19: Enum marshalling/demarshalling - @johannes85, @thekid
+
 ## 8.2.1 / 2016-10-13
 
 * Merged PR #18: Use rawurlencode() over urlencode() - @kiesel
