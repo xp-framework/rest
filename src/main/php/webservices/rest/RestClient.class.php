@@ -1,5 +1,6 @@
 <?php namespace webservices\rest;
 
+use peer\URL;
 use util\log\Traceable;
 use peer\http\HttpConnection;
 use peer\http\HttpRequest;
@@ -196,10 +197,12 @@ class RestClient extends \lang\Object implements Traceable {
       throw new IllegalStateException('No connection set');
     }
 
+    $targetUrl= $request->targetUrl(new Url());
+
     $send= $this->connection->create(new HttpRequest());
     $send->addHeaders($request->headerList());
     $send->setMethod($request->getMethod());
-    $send->setTarget($request->getTarget($this->connection->getUrl()->getPath('/')));
+    $send->setTarget($targetUrl->getPath('/'));
 
     // Compose body
     // * Serialize payloads using the serializer for the given mimetype
@@ -212,8 +215,8 @@ class RestClient extends \lang\Object implements Traceable {
       ));
     } else if ($request->hasBody()) {
       $send->setParameters($request->getBody());
-    } else {
-      $send->setParameters($request->getParameters());
+    } else if ($targetUrl->hasParams()) {
+      $send->setParameters($targetUrl->getParams());
     }
     
     try {
