@@ -320,6 +320,20 @@ class RestRequestTest extends TestCase {
     $this->assertEquals('/repos/thekid/xp-framework/issues/1', $fixture->targetUrl(new URL('http://test'))->getPath());
   }
 
+  #[@test]
+  public function segments_allowed_in_get_parameters() {
+    $fixture= new RestRequest('/repos/?user={user}');
+    $fixture->addSegment('user', 'thekid');
+    $this->assertEquals(['user' => 'thekid'], $fixture->targetUrl(new URL('http://test'))->getParams());
+  }
+
+  #[@test]
+  public function segments_in_parameters_resolved_in_target_parameters() {
+    $fixture= new RestRequest('/repos/?user={user}');
+    $fixture->addSegment('user', 'thekid');
+    $this->assertEquals(['user' => 'thekid'], $fixture->targetParameters());
+  }
+
   #[@test, @values(['/rest/api/v2/', '/rest/api/v2'])]
   public function relativeResource($base) {
     $fixture= new RestRequest('issues');

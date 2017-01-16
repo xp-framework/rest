@@ -213,7 +213,7 @@ class RestClient extends \lang\Object implements Traceable {
     } else if ($request->hasBody()) {
       $send->setParameters($request->getBody());
     } else {
-      $send->setParameters($request->getParameters());
+      $send->setParameters($request->targetParameters());
     }
     
     try {
