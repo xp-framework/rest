@@ -452,6 +452,15 @@ class RestRequest extends \lang\Object {
   }
 
   /**
+   * Returns parameters, resolving segments if necessary
+   *
+   * @return [:string]
+   */
+  public function targetParameters() {
+    return array_map([$this, 'resolve'], $this->parameters);
+  }
+
+  /**
    * Resolves target URL
    *
    * @param  peer.URL $base
@@ -475,7 +484,7 @@ class RestRequest extends \lang\Object {
       $url= clone $base;
     }
 
-    return $url->setParams(array_map([$this, 'resolve'], $this->parameters))->setPath($this->resolve($resource));
+    return $url->setParams($this->targetParameters())->setPath($this->resolve($resource));
   }
 
   /**
