@@ -1,12 +1,12 @@
 <?php namespace webservices\rest;
 
+use io\IOException;
+use lang\Object;
 use peer\URL;
 use util\log\Traceable;
 use peer\http\HttpConnection;
 use peer\http\HttpRequest;
 use lang\IllegalStateException;
-use lang\IllegalArgumentException;
-use lang\XPClass;
 
 /**
  * REST client
@@ -15,7 +15,7 @@ use lang\XPClass;
  * @test xp://webservices.rest.unittest.RestClientTest
  * @test xp://webservices.rest.unittest.RestClientSendTest
  */
-class RestClient extends \lang\Object implements Traceable {
+class RestClient extends Object implements Traceable {
   protected $connection= null;
   protected $cat= null;
   protected $serializers= [];
@@ -191,13 +191,14 @@ class RestClient extends \lang\Object implements Traceable {
    * @param  webservices.rest.RestRequest $request
    * @return webservices.rest.RestResponse
    * @throws lang.IllegalStateException if no connection is set
+   * @throws webservices.rest.RestException
    */
   public function execute(RestRequest $request) {
     if (null === $this->connection) {
       throw new IllegalStateException('No connection set');
     }
 
-    $targetUrl= $request->targetUrl(new Url());
+    $targetUrl= $request->targetUrl(new URL());
 
     $send= $this->connection->create(new HttpRequest());
     $send->addHeaders($request->headerList());
@@ -222,11 +223,13 @@ class RestClient extends \lang\Object implements Traceable {
     try {
       $this->cat && $this->cat->debug('>>>', $send->getRequestString());
       $response= $this->connection->send($send);
-    } catch (\io\IOException $e) {
+    } catch (IOException $e) {
       throw new RestException('Cannot send request', $e);
     }
 
-    $reader= new ResponseReader($this->deserializerFor($response->header('Content-Type')[0]), $this->marshalling);
+    $reader= new ResponseReader(
+      $this->deserializerFor($response->header('Content-Type')[0]), $this->marshalling
+    );
     $result= new RestResponse($response, $reader);
 
     $this->cat && $this->cat->debug('<<<', $response->toString(), $result->contentCopy());
