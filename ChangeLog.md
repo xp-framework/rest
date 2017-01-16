@@ -3,6 +3,10 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.3.2 / 2017-01-16
+
+* Fixed double-encoding of resolved GET parameters - @aguel, @johannes85
+
 ## 8.3.1 / 2017-01-16
 
 * Merged PR #21: Fix GET parameters resolution - @johannes85, @thekid
