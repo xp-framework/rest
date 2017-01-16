@@ -190,6 +190,7 @@ class RestClient extends \lang\Object implements Traceable {
    * @param  webservices.rest.RestRequest $request
    * @return webservices.rest.RestResponse
    * @throws lang.IllegalStateException if no connection is set
+   * @throws webservices.rest.RestException
    */
   public function execute(RestRequest $request) {
     if (null === $this->connection) {
