@@ -127,18 +127,11 @@ class RestMarshalling extends \lang\Object {
       }
 
       $class= typeof($value);
-      if ($class->hasAnnotation('recursive')) {
-        $classToSearchIn= $class;
-        $fields= [];
-        do {
-          $fields= array_merge($fields, $classToSearchIn->getFields());
-        } while (
-          $classToSearchIn->hasAnnotation('recursive') &&
-          ($classToSearchIn= $classToSearchIn->getParentclass()) !== null
-        );
-      } else {
-        $fields= $class->getFields();
-      }
+      $classToSearchIn= $class;
+      $fields= [];
+      do {
+        $fields= array_merge($fields, $classToSearchIn->getFields());
+      } while (($classToSearchIn= $classToSearchIn->getParentclass()) !== null);
       $r= [];
       foreach ($fields as $field) {
         $m= $field->getModifiers();

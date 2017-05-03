@@ -5,7 +5,7 @@ use lang\Object;
 /**
  * Class ParentClassWhithPrivateFields
  */
-class ParentClassWhithPrivateFields extends ParentOfParentClassWithPrivateFields {
+class ParentClassWhithPrivateFields extends Object {
 
   /** @var string */
   private $field1;
