@@ -297,10 +297,17 @@ class RestRequestTest extends TestCase {
   }
 
   #[@test]
-  public function segments_are_url_encoded() {
+  public function segments_in_path_are_raw_url_encoded() {
     $fixture= new RestRequest('/users/{user}');
     $fixture->addSegment('user', 'Timm Friebe');
     $this->assertEquals('/users/Timm%20Friebe', $fixture->targetUrl(new URL('http://test'))->getPath());
+  }
+
+  #[@test]
+  public function segments_in_parameters_are_url_encoded() {
+    $fixture= new RestRequest('/users/?user={user}');
+    $fixture->addSegment('user', 'Timm Friebe');
+    $this->assertEquals('user=Timm+Friebe', $fixture->targetUrl(new URL('http://test'))->getQuery());
   }
 
   #[@test]
@@ -318,6 +325,20 @@ class RestRequestTest extends TestCase {
     $fixture->addSegment('repo', 'xp-framework');
     $fixture->addSegment('id', 1);
     $this->assertEquals('/repos/thekid/xp-framework/issues/1', $fixture->targetUrl(new URL('http://test'))->getPath());
+  }
+
+  #[@test]
+  public function segments_allowed_in_get_parameters() {
+    $fixture= new RestRequest('/repos/?user={user}');
+    $fixture->addSegment('user', 'thekid');
+    $this->assertEquals(['user' => 'thekid'], $fixture->targetUrl(new URL('http://test'))->getParams());
+  }
+
+  #[@test]
+  public function segments_in_parameters_resolved_in_target_parameters() {
+    $fixture= new RestRequest('/repos/?user={user}');
+    $fixture->addSegment('user', 'thekid');
+    $this->assertEquals(['user' => 'thekid'], $fixture->targetParameters());
   }
 
   #[@test, @values(['/rest/api/v2/', '/rest/api/v2'])]

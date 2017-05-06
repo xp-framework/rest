@@ -406,9 +406,10 @@ class RestRequest extends \lang\Object {
    * Resolves segments in resource
    *
    * @param  string $resource
+   * @param  bool $encode
    * @return string
    */
-  private function resolve($resource) {
+  private function resolve($resource, $encode) {
     $l= strlen($resource);
     $target= '';
     $offset= 0;
@@ -418,7 +419,8 @@ class RestRequest extends \lang\Object {
       $offset+= $b;
       if ($offset >= $l) break;
       $e= strcspn($resource, '}', $offset);
-      $target.= rawurlencode($this->getSegment(substr($resource, $offset+ 1, $e- 1)));
+      $segment= $this->getSegment(substr($resource, $offset+ 1, $e- 1));
+      $target.= $encode ? rawurlencode($segment) : $segment;
       $offset+= $e+ 1;
     } while ($offset < $l);
 
@@ -433,7 +435,7 @@ class RestRequest extends \lang\Object {
    * @return string
    */
   public function getTarget($base= '/') {
-    return $this->resolve(rtrim($base, '/').'/'.ltrim($this->resource, '/'));
+    return $this->resolve(rtrim($base, '/').'/'.ltrim($this->resource, '/'), true);
   }
 
   /**
@@ -449,6 +451,19 @@ class RestRequest extends \lang\Object {
       $url->setPassword($base->getPassword());
     }
     return $url;
+  }
+
+  /**
+   * Returns parameters, resolving segments if necessary
+   *
+   * @return [:string]
+   */
+  public function targetParameters() {
+    $return= [];
+    foreach ($this->parameters as $name => $parameter) {
+      $return[$name]= $this->resolve($parameter, false);
+    }
+    return $return;
   }
 
   /**
@@ -475,7 +490,7 @@ class RestRequest extends \lang\Object {
       $url= clone $base;
     }
 
-    return $url->setParams(array_map([$this, 'resolve'], $this->parameters))->setPath($this->resolve($resource));
+    return $url->setParams($this->targetParameters())->setPath($this->resolve($resource, true));
   }
 
   /**
