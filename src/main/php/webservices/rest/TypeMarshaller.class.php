@@ -17,7 +17,7 @@ interface TypeMarshaller {
   /**
    * Marshals the type
    *
-   * @param  T type
+   * @param  var type
    * @param  webservices.rest.RestMarshalling marshalling
    * @return var
    */
@@ -29,7 +29,7 @@ interface TypeMarshaller {
    * @param  lang.Type target
    * @param  var in
    * @param  webservices.rest.RestMarshalling marshalling
-   * @return T
+   * @return var
    */
   public function unmarshal(\lang\Type $target, $in);
 }
