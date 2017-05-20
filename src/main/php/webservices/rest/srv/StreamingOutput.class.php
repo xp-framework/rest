@@ -3,6 +3,10 @@
 use util\MimeType;
 use util\Date;
 use util\Objects;
+use lang\IllegalArgumentException;
+use io\File;
+use io\streams\InputStream;
+use io\collections\IOElement;
 
 /**
  * Represents a stream to be output
@@ -21,7 +25,7 @@ class StreamingOutput extends Output {
    *
    * @param  io.streams.InputStream inputStream
    */
-  public function __construct(\io\streams\InputStream $inputStream= null) {
+  public function __construct(InputStream $inputStream= null) {
     $this->inputStream= $inputStream;
     $this->status= 200;
   }
@@ -34,22 +38,22 @@ class StreamingOutput extends Output {
    * @throws lang.IllegalArgumentException
    */
   public static function of($arg) {
-    if ($arg instanceof \io\streams\InputStream) {
+    if ($arg instanceof InputStream) {
       return new self($arg);
-    } else if ($arg instanceof \io\File) {
+    } else if ($arg instanceof File) {
       return (new self($arg->in()))
         ->withMediaType(MimeType::getByFileName($arg->getFileName()))
         ->withContentLength($arg->getSize())
         ->withLastModified(new Date($arg->lastModified()))
       ;
-    } else if ($arg instanceof \io\collections\IOElement) {
+    } else if ($arg instanceof IOElement) {
       return (new self($arg->getInputStream()))
         ->withMediaType(MimeType::getByFileName($arg->getURI()))
         ->withContentLength($arg->getSize())
         ->withLastModified($arg->lastModified())
       ;
     } else {
-      throw new \lang\IllegalArgumentException('Expected either an InputStream, File, or IOElement, have '.\xp::typeOf($arg));
+      throw new IllegalArgumentException('Expected either an InputStream, File, or IOElement, have '.typeof($arg)->getName());
     }
   }
 

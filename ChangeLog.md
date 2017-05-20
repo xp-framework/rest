@@ -3,6 +3,12 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 8.3.3 / 2017-05-20
+
+* Refactored code to use `typeof()` instead of `xp::typeOf()`, see
+  https://github.com/xp-framework/rfc/issues/323
+  (@thekid)
+
 ## 8.3.2 / 2017-01-16
 
 * Fixed double-encoding of resolved GET parameters - @aguel, @johannes85
