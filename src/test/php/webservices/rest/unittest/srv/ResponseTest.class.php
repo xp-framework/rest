@@ -5,6 +5,7 @@ use webservices\rest\Payload;
 use scriptlet\Cookie;
 use scriptlet\HttpScriptletResponse;
 use peer\URL;
+use webservices\rest\unittest\srv\fixture\Greeting;
 
 /**
  * Test response class
@@ -237,12 +238,9 @@ class ResponseTest extends \unittest\TestCase {
 
   #[@test]
   public function equals_same_object_payloads() {
-    $class= \lang\ClassLoader::defineClass('ResponseTest_SameObjectFixture', 'lang.Object', [], '{
-      public function equals($cmp) { return TRUE; }
-    }');
     $this->assertEquals(
-      Response::status(200)->withPayload($class->newInstance()), 
-      Response::status(200)->withPayload($class->newInstance())
+      Response::status(200)->withPayload(new Greeting('Hello', 'World')), 
+      Response::status(200)->withPayload(new Greeting('Hello', 'World'))
     );
   }
 
@@ -250,7 +248,7 @@ class ResponseTest extends \unittest\TestCase {
   public function equals_different_object_payloads() {
     $this->assertNotEquals(
       Response::status(200)->withPayload($this), 
-      Response::status(200)->withPayload(new \lang\Object())
+      Response::status(200)->withPayload(new Greeting('Hello', 'World'))
     );
   }
 

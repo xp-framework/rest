@@ -1,6 +1,5 @@
 <?php namespace webservices\rest\unittest\srv;
 
-use lang\Object;
 use webservices\rest\srv\RestContext;
 use webservices\rest\srv\Response;
 use webservices\rest\Payload;
@@ -33,7 +32,7 @@ class RestContextHandleTest extends \unittest\TestCase {
 
   #[@test]
   public function primitive_return() {
-    $handler= newinstance(Object::class, [], '{
+    $handler= newinstance(Handler::class, [], '{
       #[@webmethod(verb= "GET")]
       public function fixture() { return "Hello World"; }
     }');
@@ -45,7 +44,7 @@ class RestContextHandleTest extends \unittest\TestCase {
 
   #[@test]
   public function response_instance_return() {
-    $handler= newinstance(Object::class, [], '{
+    $handler= newinstance(Handler::class, [], '{
       #[@webmethod(verb= "GET")]
       public function fixture() { return \webservices\rest\srv\Response::created("/resource/4711"); }
     }');
@@ -57,7 +56,7 @@ class RestContextHandleTest extends \unittest\TestCase {
 
   #[@test]
   public function void_return() {
-    $handler= newinstance(Object::class, [], '{
+    $handler= newinstance(Handler::class, [], '{
       /** @return void **/
       #[@webmethod(verb= "GET")]
       public function fixture() { /* Intentionally empty */ }
@@ -70,7 +69,7 @@ class RestContextHandleTest extends \unittest\TestCase {
 
   #[@test]
   public function void_return_ignores_return_value() {
-    $handler= newinstance(Object::class, [], '{
+    $handler= newinstance(Handler::class, [], '{
       /** @return void **/
       #[@webmethod(verb= "GET")]
       public function fixture() { return "Something"; }
@@ -83,7 +82,7 @@ class RestContextHandleTest extends \unittest\TestCase {
 
   #[@test]
   public function null_return() {
-    $handler= newinstance(Object::class, [], '{
+    $handler= newinstance(Handler::class, [], '{
       #[@webmethod(verb= "GET")]
       public function fixture() { return null; }
     }');
@@ -95,7 +94,7 @@ class RestContextHandleTest extends \unittest\TestCase {
 
   #[@test]
   public function no_return() {
-    $handler= newinstance(Object::class, [], '{
+    $handler= newinstance(Handler::class, [], '{
       #[@webmethod(verb= "GET")]
       public function fixture() { return; }
     }');
@@ -115,7 +114,7 @@ class RestContextHandleTest extends \unittest\TestCase {
   #  [501, MethodNotImplementedException::class]
   #])]
   public function raised_exception($status, $exception) {
-    $handler= newinstance(Object::class, [$exception], [
+    $handler= newinstance(Handler::class, [$exception], [
       'exception' => null,
       '__construct' => function($exception) {
         $this->exception= $exception;
