@@ -1,15 +1,12 @@
 <?php namespace webservices\rest\unittest;
 
-
-
 use util\Date;
-
 
 /**
  * Issue
  *
  */
-class IssueWithUnderscoreFieldsAndGetter extends \lang\Object {
+class IssueWithUnderscoreFieldsAndGetter {
   protected $issue_id= 0;
   protected $title= null;
   protected $created_at= null;

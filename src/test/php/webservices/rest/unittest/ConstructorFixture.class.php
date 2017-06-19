@@ -6,7 +6,7 @@
  * Issues
  *
  */
-abstract class ConstructorFixture extends \lang\Object {
+abstract class ConstructorFixture {
   public $id= 0;
 
   /**

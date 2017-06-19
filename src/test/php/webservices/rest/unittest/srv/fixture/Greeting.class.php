@@ -5,7 +5,7 @@
  *
  * @see  xp://net.xp_framework.unittest.webservices.rest.srv.RestDefaultRouterTest
  */
-class Greeting extends \lang\Object {
+class Greeting {
   public $word;
   public $name;
 

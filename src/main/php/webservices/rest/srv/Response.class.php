@@ -1,5 +1,6 @@
 <?php namespace webservices\rest\srv;
 
+use util\Objects;
 use webservices\rest\Payload;
 use webservices\rest\RestFormat;
 
@@ -193,15 +194,16 @@ class Response extends Output {
   }
 
   /**
-   * Returns whether a given value is equal to this Response instance
+   * Compares this output to a given value
    *
-   * @param  var cmp
-   * @return bool
+   * @param  var $value
+   * @return int
    */
-  public function equals($cmp) {
-    return (
-      parent::equals($cmp) &&
-      (null === $this->payload ? null === $cmp->payload : $this->payload->equals($cmp->payload))
-    );
+  public function compareTo($value) {
+    if ($value instanceof self) {
+      if (0 !== ($c= parent::compareTo($value))) return $c;
+      return Objects::compare($this->payload, $value->payload);
+    }
+    return 1;
   }
 }

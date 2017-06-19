@@ -8,7 +8,7 @@
  * @see   xp://webservices.rest.RestJsonSerializer
  * @see   xp://webservices.rest.RestXmlSerializer
  */
-abstract class RestSerializer extends \lang\Object {
+abstract class RestSerializer {
 
   /**
    * Return the Content-Type header's value

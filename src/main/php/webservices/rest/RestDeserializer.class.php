@@ -9,7 +9,7 @@
  * @see   xp://webservices.rest.RestXmlDeserializer
  * @see   xp://webservices.rest.RestFormDeserializer
  */
-abstract class RestDeserializer extends \lang\Object {
+abstract class RestDeserializer {
 
   /**
    * Deserialize

@@ -2,11 +2,12 @@
 
 use scriptlet\Cookie;
 use util\Objects;
+use lang\Value;
 
 /**
  * Represents output
  */
-abstract class Output extends \lang\Object {
+abstract class Output implements Value {
   public $status;
   public $headers= [];
   public $cookies= [];
@@ -92,18 +93,36 @@ abstract class Output extends \lang\Object {
     return true;
   }
 
+  /** @return string */
+  public function hashCode() {
+    return 'O'.Objects::hashOf([$this->status, $this->headers, $this->cookies]);
+  }
+
+  /** @return string */
+  public function toString() {
+    $s= nameof($this).'(status= '.$this->status.")@{\n";
+    foreach ($this->headers as $name => $value) {
+      $s.= '  '.$name.': '.$value."\n";
+    }
+    foreach ($this->cookies as $cookie) {
+      $s.= '  Cookie: '.$cookie->toString()."\n";
+    }
+    return $s.'}';
+  }
+
   /**
-   * Returns whether a given value is equal to this Response instance
+   * Compares this output to a given value
    *
-   * @param  var $cmp
-   * @return bool
+   * @param  var $value
+   * @return int
    */
-  public function equals($cmp) {
-    return (
-      $cmp instanceof self &&
-      $this->status === $cmp->status &&
-      Objects::equal($this->headers, $cmp->headers) &&
-      Objects::equal($this->cookies, $cmp->cookies)
-    );
+  public function compareTo($value) {
+    return $value instanceof self
+      ? Objects::compare(
+        [$this->status, $this->headers, $this->cookies],
+        [$value->status, $value->headers, $value->cookies]
+      )
+      : 1
+    ;
   }
 }

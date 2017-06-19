@@ -1,7 +1,6 @@
 <?php namespace webservices\rest\unittest;
 
 use webservices\rest\TypeMarshaller;
-use lang\Object;
 use lang\Type;
 use lang\Primitive;
 use lang\ArrayType;
@@ -13,6 +12,7 @@ use util\TimeZone;
 use util\Money;
 use util\Currency;
 use webservices\rest\RestMarshalling;
+use webservices\rest\unittest\srv\fixture\Wallet;
 
 /**
  * TestCase
@@ -49,20 +49,8 @@ class RestMarshallingTest extends \unittest\TestCase {
   }
 
   #[@beforeClass]
-  public static function defineWalletClassAndMarshaller() {
-    self::$walletClass= ClassLoader::defineClass('Wallet', 'lang.Object', [], '{
-      public $values= [];
-      public function __construct($values= []) {
-        $this->values= $values;
-      }
-      public function add(\util\Money $m) {
-        $this->values[]= $m;
-        return $this;
-      }
-      public function equals($cmp) {
-        return $cmp instanceof self && \util\Objects::equal($cmp->values, $this->values);
-      }
-    }');
+  public static function defineWalletClassMarshaller() {
+    self::$walletClass= new XPClass(Wallet::class);
     self::$walletMarshaller= newinstance(TypeMarshaller::class, [], [
       'marshal' => function($wallet, $marshalling= null) {
         return $marshalling->marshal($wallet->values);
@@ -199,7 +187,7 @@ class RestMarshallingTest extends \unittest\TestCase {
 
   #[@test]
   public function marshal_static_member_excluded() {
-    $o= newinstance(Object::class, [], '{
+    $o= newinstance(Value::class, [], '{
       public $name= "Test";
       public static $instance;
     }');
@@ -415,7 +403,7 @@ class RestMarshallingTest extends \unittest\TestCase {
     $issue= new IssueWithField(1, 'test');
     $this->assertEquals(
       $issue, 
-      $this->fixture->unmarshal($issue->getClass(), ['issue_id' => 1, 'title' => 'test'])
+      $this->fixture->unmarshal(typeof($issue), ['issue_id' => 1, 'title' => 'test'])
     );
   }
 
@@ -424,7 +412,7 @@ class RestMarshallingTest extends \unittest\TestCase {
     $issue= new IssueWithUnderscoreField(1, 'test');
     $this->assertEquals(
       $issue, 
-      $this->fixture->unmarshal($issue->getClass(), ['issue_id' => 1, 'title' => 'test'])
+      $this->fixture->unmarshal(typeof($issue), ['issue_id' => 1, 'title' => 'test'])
     );
   }
 
@@ -433,7 +421,7 @@ class RestMarshallingTest extends \unittest\TestCase {
     $issue= new IssueWithSetter(1, 'test');
     $this->assertEquals(
       $issue, 
-      $this->fixture->unmarshal($issue->getClass(), ['issue_id' => 1, 'title' => 'test'])
+      $this->fixture->unmarshal(typeof($issue), ['issue_id' => 1, 'title' => 'test'])
     );
   }
 
@@ -442,7 +430,7 @@ class RestMarshallingTest extends \unittest\TestCase {
     $issue= new IssueWithUnderscoreSetter(1, 'test');
     $this->assertEquals(
       $issue, 
-      $this->fixture->unmarshal($issue->getClass(), ['issue_id' => 1, 'title' => 'test'])
+      $this->fixture->unmarshal(typeof($issue), ['issue_id' => 1, 'title' => 'test'])
     );
   }
 
@@ -479,7 +467,7 @@ class RestMarshallingTest extends \unittest\TestCase {
   #[@test]
   public function unmarshal_already_instance_of() {
     $issue= new IssueWithField(1, 'test1');
-    $this->assertEquals($issue, $this->fixture->unmarshal($issue->getClass(), $issue));
+    $this->assertEquals($issue, $this->fixture->unmarshal(typeof($issue), $issue));
   }
 
   #[@test]
@@ -496,7 +484,7 @@ class RestMarshallingTest extends \unittest\TestCase {
   #  [['id' => 4711, 'name' => 'Test']]
   #])]
   public function unmarshal_static_valueof_method($input) {
-    $class= ClassLoader::defineClass('RestConversionTest_StaticValueOf', 'lang.Object', [], '{
+    $class= ClassLoader::defineClass('RestConversionTest_StaticValueOf', Value::class, [], '{
       public $passed;
       public static function valueOf($args) { $self= new self(); $self->passed= $args; return $self; }
     }');
@@ -511,7 +499,7 @@ class RestMarshallingTest extends \unittest\TestCase {
   #  [['id' => 4711, 'name' => 'Test']]
   #])]
   public function unmarshal_static_valueof_method_with_array_param($input) {
-    $class= ClassLoader::defineClass('RestConversionTest_StaticValueOfWithArrayParam', 'lang.Object', [], '{
+    $class= ClassLoader::defineClass('RestConversionTest_StaticValueOfWithArrayParam', Value::class, [], '{
       public $passed;
       public static function valueOf(array $args) { $self= new self(); $self->passed= $args; return $self; }
     }');
@@ -539,7 +527,7 @@ class RestMarshallingTest extends \unittest\TestCase {
   #  [['id' => 4711, 'name' => 'Test']]
   #])]
   public function unmarshal_static_valueof_method_with_multiple_params($input) {
-    $class= ClassLoader::defineClass('RestConversionTest_StaticValueOfWithMultipleParams', 'lang.Object', [], '{
+    $class= ClassLoader::defineClass('RestConversionTest_StaticValueOfWithMultipleParams', Value::class, [], '{
       public $passed;
       public static function valueOf($id, $name) { $self= new self(); $self->passed= [$id, $name]; return $self; }
     }');
@@ -598,15 +586,12 @@ class RestMarshallingTest extends \unittest\TestCase {
 
   #[@test]
   public function unmarshal_static_member_excluded() {
-    $class= ClassLoader::defineClass('RestConversionTest_StaticMemberExcluded', 'lang.Object', [], '{
+    $class= ClassLoader::defineClass('RestConversionTest_StaticMemberExcluded', Value::class, [], '{
       public $name;
       public static $instance= null;
     }');
-    $this->assertnull($this->fixture->unmarshal($class, ['name' => 'Test', 'instance' => 'Value'])
-      ->getClass()
-      ->getField('instance')
-      ->get(null)
-    );
+    $instance= $this->fixture->unmarshal($class, ['name' => 'Test', 'instance' => 'Value']);
+    $this->assertNull(typeof($instance)->getField('instance')->get(null));
   }
 
   #[@test]

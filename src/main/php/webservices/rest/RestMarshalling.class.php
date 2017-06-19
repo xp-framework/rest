@@ -14,7 +14,7 @@ use lang\ClassLoader;
  *
  * @test  xp://net.xp_framework.unittest.webservices.rest.RestMarshallingTest
  */
-class RestMarshalling extends \lang\Object {
+class RestMarshalling {
   protected $marshallers;
 
   /**

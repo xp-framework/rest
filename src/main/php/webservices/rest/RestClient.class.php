@@ -14,7 +14,7 @@ use lang\XPClass;
  * @test xp://webservices.rest.unittest.RestClientTest
  * @test xp://webservices.rest.unittest.RestClientSendTest
  */
-class RestClient extends \lang\Object implements Traceable {
+class RestClient implements Traceable {
   protected $connection= null;
   protected $cat= null;
   protected $serializers= [];
@@ -237,6 +237,10 @@ class RestClient extends \lang\Object implements Traceable {
    * @return string
    */
   public function toString() {
-    return nameof($this).'(->'.\xp::stringOf($this->connection).')';
+    if ($this->connection) {
+      return nameof($this).'(->'.$this->connection->toString().')';
+    } else {
+      return nameof($this).'(->null)';
+    }
   }
 }

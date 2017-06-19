@@ -10,7 +10,7 @@ use webservices\rest\TypeMarshaller;
  *   { "message" : "Exception message" }
  * </code>
  */
-class DefaultExceptionMarshaller extends \lang\Object implements TypeMarshaller {
+class DefaultExceptionMarshaller implements TypeMarshaller {
 
   /**
    * Marshals the type

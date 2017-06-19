@@ -6,7 +6,7 @@
  * @see  xp://webservices.rest.unitest.RestContextTest
  */
 #[@webservice]
-class RaisesErrorFromConstructor extends \lang\Object {
+class RaisesErrorFromConstructor {
 
   /**
    * Constructor. Raises a `lang.Error`.

@@ -1,6 +1,6 @@
 <?php namespace webservices\rest;
 
-class RestResource extends \lang\Object {
+class RestResource {
   private $client, $request;
 
   /**

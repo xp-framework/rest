@@ -1,6 +1,6 @@
 <?php namespace webservices\rest\unittest;
 
-class Issues extends \lang\Object {
+class Issues {
   private $backing= null;
 
   /**

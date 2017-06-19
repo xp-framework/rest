@@ -7,7 +7,7 @@ use xml\Node;
  * Wraps an xml.Node into an array-acessible form
  *
  */
-class RestXmlMap extends \lang\Object implements \IteratorAggregate, \ArrayAccess {
+class RestXmlMap implements \IteratorAggregate, \ArrayAccess {
   protected $node= null;
 
   protected static $iterate= null;

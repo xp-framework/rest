@@ -14,7 +14,7 @@ use peer\URL;
  * @test xp://webservices.rest.unittest.RoundtripTest
  * @test xp://webservices.rest.unittest.ExecutionTest
  */
-class Endpoint extends \lang\Object implements Traceable {
+class Endpoint implements Traceable {
   private $base;
   private $connectionTo;
   private $marshalling;

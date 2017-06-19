@@ -5,7 +5,7 @@
  *
  * @test   xp://webservices.rest.unittest.ResponseReaderTest
  */
-class ResponseReader extends \lang\Object {
+class ResponseReader {
   protected $deserializer;
   protected $marshalling;
 

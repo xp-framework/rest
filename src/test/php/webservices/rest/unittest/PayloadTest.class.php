@@ -54,7 +54,7 @@ class PayloadTest extends TestCase {
 
   #[@test]
   public function different_object_payloads_are_not_equal() {
-    $this->assertNotEquals(new Payload($this), new Payload(new \lang\Object()));
+    $this->assertNotEquals(new Payload($this), new Payload(newinstance(Value::class, [])));
   }
 
   #[@test]

@@ -9,7 +9,7 @@ use peer\http\HttpResponse;
  *
  * @test    xp://net.xp_framework.unittest.webservices.rest.RestResponseTest
  */
-class RestResponse extends \lang\Object {
+class RestResponse {
   protected $response= null;
   protected $reader= null;
   protected $input= null;

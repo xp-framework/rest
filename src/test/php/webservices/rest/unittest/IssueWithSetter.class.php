@@ -6,7 +6,7 @@
  * Issue
  *
  */
-class IssueWithSetter extends \lang\Object {
+class IssueWithSetter {
   protected $issueId= 0;
   protected $title= null;
   

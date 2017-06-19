@@ -9,7 +9,7 @@ use scriptlet\Request;
  *
  * @test  xp://webservices.rest.unittest.srv.paging.PaginationTest
  */
-class Pagination extends \lang\Object {
+class Pagination {
   private $request, $size, $behavior;
 
   /**

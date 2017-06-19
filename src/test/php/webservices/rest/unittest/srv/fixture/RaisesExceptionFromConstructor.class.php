@@ -6,7 +6,7 @@
  * @see  xp://webservices.rest.unitest.RestContextTest
  */
 #[@webservice]
-class RaisesExceptionFromConstructor extends \lang\Object {
+class RaisesExceptionFromConstructor {
 
   /**
    * Constructor. Raises a `lang.IllegalStateException`.

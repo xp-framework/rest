@@ -8,7 +8,7 @@ use scriptlet\Preference;
  *
  * @test  xp://net.xp_framework.unittest.webservices.rest.srv.AbstractRestRouterTest
  */
-class AbstractRestRouter extends \lang\Object {
+class AbstractRestRouter {
   protected $cat= null;
   protected $routes= [];
   protected $input= [];

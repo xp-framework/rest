@@ -8,7 +8,7 @@
  * @see  xp://net.xp_framework.unittest.webservices.rest.srv.RestDefaultRouterTest
  */
 #[@webservice(path= '/implicit/')]
-  class ImplicitGreetingHandler extends \lang\Object {
+  class ImplicitGreetingHandler {
   protected $fixture= null;
 
   /**

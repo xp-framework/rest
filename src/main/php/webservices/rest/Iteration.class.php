@@ -6,7 +6,7 @@
  *
  * @see  php://traversable
  */
-class Iteration extends \lang\Object implements \Iterator {
+class Iteration implements \Iterator {
   protected $it, $mapping;
 
   /**

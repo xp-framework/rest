@@ -6,7 +6,7 @@ use io\streams\OutputStream;
 /**
  * Unknown format. Raises exceptions when reading / writing.
  */
-class UnknownFormat extends \lang\Object implements Format {
+class UnknownFormat implements Format {
   private $mediatype;
 
   /** @param string mediatype */

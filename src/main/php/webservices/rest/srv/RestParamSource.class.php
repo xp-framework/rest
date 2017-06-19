@@ -6,7 +6,7 @@
  * Parameter source
  *
  */
-class RestParamSource extends \lang\Object {
+class RestParamSource {
   public $name;
   public $reader;
 

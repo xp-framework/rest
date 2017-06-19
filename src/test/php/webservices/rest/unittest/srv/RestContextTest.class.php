@@ -1,7 +1,6 @@
 <?php namespace webservices\rest\unittest\srv;
 
 use webservices\rest\TypeMarshaller;
-use lang\Object;
 use webservices\rest\srv\ExceptionMapper;
 use unittest\TestCase;
 use scriptlet\HttpScriptletRequest;
@@ -11,6 +10,7 @@ use webservices\rest\srv\RestContext;
 use util\log\Logger;
 use util\log\LogCategory;
 use lang\reflect\Package;
+use webservices\rest\unittest\srv\fixture\Greeting;
 
 /**
  * Test default router
@@ -118,40 +118,40 @@ class RestContextTest extends TestCase {
   }
 
   #[@test]
-  public function marshal_this_with_typemarshaller() {
-    $this->fixture->addMarshaller('unittest.TestCase', newinstance(TypeMarshaller::class, [], '{
+  public function marshal_greeting_with_typemarshaller() {
+    $this->fixture->addMarshaller(Greeting::class, newinstance(TypeMarshaller::class, [], '{
       public function marshal($t) {
-        return $t->getName();
+        return $t->name;
       }
       public function unmarshal(\lang\Type $target, $name) {
         // Not needed
       }
     }'));
     $this->assertEquals(
-      new \webservices\rest\Payload($this->getName()),
-      $this->fixture->marshal(new \webservices\rest\Payload($this))
+      new \webservices\rest\Payload('World'),
+      $this->fixture->marshal(new \webservices\rest\Payload(new Greeting('Hello', 'World')))
     );
   }
 
   #[@test]
-  public function unmarshal_this_with_typemarshaller() {
-    $this->fixture->addMarshaller('unittest.TestCase', newinstance(TypeMarshaller::class, [], '{
+  public function unmarshal_greeting_with_typemarshaller() {
+    $this->fixture->addMarshaller(Greeting::class, newinstance(TypeMarshaller::class, [], '{
       public function marshal($t) {
         // Not needed
       }
-      public function unmarshal(\lang\Type $target, $name) {
-        return $target->newInstance($name);
+      public function unmarshal(\lang\Type $target, $value) {
+        return $target->newInstance("Hello", $value);
       }
     }'));
     $this->assertEquals(
-      $this,
-      $this->fixture->unmarshal($this->getClass(), $this->getName())
+      new Greeting('Hello', 'World'),
+      $this->fixture->unmarshal(\lang\Type::forName(Greeting::class), 'World')
     );
   }
 
   #[@test]
   public function handle_xmlfactory_annotated_method() {
-    $handler= newinstance('#[@webservice, @xmlfactory(element= "greeting")] lang.Object', [], '{
+    $handler= newinstance('#[@webservice, @xmlfactory(element= "greeting")] webservices.rest.unittest.srv.Handler', [], '{
       #[@webmethod, @xmlfactory(element = "book")]
       public function getBook() {
         return array("isbn" => "978-3-16-148410-0", "author" => "Test");
@@ -159,19 +159,19 @@ class RestContextTest extends TestCase {
     }');
     $this->assertEquals(
       \webservices\rest\srv\Response::error(200)->withPayload(new \webservices\rest\Payload(['isbn' => '978-3-16-148410-0', 'author' => 'Test'], ['name' => 'book'])),
-      $this->fixture->handle($handler, $handler->getClass()->getMethod('getBook'), [])
+      $this->fixture->handle($handler, typeof($handler)->getMethod('getBook'), [])
     );
   }
 
   #[@test]
   public function handle_xmlfactory_annotated_class() {
-    $handler= newinstance('#[@webservice, @xmlfactory(element= "greeting")] lang.Object', [], '{
+    $handler= newinstance('#[@webservice, @xmlfactory(element= "greeting")] webservices.rest.unittest.srv.Handler', [], '{
       #[@webmethod]
       public function greet() { return "Test"; }
     }');
     $this->assertEquals(
       \webservices\rest\srv\Response::error(200)->withPayload(new \webservices\rest\Payload('Test', ['name' => 'greeting'])),
-      $this->fixture->handle($handler, $handler->getClass()->getMethod('greet'), [])
+      $this->fixture->handle($handler, typeof($handler)->getMethod('greet'), [])
     );
   }
 
@@ -190,13 +190,13 @@ class RestContextTest extends TestCase {
     }'));
     $this->assertEquals(
       \webservices\rest\srv\Response::status(500)->withPayload(new \webservices\rest\Payload(['message' => 'Test'], ['name' => 'exception'])),
-      $this->fixture->handle($this, $this->getClass()->getMethod('raiseAnError'), [$t])
+      $this->fixture->handle($this, typeof($this)->getMethod('raiseAnError'), [$t])
     );
   }
 
   #[@test]
   public function constructor_injection() {
-    $class= \lang\ClassLoader::defineClass('AbstractRestRouterTest_ConstructorInjection', 'lang.Object', [], '{
+    $class= \lang\ClassLoader::defineClass('AbstractRestRouterTest_ConstructorInjection', 'webservices.rest.unittest.srv.Handler', [], '{
       protected $context;
       #[@inject(type = "webservices.rest.srv.RestContext")]
       public function __construct($context) { $this->context= $context; }
@@ -210,7 +210,7 @@ class RestContextTest extends TestCase {
 
   #[@test]
   public function typename_injection() {
-    $class= \lang\ClassLoader::defineClass('AbstractRestRouterTest_TypeNameInjection', 'lang.Object', [], '{
+    $class= \lang\ClassLoader::defineClass('AbstractRestRouterTest_TypeNameInjection', 'webservices.rest.unittest.srv.Handler', [], '{
       protected $context;
 
       /** @param webservices.rest.srv.RestContext context */
@@ -226,7 +226,7 @@ class RestContextTest extends TestCase {
 
   #[@test]
   public function typerestriction_injection() {
-    $class= \lang\ClassLoader::defineClass('AbstractRestRouterTest_TypeRestrictionInjection', 'lang.Object', [], '{
+    $class= \lang\ClassLoader::defineClass('AbstractRestRouterTest_TypeRestrictionInjection', 'webservices.rest.unittest.srv.Handler', [], '{
       protected $context;
 
       #[@inject]
@@ -243,7 +243,7 @@ class RestContextTest extends TestCase {
   public function setter_injection() {
     $prop= new \util\Properties('service.ini');
     \util\PropertyManager::getInstance()->register('service', $prop);
-    $class= \lang\ClassLoader::defineClass('AbstractRestRouterTest_SetterInjection', 'lang.Object', [], '{
+    $class= \lang\ClassLoader::defineClass('AbstractRestRouterTest_SetterInjection', 'webservices.rest.unittest.srv.Handler', [], '{
       public $prop;
       #[@inject(type = "util.Properties", name = "service")]
       public function setServiceConfig($prop) { $this->prop= $prop; }
@@ -256,7 +256,7 @@ class RestContextTest extends TestCase {
 
   #[@test]
   public function unnamed_logcategory_injection() {
-    $class= \lang\ClassLoader::defineClass('AbstractRestRouterTest_UnnamedLogcategoryInjection', 'lang.Object', [], '{
+    $class= \lang\ClassLoader::defineClass('AbstractRestRouterTest_UnnamedLogcategoryInjection', 'webservices.rest.unittest.srv.Handler', [], '{
       public $cat;
       #[@inject(type = "util.log.LogCategory")]
       public function setTrace($cat) { $this->cat= $cat; }
@@ -271,7 +271,7 @@ class RestContextTest extends TestCase {
 
   #[@test]
   public function named_logcategory_injection() {
-    $class= \lang\ClassLoader::defineClass('AbstractRestRouterTest_NamedLogcategoryInjection', 'lang.Object', [], '{
+    $class= \lang\ClassLoader::defineClass('AbstractRestRouterTest_NamedLogcategoryInjection', 'webservices.rest.unittest.srv.Handler', [], '{
       public $cat;
       #[@inject(type = "util.log.LogCategory", name = "test")]
       public function setTrace($cat) { $this->cat= $cat; }
@@ -285,7 +285,7 @@ class RestContextTest extends TestCase {
 
   #[@test, @expect(class = 'lang.reflect.TargetInvocationException', withMessage= '/InjectionError::setTrace/')]
   public function injection_error() {
-    $class= \lang\ClassLoader::defineClass('AbstractRestRouterTest_InjectionError', 'lang.Object', [], '{
+    $class= \lang\ClassLoader::defineClass('AbstractRestRouterTest_InjectionError', 'webservices.rest.unittest.srv.Handler', [], '{
       #[@inject(type = "util.log.LogCategory")]
       public function setTrace($cat) { throw new \lang\IllegalStateException("Test"); }
     }');
@@ -294,7 +294,7 @@ class RestContextTest extends TestCase {
 
   #[@test, @expect(class = 'lang.reflect.TargetInvocationException', withMessage= '/InstantiationError::<init>/')]
   public function instantiation_error() {
-    $class= \lang\ClassLoader::defineClass('AbstractRestRouterTest_InstantiationError', 'lang.Object', [], '{
+    $class= \lang\ClassLoader::defineClass('AbstractRestRouterTest_InstantiationError', 'webservices.rest.unittest.srv.Handler', [], '{
       public function __construct() { throw new \lang\IllegalStateException("Test"); }
     }');
     $this->fixture->handlerInstanceFor($class);

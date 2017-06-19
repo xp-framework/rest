@@ -17,22 +17,16 @@ class AbstractRestRouterTest extends TestCase {
   protected $target= null;
   protected $handler= null;
 
-  /**
-   * Setup
-   * 
-   */
+  /** @return void */
   public function setUp() {
     $this->fixture= new AbstractRestRouter();
     $this->fixture->setInputFormats(['*json']);
     $this->fixture->setOutputFormats(['text/json']);
-    $this->handler= $this->getClass();
+    $this->handler= typeof($this);
     $this->target= $this->handler->getMethod('target');
   }
 
-  /**
-   * Target method
-   *
-   */
+  /** @return void */
   #[@webservice]
   public function target() {
     // Intentionally empty
