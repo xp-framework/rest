@@ -237,6 +237,10 @@ class RestClient extends \lang\Object implements Traceable {
    * @return string
    */
   public function toString() {
-    return nameof($this).'(->'.\xp::stringOf($this->connection).')';
+    if ($this->connection) {
+      return nameof($this).'(->'.$this->connection->toString().')';
+    } else {
+      return nameof($this).'(->null)';
+    }
   }
 }
