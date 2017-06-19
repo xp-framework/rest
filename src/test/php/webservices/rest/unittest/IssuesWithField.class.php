@@ -6,7 +6,7 @@
  * Issues
  *
  */
-class IssuesWithField extends \lang\Object {
+class IssuesWithField {
   #[@type('webservices.rest.unittest.IssueWithField[]')]
   public $issues= null;
 

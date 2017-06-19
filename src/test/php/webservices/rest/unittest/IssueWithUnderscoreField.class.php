@@ -6,7 +6,7 @@
  * Issue
  *
  */
-class IssueWithUnderscoreField extends \lang\Object {
+class IssueWithUnderscoreField {
   public $issue_id= 0;
   public $title= null;
   

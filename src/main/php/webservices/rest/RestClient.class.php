@@ -14,7 +14,7 @@ use lang\XPClass;
  * @test xp://webservices.rest.unittest.RestClientTest
  * @test xp://webservices.rest.unittest.RestClientSendTest
  */
-class RestClient extends \lang\Object implements Traceable {
+class RestClient implements Traceable {
   protected $connection= null;
   protected $cat= null;
   protected $serializers= [];

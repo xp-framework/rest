@@ -5,7 +5,7 @@
  *
  * @test  xp://net.xp_framework.unittest.webservices.rest.srv.RestRouteTest
  */
-class RestRoute extends \lang\Object {
+class RestRoute {
   protected $verb= '';
   protected $path= '';
   protected $handler= null;

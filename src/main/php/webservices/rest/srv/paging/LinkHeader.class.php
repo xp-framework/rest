@@ -8,7 +8,7 @@ use util\Objects;
  *
  * @see   http://tools.ietf.org/html/rfc5988#page-6
  */
-class LinkHeader extends \lang\Object {
+class LinkHeader {
   private $links= [];
 
   /**

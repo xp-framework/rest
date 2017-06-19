@@ -8,7 +8,7 @@ use util\Objects;
  *
  * @test  xp://net.xp_framework.unittest.webservices.rest.PayloadTest
  */
-class Payload extends \lang\Object {
+class Payload {
   public $value, $properties;
 
   /**

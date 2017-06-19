@@ -6,7 +6,7 @@
  * Issue
  *
  */
-class IssueWithField extends \lang\Object {
+class IssueWithField {
   #[@type('int')]
   public $issueId= 0;
   #[@type('string')]

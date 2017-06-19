@@ -2,7 +2,7 @@
 
 use util\NoSuchElementException;
 
-class Paging extends \lang\Object {
+class Paging {
   private $size, $behaviors;
 
   /**

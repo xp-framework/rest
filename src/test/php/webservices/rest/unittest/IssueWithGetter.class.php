@@ -9,7 +9,7 @@ use util\Date;
  * Issue
  *
  */
-class IssueWithGetter extends \lang\Object {
+class IssueWithGetter {
   protected $issueId= 0;
   protected $title= null;
   protected $createdAt= null;

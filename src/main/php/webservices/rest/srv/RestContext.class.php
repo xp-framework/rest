@@ -23,7 +23,7 @@ use lang\reflect\TargetInvocationException;
  * @test  xp://net.xp_framework.unittest.webservices.rest.srv.RestContextTest
  * @test  xp://net.xp_framework.unittest.webservices.rest.srv.RestContextHandleTest
  */
-class RestContext extends \lang\Object implements \util\log\Traceable {
+class RestContext implements \util\log\Traceable {
   protected $mappers;
   protected $marshalling;
   protected $cat= null;

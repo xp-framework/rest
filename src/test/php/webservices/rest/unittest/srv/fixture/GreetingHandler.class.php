@@ -10,7 +10,7 @@ use webservices\rest\srv\StreamingOutput;
  * @see  xp://net.xp_framework.unittest.webservices.rest.srv.RestDefaultRouterTest
  */
 #[@webservice, @xmlfactory(element= 'greeting')]
-  class GreetingHandler extends \lang\Object {
+  class GreetingHandler {
   protected $fixture= null;
 
   /**

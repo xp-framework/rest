@@ -4,7 +4,7 @@
  * Issues
  *
  */
-class IssuesWithSetter extends \lang\Object {
+class IssuesWithSetter {
   protected $issues= null;
 
   /**

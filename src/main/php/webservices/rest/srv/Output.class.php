@@ -6,7 +6,7 @@ use util\Objects;
 /**
  * Represents output
  */
-abstract class Output extends \lang\Object {
+abstract class Output {
   public $status;
   public $headers= [];
   public $cookies= [];

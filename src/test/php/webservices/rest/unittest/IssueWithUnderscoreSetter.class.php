@@ -6,7 +6,7 @@
  * Issue
  *
  */
-class IssueWithUnderscoreSetter extends \lang\Object {
+class IssueWithUnderscoreSetter {
   protected $issue_id= 0;
   protected $title= null;
   

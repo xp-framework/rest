@@ -5,7 +5,7 @@
  * context's marshalling for exceptions.
  *
  */
-class DefaultExceptionMapper extends \lang\Object implements ExceptionMapper {
+class DefaultExceptionMapper implements ExceptionMapper {
   protected $statusCode;
 
   /**

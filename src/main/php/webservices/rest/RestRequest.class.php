@@ -11,7 +11,7 @@ use peer\URL;
  *
  * @test    xp://net.xp_framework.unittest.webservices.rest.RestRequestTest
  */
-class RestRequest extends \lang\Object {
+class RestRequest {
   protected $resource= '/';
   protected $method= '';
   protected $contentType= null;

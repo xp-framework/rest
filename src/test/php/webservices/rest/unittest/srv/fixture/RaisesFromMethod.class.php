@@ -6,7 +6,7 @@
  * @see  xp://webservices.rest.unitest.RestContextTest
  */
 #[@webservice]
-class RaisesFromMethod extends \lang\Object {
+class RaisesFromMethod {
 
   /**
    * Fixture. Raises a `lang.Error`.
