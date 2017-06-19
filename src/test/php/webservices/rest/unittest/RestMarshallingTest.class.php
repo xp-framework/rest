@@ -415,7 +415,7 @@ class RestMarshallingTest extends \unittest\TestCase {
     $issue= new IssueWithField(1, 'test');
     $this->assertEquals(
       $issue, 
-      $this->fixture->unmarshal($issue->getClass(), ['issue_id' => 1, 'title' => 'test'])
+      $this->fixture->unmarshal(typeof($issue), ['issue_id' => 1, 'title' => 'test'])
     );
   }
 
@@ -424,7 +424,7 @@ class RestMarshallingTest extends \unittest\TestCase {
     $issue= new IssueWithUnderscoreField(1, 'test');
     $this->assertEquals(
       $issue, 
-      $this->fixture->unmarshal($issue->getClass(), ['issue_id' => 1, 'title' => 'test'])
+      $this->fixture->unmarshal(typeof($issue), ['issue_id' => 1, 'title' => 'test'])
     );
   }
 
@@ -433,7 +433,7 @@ class RestMarshallingTest extends \unittest\TestCase {
     $issue= new IssueWithSetter(1, 'test');
     $this->assertEquals(
       $issue, 
-      $this->fixture->unmarshal($issue->getClass(), ['issue_id' => 1, 'title' => 'test'])
+      $this->fixture->unmarshal(typeof($issue), ['issue_id' => 1, 'title' => 'test'])
     );
   }
 
@@ -442,7 +442,7 @@ class RestMarshallingTest extends \unittest\TestCase {
     $issue= new IssueWithUnderscoreSetter(1, 'test');
     $this->assertEquals(
       $issue, 
-      $this->fixture->unmarshal($issue->getClass(), ['issue_id' => 1, 'title' => 'test'])
+      $this->fixture->unmarshal(typeof($issue), ['issue_id' => 1, 'title' => 'test'])
     );
   }
 
@@ -479,7 +479,7 @@ class RestMarshallingTest extends \unittest\TestCase {
   #[@test]
   public function unmarshal_already_instance_of() {
     $issue= new IssueWithField(1, 'test1');
-    $this->assertEquals($issue, $this->fixture->unmarshal($issue->getClass(), $issue));
+    $this->assertEquals($issue, $this->fixture->unmarshal(typeof($issue), $issue));
   }
 
   #[@test]

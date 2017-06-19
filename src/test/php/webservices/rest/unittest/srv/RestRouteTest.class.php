@@ -17,7 +17,7 @@ class RestRouteTest extends TestCase {
    * 
    */
   public function setUp() {
-    $this->handler= $this->getClass();
+    $this->handler= typeof($this);
     $this->target= $this->handler->getMethod('fixtureTarget');
   }
 

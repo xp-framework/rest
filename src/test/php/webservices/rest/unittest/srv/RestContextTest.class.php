@@ -11,6 +11,7 @@ use webservices\rest\srv\RestContext;
 use util\log\Logger;
 use util\log\LogCategory;
 use lang\reflect\Package;
+use webservices\rest\unittest\srv\fixture\Greeting;
 
 /**
  * Test default router
@@ -118,34 +119,34 @@ class RestContextTest extends TestCase {
   }
 
   #[@test]
-  public function marshal_this_with_typemarshaller() {
-    $this->fixture->addMarshaller('unittest.TestCase', newinstance(TypeMarshaller::class, [], '{
+  public function marshal_greeting_with_typemarshaller() {
+    $this->fixture->addMarshaller(Greeting::class, newinstance(TypeMarshaller::class, [], '{
       public function marshal($t) {
-        return $t->getName();
+        return $t->name;
       }
       public function unmarshal(\lang\Type $target, $name) {
         // Not needed
       }
     }'));
     $this->assertEquals(
-      new \webservices\rest\Payload($this->getName()),
-      $this->fixture->marshal(new \webservices\rest\Payload($this))
+      new \webservices\rest\Payload('World'),
+      $this->fixture->marshal(new \webservices\rest\Payload(new Greeting('Hello', 'World')))
     );
   }
 
   #[@test]
-  public function unmarshal_this_with_typemarshaller() {
-    $this->fixture->addMarshaller('unittest.TestCase', newinstance(TypeMarshaller::class, [], '{
+  public function unmarshal_greeting_with_typemarshaller() {
+    $this->fixture->addMarshaller(Greeting::class, newinstance(TypeMarshaller::class, [], '{
       public function marshal($t) {
         // Not needed
       }
-      public function unmarshal(\lang\Type $target, $name) {
-        return $target->newInstance($name);
+      public function unmarshal(\lang\Type $target, $value) {
+        return $target->newInstance("Hello", $value);
       }
     }'));
     $this->assertEquals(
-      $this,
-      $this->fixture->unmarshal($this->getClass(), $this->getName())
+      new Greeting('Hello', 'World'),
+      $this->fixture->unmarshal(\lang\Type::forName(Greeting::class), 'World')
     );
   }
 
@@ -159,7 +160,7 @@ class RestContextTest extends TestCase {
     }');
     $this->assertEquals(
       \webservices\rest\srv\Response::error(200)->withPayload(new \webservices\rest\Payload(['isbn' => '978-3-16-148410-0', 'author' => 'Test'], ['name' => 'book'])),
-      $this->fixture->handle($handler, $handler->getClass()->getMethod('getBook'), [])
+      $this->fixture->handle($handler, typeof($handler)->getMethod('getBook'), [])
     );
   }
 
@@ -171,7 +172,7 @@ class RestContextTest extends TestCase {
     }');
     $this->assertEquals(
       \webservices\rest\srv\Response::error(200)->withPayload(new \webservices\rest\Payload('Test', ['name' => 'greeting'])),
-      $this->fixture->handle($handler, $handler->getClass()->getMethod('greet'), [])
+      $this->fixture->handle($handler, typeof($handler)->getMethod('greet'), [])
     );
   }
 
@@ -190,7 +191,7 @@ class RestContextTest extends TestCase {
     }'));
     $this->assertEquals(
       \webservices\rest\srv\Response::status(500)->withPayload(new \webservices\rest\Payload(['message' => 'Test'], ['name' => 'exception'])),
-      $this->fixture->handle($this, $this->getClass()->getMethod('raiseAnError'), [$t])
+      $this->fixture->handle($this, typeof($this)->getMethod('raiseAnError'), [$t])
     );
   }
 

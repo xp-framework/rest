@@ -28,7 +28,7 @@ class RestContextHandleTest extends \unittest\TestCase {
    * @return webservices.rest.srv.Response
    */
   protected function handle($instance, $args= []) {
-    return (new RestContext())->handle($instance, $instance->getClass()->getMethod('fixture'), $args);
+    return (new RestContext())->handle($instance, typeof($instance)->getMethod('fixture'), $args);
   }
 
   #[@test]
