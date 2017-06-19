@@ -147,17 +147,19 @@ class StreamingOutput extends Output {
   }
 
   /**
-   * Returns whether a given value is equal to this Response instance
+   * Compares this output to a given value
    *
-   * @param  var cmp
-   * @return bool
+   * @param  var $value
+   * @return int
    */
-  public function equals($cmp) {
-    return (
-      parent::equals($cmp) &&
-      $this->mediaType === $cmp->mediaType &&
-      $this->contentLength === $cmp->contentLength &&
-      Objects::equal($this->inputStream, $cmp->inputStream)
-    );
+  public function compareTo($value) {
+    if ($value instanceof self) {
+      if (0 !== ($c= parent::compareTo($value))) return $c;
+      return Objects::compare(
+        [$this->mediaType, $this->contentLength, $this->inputStream],
+        [$value->mediaType, $value->contentLength, $value->inputStream]
+      );
+    }
+    return 1;
   }
 }

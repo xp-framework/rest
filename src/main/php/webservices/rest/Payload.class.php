@@ -1,14 +1,14 @@
 <?php namespace webservices\rest;
 
 use util\Objects;
-
+use lang\Value;
 
 /**
  * Represents the REST payload
  *
  * @test  xp://net.xp_framework.unittest.webservices.rest.PayloadTest
  */
-class Payload {
+class Payload implements Value {
   public $value, $properties;
 
   /**
@@ -22,17 +22,30 @@ class Payload {
     $this->properties= $properties;
   }
 
+  /** @return string */
+  public function hashCode() {
+    return 'O'.Objects::hashOf([$this->value, $this->properties]);
+  }
+
+  /** @return string */
+  public function toString() {
+    $p= '';
+    foreach ($this->properties as $key => $value) {
+      $p.= ', '.$key.'= '.$value;
+    }
+    return nameof($this).'('.substr($p, 2).")@{\n".str_replace("\n", "\n  ", Objects::stringOf($this->value))."\n}";
+  }
+
   /**
-   * Returns whether a given value is equal to this payload
-   * 
-   * @param  var cmp
-   * @return bool
+   * Compares this output to a given value
+   *
+   * @param  var $value
+   * @return int
    */
-  public function equals($cmp) {
-    return (
-      $cmp instanceof self && 
-      Objects::equal($cmp->value, $this->value) &&
-      $this->properties === $cmp->properties
-    );
+  public function compareTo($value) {
+    return $value instanceof self
+      ? Objects::compare([$this->value, $this->properties], [$value->value, $value->properties])
+      : 1
+    ;
   }
 }
