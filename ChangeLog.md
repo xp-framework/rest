@@ -3,6 +3,11 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 9.0.1 / 2017-09-24
+
+* Restored `webservices.rest.Rest{Request, Response}`'s toString()
+  (@thekid)
+
 ## 9.0.0 / 2017-06-20
 
 * **Heads up:** Drop PHP 5.5 support - @thekid
