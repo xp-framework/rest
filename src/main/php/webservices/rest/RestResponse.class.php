@@ -9,7 +9,7 @@ use peer\http\HttpResponse;
  *
  * @test    xp://net.xp_framework.unittest.webservices.rest.RestResponseTest
  */
-class RestResponse {
+class RestResponse implements \lang\Value {
   protected $response= null;
   protected $reader= null;
   protected $input= null;
@@ -212,5 +212,24 @@ class RestResponse {
    */
   public function toString() {
     return nameof($this).'<'.$this->response->message().'>@(->'.$this->response->toString().')';
+  }
+
+  /**
+   * Creates a hashcode
+   *
+   * @return string
+   */
+  public function hashCode() {
+    return uniqid();
+  }
+
+  /**
+   * Comparison
+   *
+   * @param  var $value
+   * @return int
+   */
+  public function compareTo($value) {
+    return $value === $this ? 0 : 1;
   }
 }

@@ -5,13 +5,14 @@ use peer\http\Header;
 use lang\ElementNotFoundException;
 use lang\IllegalStateException;
 use peer\URL;
+use util\Comparison;
 
 /**
  * A REST request
  *
  * @test    xp://net.xp_framework.unittest.webservices.rest.RestRequestTest
  */
-class RestRequest {
+class RestRequest implements \lang\Value {
   protected $resource= '/';
   protected $method= '';
   protected $contentType= null;
@@ -508,5 +509,24 @@ class RestRequest {
     }
 
     return nameof($this).'('.$this->method.' '.$this->resource.')@['.$headers.']';
+  }
+
+  /**
+   * Creates a hashcode
+   *
+   * @return string
+   */
+  public function hashCode() {
+    return uniqid();
+  }
+
+  /**
+   * Comparison
+   *
+   * @param  var $value
+   * @return int
+   */
+  public function compareTo($value) {
+    return $value === $this ? 0 : 1;
   }
 }
