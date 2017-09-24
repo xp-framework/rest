@@ -1,5 +1,6 @@
 <?php namespace webservices\rest\unittest;
 
+use unittest\TestCase;
 use webservices\rest\TypeMarshaller;
 use lang\Type;
 use lang\Primitive;
@@ -19,7 +20,7 @@ use webservices\rest\unittest\srv\fixture\Wallet;
  *
  * @see   xp://webservices.rest.RestMarshalling
  */
-class RestMarshallingTest extends \unittest\TestCase {
+class RestMarshallingTest extends TestCase {
   private static $enumClass;
   private static $walletClass;
   private static $moneyMarshaller;
@@ -149,6 +150,20 @@ class RestMarshallingTest extends \unittest\TestCase {
     $this->assertEquals(
       ['issueId' => 1, 'title' => 'test'], 
       $this->fixture->marshal($issue)
+    );
+  }
+
+  #[@test]
+  public function marshal_parent_class_with_private_fields() {
+    $instance= new ChildClass();
+    $instance->setField1('val1');
+    $instance->setField2('val2');
+    $this->assertEquals(
+      [
+        'field1' => 'getter_val1',
+        'field2' => 'getter_val2'
+      ],
+      $this->fixture->marshal($instance)
     );
   }
 

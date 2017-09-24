@@ -127,8 +127,13 @@ class RestMarshalling {
       }
 
       $class= typeof($value);
+      $classToSearchIn= $class;
+      $fields= [];
+      do {
+        $fields= array_merge($fields, $classToSearchIn->getFields());
+      } while (($classToSearchIn= $classToSearchIn->getParentclass()) !== null);
       $r= [];
-      foreach ($class->getFields() as $field) {
+      foreach ($fields as $field) {
         $m= $field->getModifiers();
         if ($m & MODIFIER_STATIC) {
           continue;
