@@ -121,6 +121,12 @@ class RestMarshalling {
       return $value->toString('c');    // ISO 8601, e.g. "2004-02-12T15:19:21+00:00"
     } else if ($value instanceof \Traversable) {
       return new Iteration($value, [$this, 'marshal']);
+    } else if ($value instanceof \StdClass) {
+      $r= new \StdClass();
+      foreach ($value as $key => $v) {
+        $r->{$key}= $this->marshal($v);
+      }
+      return $value;
     } else if (is_object($value)) {
       foreach ($this->marshallers->keys() as $t) {      // Specific class marshalling
         if ($t->isInstance($value)) return $this->marshallers[$t]->marshal($value, $this);

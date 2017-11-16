@@ -3,6 +3,12 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 9.1.0 / 2017-11-16
+
+* Made it possible to force arrays and maps to be emitted as JSON objects
+  by using an `(object)` cast.
+  (@thekid)
+
 ## 9.0.1 / 2017-09-24
 
 * Restored `webservices.rest.Rest{Request, Response}`'s toString()

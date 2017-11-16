@@ -213,6 +213,24 @@ class RestMarshallingTest extends \unittest\TestCase {
   }
 
   #[@test]
+  public function marshal_empty_object() {
+    $object= (object)[];
+    $this->assertEquals($object, $this->fixture->marshal($object));
+  }
+
+  #[@test]
+  public function marshal_array_as_object() {
+    $object= (object)[1, 2, 3];
+    $this->assertEquals($object, $this->fixture->marshal($object));
+  }
+
+  #[@test]
+  public function marshal_map_as_object() {
+    $object= (object)['key' => 'value'];
+    $this->assertEquals($object, $this->fixture->marshal($object));
+  }
+
+  #[@test]
   public function unmarshal_null() {
     $this->assertEquals(null, $this->fixture->unmarshal(Type::$VAR, null));
   }
