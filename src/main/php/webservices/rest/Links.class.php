@@ -1,7 +1,7 @@
 <?php namespace webservices\rest;
 
-use text\StringTokenizer;
 use lang\FormatException;
+use text\StringTokenizer;
 
 /**
  * Link header
@@ -23,7 +23,7 @@ class Links implements \lang\Value {
    */
   private function expect($st, $tokens) {
     $parsed= $st->nextToken($tokens);
-    if (false === strpos($tokens, $parsed)) {
+    if (null === $parsed || false === strpos($tokens, $parsed)) {
       throw new FormatException('Expected ['.$tokens.'], have '.\xp::stringOf($parsed));
     }
     return $parsed;
