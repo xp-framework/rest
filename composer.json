@@ -10,7 +10,7 @@
     "xp-framework/http": "^9.0 | ^8.0 | ^7.0 | ^6.2",
     "xp-framework/xml": "^9.0 | ^8.0 | ^7.0 | ^6.0",
     "xp-framework/scriptlet": "^9.0 | ^8.0.1",
-    "xp-framework/logging": "^8.0 | ^7.0 | ^6.5",
+    "xp-framework/logging": "^9.0 | ^8.0 | ^7.0 | ^6.5",
     "xp-framework/collections": "^8.0 | ^7.0 | ^6.5",
     "xp-framework/networking": "^9.0 | ^8.0 | ^7.0 | ^6.6",
     "xp-framework/tokenize": "^8.0 | ^7.0 | ^6.5",

@@ -3,6 +3,10 @@ REST Client and Server APIs for the XP Framework ChangeLog
 
 ## ?.?.? / ????-??-??
 
+## 9.1.1 / 2018-08-24
+
+* Made compatible with `xp-framework/logging` version 9.0.0 - @thekid
+
 ## 9.1.0 / 2017-11-16
 
 * Made it possible to force arrays and maps to be emitted as JSON objects
