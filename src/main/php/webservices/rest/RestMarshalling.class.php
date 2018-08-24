@@ -1,11 +1,11 @@
 <?php namespace webservices\rest;
 
-use lang\Enum;
-use lang\XPClass;
-use lang\Type;
-use lang\Primitive;
-use lang\reflect\Modifiers;
 use lang\ClassLoader;
+use lang\Enum;
+use lang\Primitive;
+use lang\Type;
+use lang\XPClass;
+use lang\reflect\Modifiers;
 
 /**
  * Marshalling takes care of converting the value to a simple output 

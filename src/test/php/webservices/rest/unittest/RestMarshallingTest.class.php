@@ -1,17 +1,17 @@
 <?php namespace webservices\rest\unittest;
 
-use webservices\rest\TypeMarshaller;
-use lang\Type;
-use lang\Primitive;
 use lang\ArrayType;
-use lang\MapType;
-use lang\XPClass;
 use lang\ClassLoader;
-use util\Date;
-use util\TimeZone;
-use util\Money;
+use lang\MapType;
+use lang\Primitive;
+use lang\Type;
+use lang\XPClass;
 use util\Currency;
+use util\Date;
+use util\Money;
+use util\TimeZone;
 use webservices\rest\RestMarshalling;
+use webservices\rest\TypeMarshaller;
 use webservices\rest\unittest\srv\fixture\Wallet;
 
 /**
@@ -51,28 +51,28 @@ class RestMarshallingTest extends \unittest\TestCase {
   #[@beforeClass]
   public static function defineWalletClassMarshaller() {
     self::$walletClass= new XPClass(Wallet::class);
-    self::$walletMarshaller= newinstance(TypeMarshaller::class, [], [
-      'marshal' => function($wallet, $marshalling= null) {
+    self::$walletMarshaller= newinstance(TypeMarshaller::class, [], '{
+      public function marshal($wallet, $marshalling= null) {
         return $marshalling->marshal($wallet->values);
-      },
-      'unmarshal' => function(\lang\Type $t, $input, $marshalling= null) {
-        return $t->newInstance($marshalling->unmarshal(new \lang\ArrayType('util.Money'), $input));
       }
-    ]);
+      public function unmarshal(\lang\Type $t, $input, $marshalling= null) {
+        return $t->newInstance($marshalling->unmarshal(new \lang\ArrayType("util.Money"), $input));
+      }
+    }');
   }
 
   #[@beforeClass]
   public static function defineMoneyMarshaller() {
-    self::$moneyMarshaller= newinstance(TypeMarshaller::class, [], [
-      'marshal' => function($money, $marshalling= null) {
+    self::$moneyMarshaller= newinstance(TypeMarshaller::class, [], '{
+      public function marshal($money, $marshalling= null) {
         $amount= $money->amount();
-        return sprintf('%.2f %s', is_object($amount) ? $amount->doubleValue() : $amount, $money->currency()->name());
-      },
-      'unmarshal' => function(\lang\Type $t, $input, $marshalling= null) {
-        sscanf($input, '%f %s', $amount, $currency);
+        return sprintf("%.2f %s", is_object($amount) ? $amount->doubleValue() : $amount, $money->currency()->name());
+      }
+      public function unmarshal(\lang\Type $t, $input, $marshalling= null) {
+        sscanf($input, "%f %s", $amount, $currency);
         return $t->newInstance($amount, \util\Currency::getInstance($currency));
       }
-    ]);
+    }');
   }
 
   #[@test]
