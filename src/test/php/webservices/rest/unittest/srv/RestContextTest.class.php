@@ -1,15 +1,14 @@
 <?php namespace webservices\rest\unittest\srv;
 
-use webservices\rest\TypeMarshaller;
-use webservices\rest\srv\ExceptionMapper;
-use unittest\TestCase;
+use lang\reflect\Package;
+use scriptlet\Cookie;
 use scriptlet\HttpScriptletRequest;
 use scriptlet\HttpScriptletResponse;
-use scriptlet\Cookie;
-use webservices\rest\srv\RestContext;
-use util\log\Logger;
+use unittest\TestCase;
 use util\log\LogCategory;
-use lang\reflect\Package;
+use webservices\rest\TypeMarshaller;
+use webservices\rest\srv\ExceptionMapper;
+use webservices\rest\srv\RestContext;
 use webservices\rest\unittest\srv\fixture\Greeting;
 
 /**
@@ -263,20 +262,6 @@ class RestContextTest extends TestCase {
     }');
     $cat= new LogCategory('test');
     $this->fixture->setTrace($cat);
-    $this->assertEquals(
-      $cat,
-      $this->fixture->handlerInstanceFor($class)->cat
-    );
-  }
-
-  #[@test]
-  public function named_logcategory_injection() {
-    $class= \lang\ClassLoader::defineClass('AbstractRestRouterTest_NamedLogcategoryInjection', 'webservices.rest.unittest.srv.Handler', [], '{
-      public $cat;
-      #[@inject(type = "util.log.LogCategory", name = "test")]
-      public function setTrace($cat) { $this->cat= $cat; }
-    }');
-    $cat= Logger::getInstance()->getCategory('test');
     $this->assertEquals(
       $cat,
       $this->fixture->handlerInstanceFor($class)->cat

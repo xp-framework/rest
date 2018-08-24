@@ -1,21 +1,20 @@
 <?php namespace webservices\rest\srv;
 
+use lang\FormatException;
+use lang\IllegalArgumentException;
+use lang\IllegalStateException;
+use lang\Throwable;
+use lang\Type;
+use lang\XPClass;
+use lang\reflect\TargetInvocationException;
 use peer\http\HttpConstants;
 use scriptlet\Preference;
-use webservices\rest\RestMarshalling;
-use webservices\rest\RestFormat;
-use webservices\rest\Payload;
-use webservices\rest\TypeMarshaller;
-use util\collections\HashTable;
 use util\PropertyManager;
-use util\log\Logger;
-use lang\XPClass;
-use lang\Type;
-use lang\Throwable;
-use lang\FormatException;
-use lang\IllegalStateException;
-use lang\IllegalArgumentException;
-use lang\reflect\TargetInvocationException;
+use util\collections\HashTable;
+use webservices\rest\Payload;
+use webservices\rest\RestFormat;
+use webservices\rest\RestMarshalling;
+use webservices\rest\TypeMarshaller;
 
 /**
  * The context of a rest call
@@ -161,7 +160,7 @@ class RestContext implements \util\log\Traceable {
     $type= isset($inject['type']) ? $inject['type'] : $routine->getParameter(0)->getType()->getName();
     switch ($type) {
       case 'util.log.LogCategory': 
-        $args= [isset($inject['name']) ? Logger::getInstance()->getCategory($inject['name']) : $this->cat];
+        $args= [$this->cat];
         break;
 
       case 'util.Properties': 
